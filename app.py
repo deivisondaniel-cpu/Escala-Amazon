@@ -153,6 +153,7 @@ with st.sidebar:
         st.info("💡 DICA: Agora você pode clicar nos botões diretamente na tabela para alterar folgas rapidamente!")
         st.divider()
         
+        # ABA DE CADASTRO
         st.markdown("**➕ Cadastrar Novo Operador**")
         novo_nome = st.text_input("Nome:").upper().strip()
         nova_funcao = st.text_input("Função:").upper().strip()
@@ -170,6 +171,33 @@ with st.sidebar:
                 df_banco.to_csv(ARQUIVO_BANCO, index=False)
                 st.success(f"{novo_nome} adicionado!")
                 st.rerun()
+
+        st.divider()
+
+        # NOVA ABA: REMOVER OPERADOR (Pessoas cadastradas na semana atual)
+        st.markdown("**❌ Remover / Desligar Operador**")
+        lista_operadores_atuais = sorted(df_banco[df_banco["SemanaID"] == id_semana_ativa]["Nome"].unique())
+        
+        if lista_operadores_atuais:
+            operador_para_remover = st.selectbox("Selecione quem remover:", lista_operadores_atuais)
+            tipo_remocao = st.radio("Escopo da remoção:", ["Apenas da semana atual", "De todo o sistema (Definitivo)"])
+            
+            if st.button("Confirmar Exclusão", type="primary", use_container_width=True):
+                if tipo_remocao == "Apenas da semana atual":
+                    # Remove apenas o registro vinculado à ID da semana ativa
+                    df_banco = df_banco[~((df_banco["SemanaID"] == id_semana_ativa) & (df_banco["Nome"] == operador_para_remover))]
+                    st.success(f"Removido da escala da semana {id_semana_ativa}!")
+                else:
+                    # Remove completamente o funcionário de qualquer histórico
+                    df_banco = df_banco[df_banco["Nome"] != operador_para_remover]
+                    st.success(f"{operador_para_remover} deletado do sistema permanentemente!")
+                
+                df_banco.to_csv(ARQUIVO_BANCO, index=False)
+                st.rerun()
+        else:
+            st.caption("Nenhum operador listado nesta semana.")
+
+        st.divider()
 
         if st.button("🚪 Sair (Deslogar)", use_container_width=True):
             st.session_state.autenticado = False

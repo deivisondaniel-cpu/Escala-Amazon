@@ -685,13 +685,13 @@ with st.sidebar:
 # ============================================================
 
 st.markdown(
-    "<div class='titulo'>📦 Escala Amazon</div>",
+    "<div class='titulo'>Monitoramento Amazon</div>",
     unsafe_allow_html=True
 )
 
 st.markdown(
     "<div class='subtitulo'>"
-    "Monitoramento Operacional • Escala de Equipe"
+    "Escala do turno"
     "</div>",
     unsafe_allow_html=True
 )

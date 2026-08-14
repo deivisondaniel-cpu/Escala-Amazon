@@ -18,7 +18,7 @@ st.markdown("""
     footer {visibility: hidden;}
     .stDecoration {display:none !important;}
     
-    /* TOTALMENTE BLINDADO: Remove botão de status, footer, badges de visualização e qualquer elemento flutuante */
+    /* BLINDAGEM MÁXIMA ANTI-FAIXA VERMELHA E ANTI-POPOVER FLUTUANTE */
     div[data-testid="stStatusWidget"],
     div[data-testid="stContainerToolbar"],
     .stActionButton, 
@@ -27,7 +27,9 @@ st.markdown("""
     [data-testid="stEmbedHover"],
     [data-testid="stFooter"],
     [style*="viewer-badge"],
-    .viewer-badge {
+    .viewer-badge,
+    div[class*="StyledEmbedHoverContainer"],
+    div[data-baseweb="popover"] {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;

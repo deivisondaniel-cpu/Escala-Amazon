@@ -65,7 +65,7 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS REFORMULADO (TEMA LOSUNG/MIDNIGHT NAVY & NEON ORANGE)
+# CSS REFORMULADO (CORREÇÃO DE CORES & LOGIN CLEAN BRANCO)
 # ============================================================
 st.markdown("""
 <style>
@@ -76,7 +76,7 @@ footer { visibility: hidden; }
 /* Remove a barra lateral */
 [data-testid="stSidebar"] { display: none; }
 
-/* Fundo Principal Ultra Escuro (Midnight Navy) */
+/* Fundo Principal Ultra Escuro */
 [data-testid="stAppViewContainer"], .stApp {
     background-color: #0A121C !important;
 }
@@ -98,7 +98,7 @@ footer { visibility: hidden; }
 }
 
 .subtitulo {
-    color: #FF5500; /* Laranja vivo */
+    color: #FF5500;
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 1px;
@@ -116,59 +116,63 @@ div[data-baseweb="select"] span {
     color: #FFFFFF !important;
 }
 
-/* Botão de Área do Gestor (Superior Direito) */
+/* ------------------------------------------------------------
+   CORREÇÃO CORRETA: ÁREA DO GESTOR TOTALMENTE BRANCA (POP-OVER)
+   ------------------------------------------------------------ */
 div[data-testid="stPopover"] > button {
-    background-color: #121E2B !important;
-    color: #FFFFFF !important;
-    border: 1px solid #1A2635 !important;
+    background-color: #FFFFFF !important;
+    color: #0A121C !important;
+    border: 1px solid #E2E8F0 !important;
     font-weight: 700 !important;
     border-radius: 8px !important;
     padding: 6px 16px !important;
 }
-div[data-testid="stPopover"] > button:hover {
-    background-color: #1A2635 !important;
-    border-color: #FF5500 !important;
+div[data-testid="stPopover"] > button:hover, div[data-testid="stPopover"] > button:focus, div[data-testid="stPopover"] > button:active {
+    background-color: #F8FAFC !important;
+    border-color: #CBD5E1 !important;
     color: #FF5500 !important;
 }
 
-/* Balão do Popover Escuro integrado */
+/* Caixa Flutuante do Popover interna */
 div[data-testid="stPopoverBody"] {
-    background-color: #121E2B !important;
-    border: 1px solid #1A2635 !important;
+    background-color: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
     border-radius: 8px !important;
-    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.6) !important;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15) !important;
+    padding: 15px !important;
 }
 div[data-testid="stPopoverBody"] label p {
-    color: #FFFFFF !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
 }
 div[data-testid="stPopoverBody"] input {
-    background-color: #0A121C !important;
-    color: #FFFFFF !important;
-    border: 1px solid #1A2635 !important;
+    background-color: #F8FAFC !important;
+    color: #0F172A !important;
+    border: 1px solid #CBD5E1 !important;
+}
+div[data-testid="stPopoverBody"] input:focus {
+    border-color: #FF5500 !important;
 }
 
-/* Botão Entrar do formulário interno do popover */
-div[data-testid="stPopoverBody"] button[type="submit"] {
-    background-color: #FF5500 !important;
+/* Botão de envio dentro do login branco */
+div[data-testid="stPopoverBody"] button[type="submit"], div[data-testid="stPopoverBody"] .stButton > button {
+    background-color: #0F172A !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
     border: none !important;
+    border-radius: 6px !important;
 }
-
-/* Botões padrões do Streamlit dentro do painel administrativo */
-.stButton > button {
-    background-color: #121E2B !important;
+div[data-testid="stPopoverBody"] button[type="submit"]:hover, div[data-testid="stPopoverBody"] .stButton > button:hover {
+    background-color: #FF5500 !important;
     color: #FFFFFF !important;
-    border: 1px solid #1A2635 !important;
-    border-radius: 8px !important;
-    font-weight: 700 !important;
-}
-.stButton > button:hover {
-    border-color: #FF5500 !important;
-    color: #FF5500 !important;
 }
 
-/* Métricas do Painel (Cards em azul marinho suave) */
+/* Textos informativos de Administração dentro do Painel */
+div[data-testid="stPopoverBody"] p, div[data-testid="stPopoverBody"] span {
+    color: #334155 !important;
+}
+
+/* Métricas do Painel */
 .metric-card {
     background-color: #121E2B;
     border: 1px solid #1A2635;
@@ -179,7 +183,7 @@ div[data-testid="stPopoverBody"] button[type="submit"] {
 .metric-numero { font-size: 26px; font-weight: 800; color: #FFFFFF; }
 .metric-label { font-size: 11px; color: #8FA0B5; font-weight: 700; letter-spacing: 0.5px; }
 
-/* Abas (Tabs) no estilo do menu lateral */
+/* Abas (Tabs) */
 .stTabs [data-baseweb="tab-list"] { background-color: #121E2B; border-radius: 8px; padding: 4px; }
 .stTabs [data-baseweb="tab"] { color: #8FA0B5 !important; font-weight: 700; }
 .stTabs [aria-selected="true"] { color: #FFFFFF !important; background-color: #FF5500; border-radius: 6px; }
@@ -213,8 +217,12 @@ div[data-testid="stPopoverBody"] button[type="submit"] {
 .nome-operador { padding-top: 10px; font-size: 13px; color: #FFFFFF; font-weight: 700; }
 .funcao-operador { padding-top: 10px; font-size: 11px; color: #8FA0B5; font-weight: 600; }
 
-/* CARD TRABALHO (Igual ao selecionado da imagem: Laranja com texto Branco) */
-.card-trabalho {
+
+/* ------------------------------------------------------------
+   AJUSTE DE CORES SOLICITADO: FOLGA LARANJA E TRABALHO MARINHO
+   ------------------------------------------------------------ */
+/* CARD FOLGA: Agora com o destaque Laranja Vibrante */
+.card-folga {
     background-color: #FF5500;
     color: #FFFFFF;
     padding: 8px;
@@ -228,12 +236,12 @@ div[data-testid="stPopoverBody"] button[type="submit"] {
     justify-content: center;
     box-shadow: 0px 4px 10px rgba(255, 85, 0, 0.25);
 }
-.sub-info { color: #FFFFFF; font-size: 10px; font-weight: 700; opacity: 0.85; }
+.sub-info-folga { color: #FFFFFF; font-size: 10px; font-weight: 700; opacity: 0.85; }
 
-/* CARD FOLGA (Discreto, integrado ao fundo) */
-.card-folga {
+/* CARD TRABALHO: Integrado de forma limpa ao background */
+.card-trabalho {
     background-color: #121E2B;
-    color: #6C7D93;
+    color: #FFFFFF;
     padding: 8px;
     border-radius: 8px;
     text-align: center;
@@ -245,7 +253,8 @@ div[data-testid="stPopoverBody"] button[type="submit"] {
     flex-direction: column;
     justify-content: center;
 }
-.sub-info-folga { color: #4A5768; font-size: 10px; }
+.sub-info { color: #8FA0B5; font-size: 10px; }
+
 
 [data-testid="stForm"] { background-color: transparent; border: none; padding: 0px; }
 .separador { border: 0; border-top: 1px solid #121E2B; margin-top: 4px; margin-bottom: 15px; }
@@ -475,18 +484,19 @@ for turno in ["T1", "T2", "T3"]:
             for i, (dia, _) in enumerate(DIAS, 2):
                 valor = status_lista[i - 2]
 
-                if valor != "FOLGA":
-                    linha[i].markdown(f"""
-                        <div class='card-trabalho'>
-                            TRABALHO
-                            <div class='sub-info'>{HORARIOS[turno]}</div>
-                        </div>
-                    """, unsafe_allow_html=True)
-                else:
+                # Agora a FOLGA é a que ganha o Laranja Vibrante
+                if valor == "FOLGA":
                     linha[i].markdown("""
                         <div class='card-folga'>
                             FOLGA
                             <div class='sub-info-folga'>Descanso</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    linha[i].markdown(f"""
+                        <div class='card-trabalho'>
+                            TRABALHO
+                            <div class='sub-info'>{HORARIOS[turno]}</div>
                         </div>
                     """, unsafe_allow_html=True)
 

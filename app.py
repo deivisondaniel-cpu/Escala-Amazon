@@ -5,7 +5,7 @@ import pandas as pd
 # Configuração da página web
 st.set_page_config(page_title="Escala monitoramento", page_icon="📦", layout="wide")
 
-# 1. TRATOR CSS (Esconde o menu padrão e formata o visual)
+# 1. TRATOR CSS (Formatação visual idêntica para todos os turnos)
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden !important;}
@@ -62,18 +62,18 @@ components.html("""
 
 st.markdown("<h1 class='titulo'>Escala Amazon</h1>", unsafe_allow_html=True)
 
-# Horário corrigido para o Turno 2
-HORARIO_T2 = "15:00 às 23:00"
+# --- CONFIGURAÇÃO DOS TURNOS E SEUS HORÁRIOS ATUALIZADOS ---
+TURNOS_CONFIG = {
+    "T1": {"nome": "Turno 1 (07:00 às 15:00)", "horario": "07:00 às 15:00", "gid": "0"},
+    "T2": {"nome": "Turno 2 (15:00 às 23:00)", "horario": "15:00 às 23:00", "gid": "1740365530"},
+    "T3": {"nome": "Turno 3 (23:00 às 07:00)", "horario": "23:00 às 07:00", "gid": "111816576"}
+}
 
-# --- PUXANDO OS DADOS DIRETO DA SUA PLANILHA ---
-@st.cache_data(ttl=15)  # Atualiza o site a cada 15 segundos caso a planilha mude
-def carregar_dados_google_sheets():
-    # Esse é o ID da planilha que você me enviou
+# --- FUNÇÃO PARA CARREGAR UMA ABA ESPECÍFICA DO GOOGLE SHEETS ---
+@st.cache_data(ttl=15)
+def carregar_dados_turno(gid_aba):
     sheet_id = "16u4SXhN3NNDmJ6o3UstFHNgRk3Go5V2KkvhGJewNl8E"
-    gid = "1740365530"  # Código da aba T2
-    
-    url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
-    
+    url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid_aba}"
     try:
         df = pd.read_csv(url, skiprows=2)
         df = df.dropna(subset=["NOME"])
@@ -81,40 +81,43 @@ def carregar_dados_google_sheets():
     except Exception as e:
         return pd.DataFrame()
 
-df_sheets = carregar_dados_google_sheets()
+dias_lista = ["SEXTA", "SÁBADO", "DOMINGO", "SEGUNDA"]
 
-if not df_sheets.empty:
-    dias_lista = ["SEXTA", "SÁBADO", "DOMINGO", "SEGUNDA"]
+# --- RENDERIZAÇÃO DE CADA TURNO NA TELA ---
+for chave_turno, conf in TURNOS_CONFIG.items():
+    df_turno = carregar_dados_turno(conf["gid"])
     
-    st.markdown(f"### 🕒 Turno 2 ({HORARIO_T2})")
-    
-    # Monta os cabeçalhos das colunas
-    cols_header = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
-    cols_header[0].markdown("<div class='header-col' style='text-align:left;'>OPERADOR</div>", unsafe_allow_html=True)
-    cols_header[1].markdown("<div class='header-col' style='text-align:left; color:#64748B;'>FUNÇÃO</div>", unsafe_allow_html=True)
-    
-    for idx, dia in enumerate(dias_lista, 2):
-        cols_header[idx].markdown(f"<div class='header-col'>{dia}</div>", unsafe_allow_html=True)
+    if not df_turno.empty:
+        st.markdown(f"### 🕒 {conf['nome']}")
         
-    st.markdown("<hr style='margin-top:0; margin-bottom:15px;' />", unsafe_allow_html=True)
-    
-    # Desenha as linhas com os nomes e blocos de folga
-    for _, row in df_sheets.iterrows():
-        nome_clean = str(row["NOME"]).strip()
-        if "TOTAL" in nome_clean.upper() or nome_clean == "" or nome_clean == "nan":
-            continue
-            
-        cols = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
-        cols[0].markdown(f"<div class='nome-operador'><b>{nome_clean}</b></div>", unsafe_allow_html=True)
-        cols[1].markdown(f"<div class='funcao-operador'>{str(row['FUNÇÃO'])}</div>", unsafe_allow_html=True)
+        # Cria as colunas de cabeçalho do turno atual
+        cols_header = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
+        cols_header[0].markdown("<div class='header-col' style='text-align:left;'>OPERADOR</div>", unsafe_allow_html=True)
+        cols_header[1].markdown("<div class='header-col' style='text-align:left; color:#64748B;'>FUNÇÃO</div>", unsafe_allow_html=True)
         
         for idx, dia in enumerate(dias_lista, 2):
-            celula = str(row[dia]).strip().upper()
+            cols_header[idx].markdown(f"<div class='header-col'>{dia}</div>", unsafe_allow_html=True)
             
-            # Se não estiver escrito FOLGA na planilha, o sistema desenha o cartão de TRABALHO com o horário de 15h às 23h
-            if "FOLGA" not in celula and celula != "NAN" and celula != "":
-                cols[idx].markdown(f"<div class='card-trabalho'>TRABALHO<div class='sub-info'>{HORARIO_T2}</div></div>", unsafe_allow_html=True)
-            else:
-                cols[idx].markdown("<div class='card-folga'>FOLGA<div class='sub-info-folga'>Descanso</div></div>", unsafe_allow_html=True)
-else:
-    st.error("Por favor, verifique o Passo 2. O sistema precisa que a planilha esteja configurada como 'Qualquer pessoa com o link'.")
+        st.markdown("<hr style='margin-top:0; margin-bottom:15px;' />", unsafe_allow_html=True)
+        
+        # Renderiza os operadores do turno atual
+        for _, row in df_turno.iterrows():
+            nome_clean = str(row["NOME"]).strip()
+            if "TOTAL" in nome_clean.upper() or nome_clean == "" or nome_clean == "nan":
+                continue
+                
+            cols = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
+            cols[0].markdown(f"<div class='nome-operador'><b>{nome_clean}</b></div>", unsafe_allow_html=True)
+            cols[1].markdown(f"<div class='funcao-operador'>{str(row['FUNÇÃO'])}</div>", unsafe_allow_html=True)
+            
+            for idx, dia in enumerate(dias_lista, 2):
+                celula = str(row[dia]).strip().upper()
+                
+                # Exibe o bloco preto se for dia de trabalho, ou amarelo se for folga
+                if "FOLGA" not in celula and celula != "NAN" and celula != "":
+                    cols[idx].markdown(f"<div class='card-trabalho'>TRABALHO<div class='sub-info'>{conf['horario']}</div></div>", unsafe_allow_html=True)
+                else:
+                    cols[idx].markdown("<div class='card-folga'>FOLGA<div class='sub-info-folga'>Descanso</div></div>", unsafe_allow_html=True)
+        st.write("") # Espaço entre os turnos
+    else:
+        st.caption(f"Não foi possível carregar os dados do {conf['nome']}. Verifique as abas da planilha.")

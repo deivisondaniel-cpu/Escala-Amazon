@@ -8,8 +8,8 @@ from datetime import datetime, timedelta
 # ============================================================
 
 st.set_page_config(
-    page_title="Escala Amazon",
-    page_icon="📦",
+    page_title="Monitoramento Amazon",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -18,6 +18,7 @@ st.set_page_config(
 # ============================================================
 # BANCO INTERNO
 # ============================================================
+# Sistema independente.
 # Não utiliza CSV, Excel ou Google Sheets.
 # O próprio aplicativo possui seu banco SQLite.
 
@@ -25,7 +26,10 @@ BANCO = "escala_amazon.db"
 
 
 def conectar():
-    return sqlite3.connect(BANCO, check_same_thread=False)
+    return sqlite3.connect(
+        BANCO,
+        check_same_thread=False
+    )
 
 
 def criar_banco():
@@ -52,7 +56,8 @@ def criar_banco():
             sabado TEXT NOT NULL,
             domingo TEXT NOT NULL,
             segunda TEXT NOT NULL,
-            FOREIGN KEY (operador_id) REFERENCES operadores(id)
+            FOREIGN KEY (operador_id)
+                REFERENCES operadores(id)
         )
     """)
 
@@ -397,7 +402,10 @@ def remover_operador(operador_id):
     conn.close()
 
 
-def buscar_status(operador_id, semana_id):
+def buscar_status(
+    operador_id,
+    semana_id
+):
 
     conn = conectar()
 
@@ -490,7 +498,9 @@ def obter_semana(deslocamento=0):
 
     hoje = datetime.now()
 
-    dias_para_sexta = (hoje.weekday() - 4) % 7
+    dias_para_sexta = (
+        hoje.weekday() - 4
+    ) % 7
 
     sexta = (
         hoje
@@ -509,10 +519,17 @@ def obter_semana(deslocamento=0):
             f"{sexta.strftime('%d/%m')} "
             f"até {segunda.strftime('%d/%m')}",
 
-        "Sexta": sexta.strftime("%d/%m"),
-        "Sábado": sabado.strftime("%d/%m"),
-        "Domingo": domingo.strftime("%d/%m"),
-        "Segunda": segunda.strftime("%d/%m")
+        "Sexta":
+            sexta.strftime("%d/%m"),
+
+        "Sábado":
+            sabado.strftime("%d/%m"),
+
+        "Domingo":
+            domingo.strftime("%d/%m"),
+
+        "Segunda":
+            segunda.strftime("%d/%m")
     }
 
 
@@ -529,7 +546,9 @@ semanas = [
 with st.sidebar:
 
     st.markdown(
-        "<div class='sidebar-titulo'>🔐 Gestão da Escala</div>",
+        "<div class='sidebar-titulo'>"
+        "🔐 Gestão da Escala"
+        "</div>",
         unsafe_allow_html=True
     )
 
@@ -583,7 +602,9 @@ with st.sidebar:
         # CADASTRAR
         # ====================================================
 
-        st.markdown("### ➕ Novo operador")
+        st.markdown(
+            "### ➕ Novo operador"
+        )
 
         novo_nome = st.text_input(
             "Nome",
@@ -607,7 +628,10 @@ with st.sidebar:
             use_container_width=True
         ):
 
-            if novo_nome.strip() and nova_funcao.strip():
+            if (
+                novo_nome.strip()
+                and nova_funcao.strip()
+            ):
 
                 cadastrar_operador(
                     novo_nome.strip().upper(),
@@ -633,7 +657,9 @@ with st.sidebar:
         # REMOVER
         # ====================================================
 
-        st.markdown("### ❌ Remover operador")
+        st.markdown(
+            "### ❌ Remover operador"
+        )
 
         operadores = buscar_operadores()
 
@@ -655,7 +681,9 @@ with st.sidebar:
             ):
 
                 remover_operador(
-                    opcoes_remocao[selecionado]
+                    opcoes_remocao[
+                        selecionado
+                    ]
                 )
 
                 st.success(
@@ -681,17 +709,19 @@ with st.sidebar:
 
 
 # ============================================================
-# TÍTULO
+# TÍTULO PRINCIPAL
 # ============================================================
 
 st.markdown(
-    "<div class='titulo'>📦 Escala Amazon</div>",
+    "<div class='titulo'>"
+    "Monitoramento Amazon"
+    "</div>",
     unsafe_allow_html=True
 )
 
 st.markdown(
     "<div class='subtitulo'>"
-    "Monitoramento Operacional • Escala de Equipe"
+    "Escala do turno"
     "</div>",
     unsafe_allow_html=True
 )
@@ -713,7 +743,9 @@ semana_escolhida = st.selectbox(
 )
 
 semana = semanas[
-    semana_labels.index(semana_escolhida)
+    semana_labels.index(
+        semana_escolhida
+    )
 ]
 
 semana_id = semana["id"]
@@ -756,8 +788,12 @@ with m1:
     st.markdown(
         f"""
         <div class='metric-card'>
-            <div class='metric-numero'>{total}</div>
-            <div class='metric-label'>OPERADORES</div>
+            <div class='metric-numero'>
+                {total}
+            </div>
+            <div class='metric-label'>
+                OPERADORES
+            </div>
         </div>
         """,
         unsafe_allow_html=True
@@ -769,8 +805,12 @@ with m2:
     st.markdown(
         f"""
         <div class='metric-card'>
-            <div class='metric-numero'>{t1}</div>
-            <div class='metric-label'>T1 • 07h às 15h</div>
+            <div class='metric-numero'>
+                {t1}
+            </div>
+            <div class='metric-label'>
+                T1 • 07h às 15h
+            </div>
         </div>
         """,
         unsafe_allow_html=True
@@ -782,8 +822,12 @@ with m3:
     st.markdown(
         f"""
         <div class='metric-card'>
-            <div class='metric-numero'>{t2}</div>
-            <div class='metric-label'>T2 • 15h às 23h</div>
+            <div class='metric-numero'>
+                {t2}
+            </div>
+            <div class='metric-label'>
+                T2 • 15h às 23h
+            </div>
         </div>
         """,
         unsafe_allow_html=True
@@ -795,8 +839,12 @@ with m4:
     st.markdown(
         f"""
         <div class='metric-card'>
-            <div class='metric-numero'>{t3}</div>
-            <div class='metric-label'>T3 • 23h às 07h</div>
+            <div class='metric-numero'>
+                {t3}
+            </div>
+            <div class='metric-label'>
+                T3 • 23h às 07h
+            </div>
         </div>
         """,
         unsafe_allow_html=True
@@ -826,7 +874,11 @@ DIAS = [
 # ESCALA
 # ============================================================
 
-for turno in ["T1", "T2", "T3"]:
+for turno in [
+    "T1",
+    "T2",
+    "T3"
+]:
 
     operadores_turno = [
         x for x in operadores
@@ -844,12 +896,15 @@ for turno in ["T1", "T2", "T3"]:
     st.markdown(
         f"""
         <div class='turno-header'>
+
             <div class='turno-titulo'>
                 🕒 {NOMES_TURNOS[turno]}
             </div>
+
             <div class='turno-horario'>
                 {HORARIOS[turno]}
             </div>
+
         </div>
         """,
         unsafe_allow_html=True
@@ -888,12 +943,16 @@ for turno in ["T1", "T2", "T3"]:
     )
 
 
-    for i, (dia, _) in enumerate(DIAS, 2):
+    for i, (dia, _) in enumerate(
+        DIAS,
+        2
+    ):
 
         headers[i].markdown(
             f"""
             <div class='header-col'>
-                {dia.upper()} ({semana[dia]})
+                {dia.upper()}
+                ({semana[dia]})
             </div>
             """,
             unsafe_allow_html=True
@@ -913,7 +972,9 @@ for turno in ["T1", "T2", "T3"]:
     for operador in operadores_turno:
 
         operador_id = operador[0]
+
         nome = operador[1]
+
         funcao = operador[2]
 
 
@@ -991,9 +1052,15 @@ for turno in ["T1", "T2", "T3"]:
 
         status_lista = list(status)
 
-        for i, (dia, _) in enumerate(DIAS, 2):
 
-            valor = status_lista[i - 2]
+        for i, (dia, _) in enumerate(
+            DIAS,
+            2
+        ):
+
+            valor = status_lista[
+                i - 2
+            ]
 
 
             # -----------------------------------------------
@@ -1006,6 +1073,7 @@ for turno in ["T1", "T2", "T3"]:
                     f"""
                     <div class='card-trabalho'>
                         TRABALHO
+
                         <div class='sub-info'>
                             {HORARIOS[turno]}
                         </div>
@@ -1025,6 +1093,7 @@ for turno in ["T1", "T2", "T3"]:
                     """
                     <div class='card-folga'>
                         FOLGA
+
                         <div class='sub-info-folga'>
                             Descanso
                         </div>
@@ -1042,7 +1111,9 @@ for turno in ["T1", "T2", "T3"]:
 
                 if valor == "FOLGA":
 
-                    novo_valor = HORARIOS[turno]
+                    novo_valor = HORARIOS[
+                        turno
+                    ]
 
                 else:
 
@@ -1059,13 +1130,17 @@ for turno in ["T1", "T2", "T3"]:
                     use_container_width=True
                 ):
 
-                    status_lista[i - 2] = novo_valor
+                    status_lista[
+                        i - 2
+                    ] = novo_valor
+
 
                     salvar_status(
                         operador_id,
                         semana_id,
                         *status_lista
                     )
+
 
                     st.rerun()
 
@@ -1080,5 +1155,6 @@ for turno in ["T1", "T2", "T3"]:
 st.divider()
 
 st.caption(
-    "Escala Amazon • Sistema independente de gestão de escala"
+    "Monitoramento Amazon • Sistema independente "
+    "de gestão de escala"
 )

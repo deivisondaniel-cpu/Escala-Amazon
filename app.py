@@ -65,7 +65,7 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS ATUALIZADO: ESTILO INDUSTRIAL DARK AMAZON
+# CSS REFORMULADO (DARK COMPACTO E POPOVER INTEGRADO)
 # ============================================================
 st.markdown("""
 <style>
@@ -73,49 +73,94 @@ st.markdown("""
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }
 
-/* Remove a sidebar completamente */
+/* Remove a barra lateral */
 [data-testid="stSidebar"] { display: none; }
 
-/* Fundo Dark Principal (Azul Escuro Amazon / Squid Ink) */
-[data-testid="stAppViewContainer"] { background-color: #19222D; }
-.stApp { background-color: #19222D; }
-
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    margin-bottom: 5px;
+/* Fundo Principal Dark Corporativo */
+[data-testid="stAppViewContainer"], .stApp {
+    background-color: #131A22 !important;
 }
 
-/* Títulos e Textos em Branco e Laranja */
+/* Títulos principais */
 .titulo {
     color: #FFFFFF;
     font-family: 'Segoe UI', sans-serif;
     font-size: 32px;
     font-weight: 800;
 }
-
 .subtitulo {
     color: #FF9900;
     font-size: 14px;
     font-weight: 700;
-    letter-spacing: 0.2px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
-/* Selectbox da semana adaptado ao escuro */
+/* Filtro de período */
 div[data-baseweb="select"] > div {
-    border: 1px solid #314154 !important;
-    border-radius: 8px !important;
+    border: 1px solid #232F3E !important;
+    border-radius: 6px !important;
     background-color: #232F3E !important;
-    color: #FFFFFF !important;
 }
 div[data-baseweb="select"] span {
     color: #FFFFFF !important;
 }
 
-/* Cabeçalhos de Turnos */
+/* Botão de Área do Gestor (Superior Direito) */
+div[data-testid="stPopover"] > button {
+    background-color: #232F3E !important;
+    color: #FFFFFF !important;
+    border: 1px solid #37475A !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    padding: 6px 16px !important;
+}
+div[data-testid="stPopover"] > button:hover {
+    background-color: #37475A !important;
+    border-color: #FF9900 !important;
+    color: #FF9900 !important;
+}
+
+/* FIX CRÍTICO: Força o Balão do Popover a ficar escuro */
+div[data-testid="stPopoverBody"] {
+    background-color: #232F3E !important;
+    border: 1px solid #37475A !important;
+    border-radius: 8px !important;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+div[data-testid="stPopoverBody"] label p {
+    color: #FFFFFF !important;
+}
+div[data-testid="stPopoverBody"] input {
+    background-color: #131A22 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #37475A !important;
+}
+
+/* Botão de Entrar interno do formulário */
+div[data-testid="stPopoverBody"] button[type="submit"] {
+    background-color: #FF9900 !important;
+    color: #131A22 !important;
+    font-weight: 700 !important;
+    border: none !important;
+}
+
+/* Métricas do Painel */
+.metric-card {
+    background-color: #232F3E;
+    border: 1px solid #37475A;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+}
+.metric-numero { font-size: 26px; font-weight: 800; color: #FFFFFF; }
+.metric-label { font-size: 11px; color: #99AAB5; font-weight: 700; letter-spacing: 0.5px; }
+
+/* Abas (Tabs) customizadas */
+.stTabs [data-baseweb="tab-list"] { background-color: #232F3E; border-radius: 6px; padding: 4px; }
+.stTabs [data-baseweb="tab"] { color: #99AAB5 !important; font-weight: 700; }
+.stTabs [aria-selected="true"] { color: #FF9900 !important; background-color: #131A22; border-radius: 4px; }
+
+/* Cabeçalho do Turno Ativo */
 .turno-header {
     display: flex;
     align-items: center;
@@ -125,116 +170,59 @@ div[data-baseweb="select"] span {
     padding: 10px 14px;
     background-color: #232F3E;
     border-left: 5px solid #FF9900;
-    border-bottom: 1px solid #314154;
-    border-radius: 8px;
-    box-shadow: 0 2px 7px rgba(0,0,0,0.3);
+    border-radius: 6px;
 }
-
-.turno-titulo { font-size: 21px; font-weight: 800; color: #FFFFFF; }
+.turno-titulo { font-size: 20px; font-weight: 800; color: #FFFFFF; }
 .turno-horario {
-    background-color: #19222D;
+    background-color: #131A22;
     color: #FF9900;
     border: 1px solid #FF9900;
-    padding: 4px 11px;
+    padding: 3px 10px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
 }
 
-/* Listagem de Operadores */
-.header-col { text-align: center; font-weight: 800; font-size: 12px; color: #FF9900; margin-bottom: 8px; }
+/* Colunas da tabela */
+.header-col { text-align: center; font-weight: 800; font-size: 11px; color: #FF9900; margin-bottom: 10px; letter-spacing: 0.5px; }
 .header-esquerda { text-align: left; }
-.nome-operador { padding-top: 9px; font-size: 13px; color: #FFFFFF; }
-.funcao-operador { padding-top: 9px; font-size: 11px; color: #A2B4C7; font-weight: 600; }
+.nome-operador { padding-top: 10px; font-size: 13px; color: #FFFFFF; font-weight: 700; }
+.funcao-operador { padding-top: 10px; font-size: 11px; color: #99AAB5; font-weight: 600; }
 
-/* CARD TRABALHO (Fundo Laranja / Texto Escuro para contraste perfeito) */
+/* CARDS DE STATUS (Trabalho vs Folga) */
 .card-trabalho {
     background-color: #FF9900;
-    color: #19222D;
-    padding: 8px 5px;
-    border-radius: 7px;
+    color: #131A22;
+    padding: 8px;
+    border-radius: 6px;
     text-align: center;
     font-weight: 800;
     font-size: 11px;
-    margin-bottom: 4px;
-    min-height: 43px;
+    min-height: 44px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-.sub-info { color: #19222D; font-size: 10px; margin-top: 3px; font-weight: 700; }
+.sub-info { color: #131A22; font-size: 10px; font-weight: 700; opacity: 0.8; }
 
-/* CARD FOLGA (Fundo Escuro / Detalhe Cinza Azulado) */
 .card-folga {
     background-color: #232F3E;
-    color: #A2B4C7;
-    padding: 8px 5px;
-    border-radius: 7px;
+    color: #8494A5;
+    padding: 8px;
+    border-radius: 6px;
     text-align: center;
     font-weight: 700;
     font-size: 11px;
-    border-left: 4px solid #314154;
-    margin-bottom: 4px;
-    min-height: 43px;
+    border: 1px solid #37475A;
+    min-height: 44px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-.sub-info-folga { color: #617184; font-size: 10px; margin-top: 3px; font-weight: 600; }
+.sub-info-folga { color: #526273; font-size: 10px; }
 
-.separador { border: 0; border-top: 1px solid #314154; margin-top: 2px; margin-bottom: 15px; }
-
-/* Métricas Dark */
-.metric-card {
-    background-color: #232F3E;
-    border: 1px solid #314154;
-    border-top: 4px solid #FF9900;
-    border-radius: 10px;
-    padding: 12px;
-    text-align: center;
-    box-shadow: 0 2px 7px rgba(0,0,0,0.2);
-}
-.metric-numero { font-size: 24px; font-weight: 800; color: #FFFFFF; }
-.metric-label { font-size: 11px; color: #A2B4C7; font-weight: 700; }
-
-/* Customização dos Inputs internos do Popover do Gestor */
-[data-testid="stForm"] { background-color: #232F3E; border: none; padding: 0px; }
-[data-testid="stForm"] input { background-color: #19222D !important; color: #FFFFFF !important; }
-.stButton > button { border-radius: 7px; font-weight: 700; }
-
-/* Estilização específica das Abas (Tabs) para o Dark Mode */
-.stTabs [data-baseweb="tab-list"] { background-color: #232F3E; border-radius: 8px; padding: 4px; }
-.stTabs [data-baseweb="tab"] { color: #A2B4C7 !important; font-weight: 700; }
-.stTabs [aria-selected="true"] { color: #FF9900 !important; background-color: #19222D; border-radius: 6px; }
-
-/* Estilização do Botão Popover Superior */
-div[data-testid="stPopover"] > button {
-    background-color: #232F3E !important;
-    color: #FFFFFF !important;
-    border: 1px solid #314154 !important;
-    font-weight: 700 !important;
-    border-radius: 8px !important;
-}
-div[data-testid="stPopover"] > button:hover {
-    background-color: #FF9900 !important;
-    border-color: #FF9900 !important;
-    color: #19222D !important;
-}
-
-/* Cor das labels de inputs gerais */
-label p { color: #FFFFFF !important; }
-
-.stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
-.stCaption { color: #617184 !important; }
-
-@media (max-width: 800px) {
-    .titulo { font-size: 24px; }
-    .turno-titulo { font-size: 18px; }
-    .turno-horario { font-size: 10px; }
-    .metric-numero { font-size: 18px; }
-}
+.separador { border: 0; border-top: 1px solid #232F3E; margin-top: 4px; margin-bottom: 15px; }
+.stMainBlockContainer { padding-top: 20px !important; }
 </style>
 """, unsafe_allow_html=True)
 

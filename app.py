@@ -9,7 +9,7 @@ st.set_page_config(
     page_title="Escala Amazon",
     page_icon="amazon.png",
     layout="wide",
-    initial_sidebar_state="collapsed" # Remove a sidebar por padrão
+    initial_sidebar_state="collapsed"
 )
 
 # ============================================================
@@ -65,208 +65,176 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS REFORMULADO (CORREÇÃO DE CORES & LOGIN CLEAN BRANCO)
+# CSS PROFISSIONAL: ULTRA COMPACTO & ALTO CONTRASTE
 # ============================================================
 st.markdown("""
 <style>
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }
-
-/* Remove a barra lateral */
 [data-testid="stSidebar"] { display: none; }
 
-/* Fundo Principal Ultra Escuro */
+/* Correção do topo e redução drástica do espaçamento global */
 [data-testid="stAppViewContainer"], .stApp {
     background-color: #0A121C !important;
 }
-
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    margin-bottom: 5px;
+.stMainBlockContainer {
+    padding-top: 5px !important;
+    padding-bottom: 10px !important;
+    max-width: 98% !important;
 }
 
-/* Títulos principais */
+/* Títulos corrigidos (sem cortes) e menores */
 .titulo {
     color: #FFFFFF;
     font-family: 'Segoe UI', sans-serif;
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 800;
+    line-height: 1.2;
 }
-
 .subtitulo {
     color: #FF5500;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 1px;
     text-transform: uppercase;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
 }
 
-/* Filtro de período */
+/* Filtro de período super enxuto */
 div[data-baseweb="select"] > div {
     border: 1px solid #1A2635 !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
     background-color: #121E2B !important;
+    min-height: 30px !important;
 }
 div[data-baseweb="select"] span {
     color: #FFFFFF !important;
+    font-size: 12px !important;
 }
 
-/* ------------------------------------------------------------
-   CORREÇÃO CORRETA: ÁREA DO GESTOR TOTALMENTE BRANCA (POP-OVER)
-   ------------------------------------------------------------ */
+/* Área do Gestor - Botão Branco Clean */
 div[data-testid="stPopover"] > button {
     background-color: #FFFFFF !important;
     color: #0A121C !important;
     border: 1px solid #E2E8F0 !important;
     font-weight: 700 !important;
-    border-radius: 8px !important;
-    padding: 6px 16px !important;
+    border-radius: 6px !important;
+    padding: 2px 10px !important;
+    font-size: 12px !important;
 }
-div[data-testid="stPopover"] > button:hover, div[data-testid="stPopover"] > button:focus, div[data-testid="stPopover"] > button:active {
-    background-color: #F8FAFC !important;
-    border-color: #CBD5E1 !important;
+div[data-testid="stPopover"] > button:hover {
     color: #FF5500 !important;
+    background-color: #F8FAFC !important;
 }
 
-/* Caixa Flutuante do Popover interna */
+/* Balão do Popover 100% Branco Interno */
 div[data-testid="stPopoverBody"] {
     background-color: #FFFFFF !important;
     border: 1px solid #E2E8F0 !important;
-    border-radius: 8px !important;
-    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15) !important;
-    padding: 15px !important;
-}
-div[data-testid="stPopoverBody"] label p {
-    color: #334155 !important;
-    font-weight: 600 !important;
-}
-div[data-testid="stPopoverBody"] input {
-    background-color: #F8FAFC !important;
-    color: #0F172A !important;
-    border: 1px solid #CBD5E1 !important;
-}
-div[data-testid="stPopoverBody"] input:focus {
-    border-color: #FF5500 !important;
-}
-
-/* Botão de envio dentro do login branco */
-div[data-testid="stPopoverBody"] button[type="submit"], div[data-testid="stPopoverBody"] .stButton > button {
-    background-color: #0F172A !important;
-    color: #FFFFFF !important;
-    font-weight: 700 !important;
-    border: none !important;
     border-radius: 6px !important;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2) !important;
+    padding: 10px !important;
 }
-div[data-testid="stPopoverBody"] button[type="submit"]:hover, div[data-testid="stPopoverBody"] .stButton > button:hover {
-    background-color: #FF5500 !important;
-    color: #FFFFFF !important;
-}
+div[data-testid="stPopoverBody"] label p { color: #334155 !important; font-weight: 600; font-size: 12px; }
+div[data-testid="stPopoverBody"] input { background-color: #F8FAFC !important; color: #0F172A !important; border: 1px solid #CBD5E1 !important; height: 30px; }
+div[data-testid="stPopoverBody"] button[type="submit"] { background-color: #0F172A !important; color: #FFFFFF !important; font-weight: 700; border: none !important; }
+div[data-testid="stPopoverBody"] p, div[data-testid="stPopoverBody"] span { color: #334155 !important; }
 
-/* Textos informativos de Administração dentro do Painel */
-div[data-testid="stPopoverBody"] p, div[data-testid="stPopoverBody"] span {
-    color: #334155 !important;
-}
-
-/* Métricas do Painel */
+/* Mini Cards de Métricas (Ganho de espaço vertical) */
 .metric-card {
     background-color: #121E2B;
     border: 1px solid #1A2635;
-    border-radius: 8px;
-    padding: 14px;
+    border-radius: 6px;
+    padding: 6px 10px;
     text-align: center;
 }
-.metric-numero { font-size: 26px; font-weight: 800; color: #FFFFFF; }
-.metric-label { font-size: 11px; color: #8FA0B5; font-weight: 700; letter-spacing: 0.5px; }
+.metric-numero { font-size: 18px; font-weight: 800; color: #FFFFFF; line-height: 1.1; }
+.metric-label { font-size: 10px; color: #8FA0B5; font-weight: 700; letter-spacing: 0.5px; }
 
-/* Abas (Tabs) */
-.stTabs [data-baseweb="tab-list"] { background-color: #121E2B; border-radius: 8px; padding: 4px; }
-.stTabs [data-baseweb="tab"] { color: #8FA0B5 !important; font-weight: 700; }
-.stTabs [aria-selected="true"] { color: #FFFFFF !important; background-color: #FF5500; border-radius: 6px; }
+/* Abas (Tabs) compactas e com alto contraste nas inativas */
+.stTabs [data-baseweb="tab-list"] { background-color: #121E2B; border-radius: 6px; padding: 2px; gap: 4px; }
+.stTabs [data-baseweb="tab"] { color: #A0AEC0 !important; font-weight: 700; font-size: 12px !important; padding: 6px 12px !important; }
+.stTabs [aria-selected="true"] { color: #FFFFFF !important; background-color: #FF5500; border-radius: 4px; }
 
-/* Cabeçalho do Turno Ativo */
+/* Faixa informativa do turno mais fina */
 .turno-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-top: 15px;
-    margin-bottom: 20px;
-    padding: 10px 14px;
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 10px;
+    padding: 4px 10px;
     background-color: #121E2B;
-    border-left: 5px solid #FF5500;
-    border-radius: 8px;
+    border-left: 4px solid #FF5500;
+    border-radius: 4px;
 }
-.turno-titulo { font-size: 20px; font-weight: 800; color: #FFFFFF; }
+.turno-titulo { font-size: 14px; font-weight: 800; color: #FFFFFF; }
 .turno-horario {
     background-color: #0A121C;
     color: #FF5500;
     border: 1px solid #FF5500;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
+    padding: 1px 8px;
+    border-radius: 12px;
+    font-size: 10px;
     font-weight: 800;
 }
 
-/* Colunas da tabela */
-.header-col { text-align: center; font-weight: 800; font-size: 11px; color: #FF5500; margin-bottom: 10px; letter-spacing: 0.5px; }
+/* Estrutura da Tabela de Operadores de Alta Densidade */
+.header-col { text-align: center; font-weight: 800; font-size: 10px; color: #FF5500; margin-bottom: 4px; letter-spacing: 0.5px; }
 .header-esquerda { text-align: left; }
-.nome-operador { padding-top: 10px; font-size: 13px; color: #FFFFFF; font-weight: 700; }
-.funcao-operador { padding-top: 10px; font-size: 11px; color: #8FA0B5; font-weight: 600; }
+.nome-operador { padding-top: 6px; font-size: 12px; color: #FFFFFF; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.funcao-operador { padding-top: 6px; font-size: 11px; color: #8FA0B5; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-
-/* ------------------------------------------------------------
-   AJUSTE DE CORES SOLICITADO: FOLGA LARANJA E TRABALHO MARINHO
-   ------------------------------------------------------------ */
-/* CARD FOLGA: Agora com o destaque Laranja Vibrante */
+/* CARD FOLGA (Destaque Laranja Vibrante) */
 .card-folga {
     background-color: #FF5500;
     color: #FFFFFF;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 4px;
+    border-radius: 6px;
     text-align: center;
     font-weight: 800;
     font-size: 11px;
-    min-height: 44px;
+    min-height: 32px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0px 4px 10px rgba(255, 85, 0, 0.25);
+    box-shadow: 0px 2px 6px rgba(255, 85, 0, 0.2);
 }
-.sub-info-folga { color: #FFFFFF; font-size: 10px; font-weight: 700; opacity: 0.85; }
+.sub-info-folga { color: #FFFFFF; font-size: 9px; font-weight: 700; opacity: 0.9; }
 
-/* CARD TRABALHO: Integrado de forma limpa ao background */
+/* CARD TRABALHO (Ajustado com ALTO CONTRASTE nas letras) */
 .card-trabalho {
     background-color: #121E2B;
     color: #FFFFFF;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 4px;
+    border-radius: 6px;
     text-align: center;
     font-weight: 700;
     font-size: 11px;
     border: 1px solid #1A2635;
-    min-height: 44px;
+    min-height: 32px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
-.sub-info { color: #8FA0B5; font-size: 10px; }
+.sub-info { color: #E2E8F0 !important; font-size: 9px; font-weight: 600; opacity: 1; } /* Cinza claro totalmente visível */
 
+/* Reduzir o tamanho dos botões de alternar para os gestores */
+.stButton > button {
+    padding: 1px 4px !important;
+    font-size: 10px !important;
+    min-height: 20px !important;
+    height: 22px !important;
+    background-color: #121E2B !important;
+    color: #E2E8F0 !important;
+    border: 1px solid #1A2635 !important;
+}
+.stButton > button:hover { border-color: #FF5500 !important; color: #FF5500 !important; }
 
 [data-testid="stForm"] { background-color: transparent; border: none; padding: 0px; }
-.separador { border: 0; border-top: 1px solid #121E2B; margin-top: 4px; margin-bottom: 15px; }
-.stMainBlockContainer { padding-top: 20px !important; padding-bottom: 30px !important; }
-.stCaption { color: #6C7D93 !important; }
-
-@media (max-width: 800px) {
-    .titulo { font-size: 24px; }
-    .turno-titulo { font-size: 18px; }
-    .turno-horario { font-size: 10px; }
-    .metric-numero { font-size: 18px; }
-}
+.separador { border: 0; border-top: 1px solid #121E2B; margin-top: 2px; margin-bottom: 6px; }
+.stMarkdown div p { margin-bottom: 0px !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -347,7 +315,7 @@ def obter_semana(deslocamento=0):
 semanas = [obter_semana(i) for i in range(-2, 5)]
 
 # ============================================================
-# CABEÇALHO DA APLICAÇÃO (TÍTULO + LOGIN ALINHADOS)
+# CABEÇALHO COMPACTO ALINHADO
 # ============================================================
 col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
@@ -409,7 +377,7 @@ with col_log:
                 st.rerun()
 
 # ============================================================
-# FILTRO DE SEMANA
+# FILTRO DE SEMANA COMPACTO
 # ============================================================
 semana_labels = [x["nome"] for x in semanas]
 semana_escolhida = st.selectbox("📅 Período da escala", semana_labels, index=2)
@@ -419,7 +387,7 @@ semana_id = semana["id"]
 operadores = buscar_operadores()
 
 # ============================================================
-# MÉTRICAS DO PAINEL
+# MINI PAINEL DE MÉTRICAS (MUITO MAIS FINO)
 # ============================================================
 total = len(operadores)
 t1 = len([x for x in operadores if x[3] == "T1"])
@@ -432,14 +400,12 @@ with m2: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t1}<
 with m3: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t2}</div><div class='metric-label'>T2 • 15h às 23h</div></div>", unsafe_allow_html=True)
 with m4: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t3}</div><div class='metric-label'>T3 • 23h às 07h</div></div>", unsafe_allow_html=True)
 
-st.write("")
-
 # ============================================================
-# ABAS DE NAVEGAÇÃO DOS TURNOS
+# ABAS DE TURNO COMPACTAS
 # ============================================================
 DIAS = [("Sexta", "sexta"), ("Sábado", "sabado"), ("Domingo", "domingo"), ("Segunda", "segunda")]
 
-aba_t1, aba_t2, aba_t3 = st.tabs(["🌅 Turno 1 (07h às 15h)", "🌆 Turno 2 (15h às 23h)", "🌌 Turno 3 (23h às 07h)"])
+aba_t1, aba_t2, aba_t3 = st.tabs(["🌅 Turno 1", "🌆 Turno 2", "🌌 Turno 3"])
 abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
 
 for turno in ["T1", "T2", "T3"]:
@@ -447,7 +413,7 @@ for turno in ["T1", "T2", "T3"]:
         operadores_turno = [x for x in operadores if x[3] == turno]
 
         if not operadores_turno:
-            st.info(f"Nenhum operador alocado no {NOMES_TURNOS[turno]} para este período.")
+            st.info(f"Nenhum operador alocado no {NOMES_TURNOS[turno]}.")
             continue
 
         st.markdown(f"""
@@ -457,7 +423,8 @@ for turno in ["T1", "T2", "T3"]:
             </div>
         """, unsafe_allow_html=True)
 
-        headers = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
+        # Montagem da Grid compacta
+        headers = st.columns([2.2, 1.8, 2, 2, 2, 2])
         headers[0].markdown("<div class='header-col header-esquerda'>OPERADOR</div>", unsafe_allow_html=True)
         headers[1].markdown("<div class='header-col header-esquerda'>FUNÇÃO</div>", unsafe_allow_html=True)
 
@@ -475,7 +442,7 @@ for turno in ["T1", "T2", "T3"]:
                 status = (horario, horario, horario, horario)
                 salvar_status(operador_id, semana_id, *status)
 
-            linha = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
+            linha = st.columns([2.2, 1.8, 2, 2, 2, 2])
             linha[0].markdown(f"<div class='nome-operador'><b>{nome}</b></div>", unsafe_allow_html=True)
             linha[1].markdown(f"<div class='funcao-operador'>{funcao}</div>", unsafe_allow_html=True)
 
@@ -484,7 +451,6 @@ for turno in ["T1", "T2", "T3"]:
             for i, (dia, _) in enumerate(DIAS, 2):
                 valor = status_lista[i - 2]
 
-                # Agora a FOLGA é a que ganha o Laranja Vibrante
                 if valor == "FOLGA":
                     linha[i].markdown("""
                         <div class='card-folga'>
@@ -500,12 +466,10 @@ for turno in ["T1", "T2", "T3"]:
                         </div>
                     """, unsafe_allow_html=True)
 
+                # Botão administrativo alinhado e enxuto embaixo do card se logado
                 if st.session_state.autenticado:
                     novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                    if linha[i].button("↔ Alternar", key=f"{operador_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
+                    if linha[i].button("Alternar", key=f"{operador_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
                         status_lista[i - 2] = novo_valor
                         salvar_status(operador_id, semana_id, *status_lista)
                         st.rerun()
-
-st.divider()
-st.caption("Escala Amazon • Sistema independente de gestão de escala")

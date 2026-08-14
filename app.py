@@ -65,7 +65,7 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS ATUALIZADO (SEM SIDEBAR, FOCO NO TOPO)
+# CSS REFORMULADO (TEMA LOSUNG/MIDNIGHT NAVY & NEON ORANGE)
 # ============================================================
 st.markdown("""
 <style>
@@ -73,11 +73,13 @@ st.markdown("""
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }
 
-/* Remove o espaço que a sidebar deixaria */
+/* Remove a barra lateral */
 [data-testid="stSidebar"] { display: none; }
 
-[data-testid="stAppViewContainer"] { background-color: #F3F6F9; }
-.stApp { background-color: #F3F6F9; }
+/* Fundo Principal Ultra Escuro (Midnight Navy) */
+[data-testid="stAppViewContainer"], .stApp {
+    background-color: #0A121C !important;
+}
 
 .header-container {
     display: flex;
@@ -87,27 +89,102 @@ footer { visibility: hidden; }
     margin-bottom: 5px;
 }
 
+/* Títulos principais */
 .titulo {
-    color: #232F3E;
+    color: #FFFFFF;
     font-family: 'Segoe UI', sans-serif;
     font-size: 32px;
     font-weight: 800;
 }
 
 .subtitulo {
-    color: #146EB4;
-    font-size: 14px;
+    color: #FF5500; /* Laranja vivo */
+    font-size: 13px;
     font-weight: 700;
-    letter-spacing: 0.2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     margin-bottom: 25px;
 }
 
+/* Filtro de período */
 div[data-baseweb="select"] > div {
-    border: 1px solid #CBD5E1 !important;
+    border: 1px solid #1A2635 !important;
     border-radius: 8px !important;
-    background-color: #FFFFFF !important;
+    background-color: #121E2B !important;
+}
+div[data-baseweb="select"] span {
+    color: #FFFFFF !important;
 }
 
+/* Botão de Área do Gestor (Superior Direito) */
+div[data-testid="stPopover"] > button {
+    background-color: #121E2B !important;
+    color: #FFFFFF !important;
+    border: 1px solid #1A2635 !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    padding: 6px 16px !important;
+}
+div[data-testid="stPopover"] > button:hover {
+    background-color: #1A2635 !important;
+    border-color: #FF5500 !important;
+    color: #FF5500 !important;
+}
+
+/* Balão do Popover Escuro integrado */
+div[data-testid="stPopoverBody"] {
+    background-color: #121E2B !important;
+    border: 1px solid #1A2635 !important;
+    border-radius: 8px !important;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
+div[data-testid="stPopoverBody"] label p {
+    color: #FFFFFF !important;
+}
+div[data-testid="stPopoverBody"] input {
+    background-color: #0A121C !important;
+    color: #FFFFFF !important;
+    border: 1px solid #1A2635 !important;
+}
+
+/* Botão Entrar do formulário interno do popover */
+div[data-testid="stPopoverBody"] button[type="submit"] {
+    background-color: #FF5500 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border: none !important;
+}
+
+/* Botões padrões do Streamlit dentro do painel administrativo */
+.stButton > button {
+    background-color: #121E2B !important;
+    color: #FFFFFF !important;
+    border: 1px solid #1A2635 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+.stButton > button:hover {
+    border-color: #FF5500 !important;
+    color: #FF5500 !important;
+}
+
+/* Métricas do Painel (Cards em azul marinho suave) */
+.metric-card {
+    background-color: #121E2B;
+    border: 1px solid #1A2635;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+}
+.metric-numero { font-size: 26px; font-weight: 800; color: #FFFFFF; }
+.metric-label { font-size: 11px; color: #8FA0B5; font-weight: 700; letter-spacing: 0.5px; }
+
+/* Abas (Tabs) no estilo do menu lateral */
+.stTabs [data-baseweb="tab-list"] { background-color: #121E2B; border-radius: 8px; padding: 4px; }
+.stTabs [data-baseweb="tab"] { color: #8FA0B5 !important; font-weight: 700; }
+.stTabs [aria-selected="true"] { color: #FFFFFF !important; background-color: #FF5500; border-radius: 6px; }
+
+/* Cabeçalho do Turno Ativo */
 .turno-header {
     display: flex;
     align-items: center;
@@ -115,100 +192,65 @@ div[data-baseweb="select"] > div {
     margin-top: 15px;
     margin-bottom: 20px;
     padding: 10px 14px;
-    background-color: #FFFFFF;
-    border-left: 5px solid #FF9900;
-    border-bottom: 1px solid #D7DEE7;
+    background-color: #121E2B;
+    border-left: 5px solid #FF5500;
     border-radius: 8px;
-    box-shadow: 0 2px 7px rgba(35,47,62,0.06);
 }
-
-.turno-titulo { font-size: 21px; font-weight: 800; color: #232F3E; }
+.turno-titulo { font-size: 20px; font-weight: 800; color: #FFFFFF; }
 .turno-horario {
-    background-color: #EAF3FB;
-    color: #146EB4;
-    border: 1px solid #B9D7EE;
-    padding: 4px 11px;
+    background-color: #0A121C;
+    color: #FF5500;
+    border: 1px solid #FF5500;
+    padding: 3px 10px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
 }
 
-.header-col { text-align: center; font-weight: 800; font-size: 12px; color: #232F3E; margin-bottom: 8px; }
+/* Colunas da tabela */
+.header-col { text-align: center; font-weight: 800; font-size: 11px; color: #FF5500; margin-bottom: 10px; letter-spacing: 0.5px; }
 .header-esquerda { text-align: left; }
-.nome-operador { padding-top: 9px; font-size: 13px; color: #232F3E; }
-.funcao-operador { padding-top: 9px; font-size: 11px; color: #617184; font-weight: 600; }
+.nome-operador { padding-top: 10px; font-size: 13px; color: #FFFFFF; font-weight: 700; }
+.funcao-operador { padding-top: 10px; font-size: 11px; color: #8FA0B5; font-weight: 600; }
 
+/* CARD TRABALHO (Igual ao selecionado da imagem: Laranja com texto Branco) */
 .card-trabalho {
-    background-color: #232F3E;
+    background-color: #FF5500;
     color: #FFFFFF;
-    padding: 8px 5px;
-    border-radius: 7px;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 11px;
+    min-height: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0px 4px 10px rgba(255, 85, 0, 0.25);
+}
+.sub-info { color: #FFFFFF; font-size: 10px; font-weight: 700; opacity: 0.85; }
+
+/* CARD FOLGA (Discreto, integrado ao fundo) */
+.card-folga {
+    background-color: #121E2B;
+    color: #6C7D93;
+    padding: 8px;
+    border-radius: 8px;
     text-align: center;
     font-weight: 700;
     font-size: 11px;
-    border-left: 4px solid #FF9900;
-    margin-bottom: 4px;
-    min-height: 43px;
+    border: 1px solid #1A2635;
+    min-height: 44px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(35,47,62,0.10);
 }
-.sub-info { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 700; }
+.sub-info-folga { color: #4A5768; font-size: 10px; }
 
-.card-folga {
-    background-color: #EAF3FB;
-    color: #232F3E;
-    padding: 8px 5px;
-    border-radius: 7px;
-    text-align: center;
-    font-weight: 800;
-    font-size: 11px;
-    border-left: 4px solid #146EB4;
-    margin-bottom: 4px;
-    min-height: 43px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(20,110,180,0.07);
-}
-.sub-info-folga { color: #6B8196; font-size: 10px; margin-top: 3px; font-weight: 600; }
-
-.separador { border: 0; border-top: 1px solid #D7DEE7; margin-top: 2px; margin-bottom: 15px; }
-
-.metric-card {
-    background-color: #FFFFFF;
-    border: 1px solid #D7DEE7;
-    border-top: 4px solid #146EB4;
-    border-radius: 10px;
-    padding: 12px;
-    text-align: center;
-    box-shadow: 0 2px 7px rgba(35,47,62,0.06);
-}
-.metric-numero { font-size: 22px; font-weight: 800; color: #232F3E; }
-.metric-label { font-size: 11px; color: #617184; font-weight: 700; }
-.metric-card:first-child { border-top-color: #FF9900; }
-
-[data-testid="stForm"] { background-color: #FFFFFF; border: none; padding: 0px; }
-.stButton > button { border-radius: 7px; font-weight: 700; border: 1px solid #D7DEE7; }
-div[data-testid="column"] .stButton > button { color: #232F3E; }
-div[data-baseweb="input"] { border-radius: 7px; }
-.stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
-.stCaption { color: #617184 !important; }
-
-/* Estilização dos botões popover no topo */
-div[data-testid="stPopover"] > button {
-    background-color: #232F3E !important;
-    color: #FFFFFF !important;
-    border: 1px solid #232F3E !important;
-    font-weight: 700 !important;
-    border-radius: 8px !important;
-}
-div[data-testid="stPopover"] > button:hover {
-    background-color: #FF9900 !important;
-    border-color: #FF9900 !important;
-    color: #232F3E !important;
-}
+[data-testid="stForm"] { background-color: transparent; border: none; padding: 0px; }
+.separador { border: 0; border-top: 1px solid #121E2B; margin-top: 4px; margin-bottom: 15px; }
+.stMainBlockContainer { padding-top: 20px !important; padding-bottom: 30px !important; }
+.stCaption { color: #6C7D93 !important; }
 
 @media (max-width: 800px) {
     .titulo { font-size: 24px; }
@@ -269,7 +311,7 @@ def salvar_status(operador_id, semana_id, sexta, sabado, domingo, segunda):
     else:
         conn.execute("""
             INSERT INTO escala (operador_id, semana_id, sexta, sabado, domingo, segunda) VALUES (?, ?, ?, ?, ?, ?)
-        """, (operador_id, semana_id, sexta, sabado, domingo, segunda))
+        """, (sexta, sabado, domingo, segunda, operador_id, semana_id))
     conn.commit()
     conn.close()
 
@@ -305,7 +347,6 @@ with col_tit:
     st.markdown("<div class='subtitulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
 
 with col_log:
-    # Caso NÃO esteja logado, exibe apenas o botão discreto de Login no canto superior direito
     if not st.session_state.autenticado:
         with st.popover("👤 Área do Gestor", use_container_width=True):
             with st.form("login_form", clear_on_submit=True):
@@ -320,12 +361,10 @@ with col_log:
                     else:
                         st.error("Dados incorretos.")
     else:
-        # Se logado, cria um menu flutuante com as ferramentas administrativas
         with st.popover("⚙️ Painel de Gestão", use_container_width=True):
             st.markdown("🟢 **Modo Administrador**")
             st.divider()
             
-            # Sub-opções dentro do botão superior
             menu_admin = st.selectbox("O que deseja fazer?", ["Adicionar Operador", "Remover Operador"])
             
             if menu_admin == "Adicionar Operador":

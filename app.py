@@ -7,9 +7,9 @@ import os
 st.set_page_config(page_title="Escala monitoramento", page_icon="📦", layout="wide")
 
 # Nome do banco de dados próprio e independente do sistema
-ARQUIVO_BANCO = "banco_escala_amazon_definitivo.csv"
+ARQUIVO_BANCO = "banco_escala_amazon_definitivo_v4.csv"
 
-# 1. TRATOR CSS (Deixa o visual limpo e profissional)
+# 1. TRATOR CSS (Visual idêntico ao original, limpo e profissional)
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden !important;}
@@ -29,7 +29,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 2. INJEÇÃO DE JAVASCRIPT MASTER (Elimina qualquer selo do Streamlit)
+# 2. INJEÇÃO DE JAVASCRIPT MASTER (Elimina os selos teimosos)
 components.html("""
     <script>
     function exterminarSeloTeimoso() {
@@ -66,18 +66,21 @@ components.html("""
 
 st.markdown("<h1 class='titulo'>Escala Amazon</h1>", unsafe_allow_html=True)
 
-# --- SISTEMA DE LOGIN SEGURO ---
+# Gerenciamento de Login
 if "logged_in" in st.query_params and st.query_params["logged_in"] == "true":
     st.session_state.autenticado = True
 elif 'autenticado' not in st.session_state:
     st.session_state.autenticado = False
 
-# --- CRIAÇÃO DO BANCO DE DADOS INTERNO DO ZERO (SEM PLANILHAS) ---
-def inicializar_banco_independente():
+# Mapeamento padrão de horários
+horarios_map = {"T1": "07:00 às 15:00", "T2": "15:00 às 23:00", "T3": "23:00 às 07:00"}
+dias_lista = ["Sexta", "Sábado", "Domingo", "Segunda"]
+
+# --- INICIALIZAÇÃO DO BANCO INDEPENDENTE ---
+def inicializar_banco():
     if not os.path.exists(ARQUIVO_BANCO):
-        # Aqui estão guardados todos os operadores do sistema com seus horários reais e corrigidos
         dados_iniciais = [
-            # TURNO 1 (07:00 às 15:00)
+            # TURNO 1
             {"Turno": "T1", "Nome": "ALAN ARÁUJO", "Função": "ANALISTA", "Sexta": "07:00 às 15:00", "Sábado": "FOLGA", "Domingo": "07:00 às 15:00", "Segunda": "07:00 às 15:00"},
             {"Turno": "T1", "Nome": "MARGARIDA", "Função": "PICKUP", "Sexta": "07:00 às 15:00", "Sábado": "FOLGA", "Domingo": "07:00 às 15:00", "Segunda": "07:00 às 15:00"},
             {"Turno": "T1", "Nome": "JOSÉ BRUNO PALHANO", "Função": "PICKUP", "Sexta": "FOLGA", "Sábado": "07:00 às 15:00", "Domingo": "07:00 às 15:00", "Segunda": "07:00 às 15:00"},
@@ -88,7 +91,7 @@ def inicializar_banco_independente():
             {"Turno": "T1", "Nome": "CONCEIÇÃO DAIANE", "Função": "SEGURANÇA (ONISYS)", "Sexta": "07:00 às 15:00", "Sábado": "FOLGA", "Domingo": "07:00 às 15:00", "Segunda": "07:00 às 15:00"},
             {"Turno": "T1", "Nome": "MATHEUS LUSTOSA", "Função": "SEGURANÇA/ELOG", "Sexta": "FOLGA", "Sábado": "07:00 às 15:00", "Domingo": "07:00 às 15:00", "Segunda": "07:00 às 15:00"},
             
-            # TURNO 2 (15:00 às 23:00) - CORRIGIDO!
+            # TURNO 2 (Atualizado para 23h!)
             {"Turno": "T2", "Nome": "MANUELA PINHEIRO", "Função": "LÍDER", "Sexta": "15:00 às 23:00", "Sábado": "15:00 às 23:00", "Domingo": "FOLGA", "Segunda": "15:00 às 23:00"},
             {"Turno": "T2", "Nome": "ISABEL", "Função": "LÍDER/SEGURANÇA", "Sexta": "15:00 às 23:00", "Sábado": "FOLGA", "Domingo": "15:00 às 23:00", "Segunda": "15:00 às 23:00"},
             {"Turno": "T2", "Nome": "ANDREZA OLIVEIRA", "Função": "PICKUP", "Sexta": "15:00 às 23:00", "Sábado": "FOLGA", "Domingo": "15:00 às 23:00", "Segunda": "15:00 às 23:00"},
@@ -101,7 +104,7 @@ def inicializar_banco_independente():
             {"Turno": "T2", "Nome": "MARIA NATHALIA", "Função": "SEGURANÇA", "Sexta": "15:00 às 23:00", "Sábado": "15:00 às 23:00", "Domingo": "FOLGA", "Segunda": "15:00 às 23:00"},
             {"Turno": "T2", "Nome": "CINAMOR", "Função": "ELOG", "Sexta": "15:00 às 23:00", "Sábado": "15:00 às 23:00", "Domingo": "15:00 às 23:00", "Segunda": "FOLGA"},
             
-            # TURNO 3 (23:00 às 07:00) - CORRIGIDO!
+            # TURNO 3
             {"Turno": "T3", "Nome": "WESLEY", "Função": "LÍDER", "Sexta": "FOLGA", "Sábado": "23:00 às 07:00", "Domingo": "23:00 às 07:00", "Segunda": "23:00 às 07:00"},
             {"Turno": "T3", "Nome": "JOÃO", "Função": "LÍDER/SEGURANÇA", "Sexta": "23:00 às 07:00", "Sábado": "23:00 às 07:00", "Domingo": "23:00 às 07:00", "Segunda": "FOLGA"},
             {"Turno": "T3", "Nome": "RILDOMAR", "Função": "PICKUP", "Sexta": "23:00 às 07:00", "Sábado": "FOLGA", "Domingo": "23:00 às 07:00", "Segunda": "23:00 às 07:00"},
@@ -113,10 +116,10 @@ def inicializar_banco_independente():
         ]
         pd.DataFrame(dados_iniciais).to_csv(ARQUIVO_BANCO, index=False)
 
-inicializar_banco_independente()
+inicializar_banco()
 df_banco = pd.read_csv(ARQUIVO_BANCO)
 
-# --- PAINEL LATERAL (ÁREA DO COORDENADOR PARA TROCAR AS FOLGAS NO SITE) ---
+# --- PAINEL LATERAL (ÁREA DO COORDENADOR RESTAURADA COMPLETA) ---
 with st.sidebar:
     st.markdown("<h3 style='color:#FF9900; margin-top:0;'>🔐 Área do Coordenador</h3>", unsafe_allow_html=True)
     
@@ -134,29 +137,53 @@ with st.sidebar:
                     st.error("Dados incorretos.")
     else:
         st.write("🟢 Modo Edição Ativo")
-        st.info("Clique diretamente nos botões '🔄 Alternar' na tabela para trocar de TRABALHO para FOLGA instantaneamente.")
+        st.info("Utilize os botões diretamente nos cartões para alternar as folgas.")
         st.divider()
         
-        # CADASTRO DIRETO NO SITE
+        # FORMULÁRIO DE CADASTRO COMPLETO (COM SELEÇÃO DE ESCALA POR DIA)
         st.markdown("**➕ Adicionar Operador**")
         novo_nome = st.text_input("Nome:").upper().strip()
         nova_funcao = st.text_input("Função:").upper().strip()
-        novo_turno = st.selectbox("Turno:", ["Turno 1", "Turno 2", "Turno 3"])
+        novo_turno = st.selectbox("Turno:", ["Turno 1 (07-15h)", "Turno 2 (15-23h)", "Turno 3 (23-07h)"])
         
+        turno_id = "T1" if "1" in novo_turno else "T2" if "2" in novo_turno else "T3"
+        horario_padrao = horarios_map[turno_id]
+        
+        st.markdown("*Defina a escala inicial do operador:*")
+        escala_dias = {}
+        for d in dias_lista:
+            escala_dias[d] = st.selectbox(f"{d.upper()}:", [f"Trabalha ({horario_padrao})", "FOLGA"], key=f"cad_{d}")
+            
         if st.button("Salvar no Sistema", use_container_width=True):
             if novo_nome and nova_funcao:
-                turno_id = "T1" if "1" in novo_turno else "T2" if "2" in novo_turno else "T3"
-                horarios_map = {"T1": "07:00 às 15:00", "T2": "15:00 às 23:00", "T3": "23:00 às 07:00"}
-                horario_sugerido = horarios_map[turno_id]
-                
                 nova_linha = {
-                    "Turno": turno_id, "Nome": novo_nome, "Função": nova_funcao,
-                    "Sexta": horario_sugerido, "Sábado": horario_sugerido, "Domingo": horario_sugerido, "Segunda": horario_sugerido
+                    "Turno": turno_id,
+                    "Nome": novo_nome,
+                    "Função": nova_funcao,
+                    "Sexta": horario_padrao if "Trabalha" in escala_dias["Sexta"] else "FOLGA",
+                    "Sábado": horario_padrao if "Trabalha" in escala_dias["Sábado"] else "FOLGA",
+                    "Domingo": horario_padrao if "Trabalha" in escala_dias["Domingo"] else "FOLGA",
+                    "Segunda": horario_padrao if "Trabalha" in escala_dias["Segunda"] else "FOLGA"
                 }
                 df_banco = pd.concat([df_banco, pd.DataFrame([nova_linha])], ignore_index=True)
                 df_banco.to_csv(ARQUIVO_BANCO, index=False)
-                st.success(f"{novo_nome} adicionado!")
+                st.success(f"{novo_nome} cadastrado com sucesso!")
                 st.rerun()
+            else:
+                st.error("Preencha o Nome e a Função.")
+
+        st.divider()
+        
+        # SISTEMA DE REMOÇÃO RESTAURADO
+        st.markdown("**❌ Remover Operador**")
+        lista_operadores = sorted(df_banco["Nome"].unique())
+        operador_para_remover = st.selectbox("Selecione o operador:", lista_operadores)
+        
+        if st.button("Excluir Definitivamente", type="secondary", use_container_width=True):
+            df_banco = df_banco[df_banco["Nome"] != operador_para_remover]
+            df_banco.to_csv(ARQUIVO_BANCO, index=False)
+            st.success(f"Operador {operador_para_remover} removido!")
+            st.rerun()
 
         st.divider()
         if st.button("🚪 Sair do Modo Edição", use_container_width=True):
@@ -164,13 +191,12 @@ with st.sidebar:
             st.query_params.clear()
             st.rerun()
 
-# --- EXIBIÇÃO DA ESCALA (TODOS OS TURNOS COM HORÁRIOS CORRIGIDOS) ---
+# --- RENDERING DA ESCALA GERAL ---
 mapa_nomes_turnos = {
     "T1": "Turno 1 (07:00 às 15:00)", 
     "T2": "Turno 2 (15:00 às 23:00)", 
     "T3": "Turno 3 (23:00 às 07:00)"
 }
-dias_lista = ["Sexta", "Sábado", "Domingo", "Segunda"]
 
 for id_turno, nome_exibicao in mapa_nomes_turnos.items():
     df_turno = df_banco[df_banco["Turno"] == id_turno]
@@ -200,11 +226,8 @@ for id_turno, nome_exibicao in mapa_nomes_turnos.items():
                 else:
                     cols[idx].markdown("<div class='card-folga'>FOLGA<div class='sub-info-folga'>Descanso</div></div>", unsafe_allow_html=True)
                 
-                # Se o coordenador estiver logado, ele ganha o botão para gerenciar as folgas
                 if st.session_state.autenticado:
-                    horarios_retorno_map = {"T1": "07:00 às 15:00", "T2": "15:00 às 23:00", "T3": "23:00 às 07:00"}
-                    novo_status = "FOLGA" if "FOLGA" not in status_atual.upper() else horarios_retorno_map[id_turno]
-                    
+                    novo_status = "FOLGA" if "FOLGA" not in status_atual.upper() else horarios_map[id_turno]
                     if cols[idx].button(f"🔄 Alternar", key=f"btn_{row['Nome']}_{dia}"):
                         idx_banco = df_banco[(df_banco["Turno"] == id_turno) & (df_banco["Nome"] == row['Nome'])].index[0]
                         df_banco.at[idx_banco, dia] = novo_status

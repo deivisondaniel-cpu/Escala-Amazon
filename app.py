@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from datetime import datetime, timedelta
 
-# Configuração da página web - ÍCONE DE CAIXA ADICIONADO (📦)
+# Configuração da página web
 st.set_page_config(page_title="Escala monitoramento", page_icon="📦", layout="wide")
 
 # Nome do arquivo de banco de dados permanente
@@ -46,6 +46,13 @@ if "logged_in" in st.query_params and st.query_params["logged_in"] == "true":
     st.session_state.autenticado = True
 elif 'autenticado' not in st.session_state:
     st.session_state.autenticado = False
+
+# --- DICIONÁRIO DE HORÁRIOS PADRÃO POR TURNO ---
+horarios_turnos = {
+    "T1": "07:00 às 15:00",
+    "T2": "15:00 às 23:00",
+    "T3": "23:00 às 07:00"
+}
 
 # --- LÓGICA DE DATAS AUTOMÁTICAS ---
 def obter_datas_semana(deslocamento_semanas=0):
@@ -92,27 +99,29 @@ def inicializar_banco():
             {"Turno": "T1", "Nome": "BRUNA BLENDA", "Função": "DROPOFF", "Sexta": "FOLGA", "Sábado": "07:00 às 15:00", "Domingo": "07:00 às 15:00", "Segunda": "07:00 às 15:00"},
             {"Turno": "T1", "Nome": "CONCEIÇÃO DAIANE", "Função": "SEGURANÇA (ONISYS)", "Sexta": "07:00 às 15:00", "Sábado": "FOLGA", "Domingo": "07:00 às 15:00", "Segunda": "07:00 às 15:00"},
             {"Turno": "T1", "Nome": "MATHEUS LUSTOSA", "Função": "SEGURANÇA/ELOG", "Sexta": "FOLGA", "Sábado": "07:00 às 15:00", "Domingo": "07:00 às 15:00", "Segunda": "07:00 às 15:00"},
-            # Turno 2
-            {"Turno": "T2", "Nome": "MANUELA PINHEIRO", "Função": "LÍDER", "Sexta": "15:00 às 19:00", "Sábado": "15:00 às 19:00", "Domingo": "FOLGA", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T2", "Nome": "ISABEL", "Função": "LÍDER/SEGURANÇA", "Sexta": "15:00 às 19:00", "Sábado": "FOLGA", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T2", "Nome": "ANDREZA OLIVEIRA", "Função": "PICKUP", "Sexta": "15:00 às 19:00", "Sábado": "FOLGA", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T2", "Nome": "ROZIANE DA SILVA", "Função": "PICKUP", "Sexta": "FOLGA", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T2", "Nome": "DAIANE", "Função": "SEGURANÇA", "Sexta": "FOLGA", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T2", "Nome": "EMANUEL ROBERTO", "Função": "DEPART", "Sexta": "FOLGA", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T2", "Nome": "TAMMYRIS DA SILVA", "Função": "DROPOFF", "Sexta": "15:00 às 19:00", "Sábado": "FOLGA", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T2", "Nome": "RAPHAEL DO NASCIMENTO", "Função": "DROPOFF", "Sexta": "15:00 às 19:00", "Sábado": "15:00 às 19:00", "Domingo": "FOLGA", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T2", "Nome": "LUDMILLA RODRIGUES", "Função": "DROPOFF", "Sexta": "15:00 às 19:00", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "FOLGA"},
-            {"Turno": "T2", "Nome": "MARIA NATHALIA", "Função": "SEGURANÇA", "Sexta": "15:00 às 19:00", "Sábado": "15:00 às 19:00", "Domingo": "FOLGA", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T2", "Nome": "CINAMOR", "Função": "ELOG", "Sexta": "15:00 às 19:00", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "FOLGA"},
-            # Turno 3
-            {"Turno": "T3", "Nome": "WESLEY", "Função": "LÍDER", "Sexta": "FOLGA", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T3", "Nome": "JOÃO", "Função": "LÍDER/SEGURANÇA", "Sexta": "15:00 às 19:00", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "FOLGA"},
-            {"Turno": "T3", "Nome": "RILDOMAR", "Função": "PICKUP", "Sexta": "15:00 às 19:00", "Sábado": "FOLGA", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T3", "Nome": "LUCIANA", "Função": "PICKUP", "Sexta": "FOLGA", "Sábado": "15:00 às 19:00", "Domingo": "FOLGA", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T3", "Nome": "GLAYLDSON", "Função": "SEGURANÇA", "Sexta": "15:00 às 19:00", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "FOLGA"},
-            {"Turno": "T3", "Nome": "TAYANARA", "Função": "DEPART", "Sexta": "15:00 às 19:00", "Sábado": "15:00 às 19:00", "Domingo": "FOLGA", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T3", "Nome": "RUAN", "Função": "DROPOFF", "Sexta": "15:00 às 19:00", "Sábado": "FOLGA", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T3", "Nome": "BÁRBARA", "Função": "DROPOFF", "Sexta": "15:00 às 19:00", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"}
+            
+            # Turno 2 (Corrigido para 15h às 23h)
+            {"Turno": "T2", "Nome": "MANUELA PINHEIRO", "Função": "LÍDER", "Sexta": "15:00 às 23:00", "Sábado": "15:00 às 23:00", "Domingo": "FOLGA", "Segunda": "15:00 às 23:00"},
+            {"Turno": "T2", "Nome": "ISABEL", "Função": "LÍDER/SEGURANÇA", "Sexta": "15:00 às 23:00", "Sábado": "FOLGA", "Domingo": "15:00 às 23:00", "Segunda": "15:00 às 23:00"},
+            {"Turno": "T2", "Nome": "ANDREZA OLIVEIRA", "Função": "PICKUP", "Sexta": "15:00 às 23:00", "Sábado": "FOLGA", "Domingo": "15:00 às 23:00", "Segunda": "15:00 às 23:00"},
+            {"Turno": "T2", "Nome": "ROZIANE DA SILVA", "Função": "PICKUP", "Sexta": "FOLGA", "Sábado": "15:00 às 23:00", "Domingo": "15:00 às 23:00", "Segunda": "15:00 às 23:00"},
+            {"Turno": "T2", "Nome": "DAIANE", "Função": "SEGURANÇA", "Sexta": "FOLGA", "Sábado": "15:00 às 23:00", "Domingo": "15:00 às 23:00", "Segunda": "15:00 às 23:00"},
+            {"Turno": "T2", "Nome": "EMANUEL ROBERTO", "Função": "DEPART", "Sexta": "FOLGA", "Sábado": "15:00 às 23:00", "Domingo": "15:00 às 23:00", "Segunda": "15:00 às 23:00"},
+            {"Turno": "T2", "Nome": "TAMMYRIS DA SILVA", "Função": "DROPOFF", "Sexta": "15:00 às 23:00", "Sábado": "FOLGA", "Domingo": "15:00 às 23:00", "Segunda": "15:00 às 23:00"},
+            {"Turno": "T2", "Nome": "RAPHAEL DO NASCIMENTO", "Função": "DROPOFF", "Sexta": "15:00 às 23:00", "Sábado": "15:00 às 23:00", "Domingo": "FOLGA", "Segunda": "15:00 às 23:00"},
+            {"Turno": "T2", "Nome": "LUDMILLA RODRIGUES", "Função": "DROPOFF", "Sexta": "15:00 às 23:00", "Sábado": "15:00 às 23:00", "Domingo": "15:00 às 23:00", "Segunda": "FOLGA"},
+            {"Turno": "T2", "Nome": "MARIA NATHALIA", "Função": "SEGURANÇA", "Sexta": "15:00 às 23:00", "Sábado": "15:00 às 23:00", "Domingo": "FOLGA", "Segunda": "15:00 às 23:00"},
+            {"Turno": "T2", "Nome": "CINAMOR", "Função": "ELOG", "Sexta": "15:00 às 23:00", "Sábado": "15:00 às 23:00", "Domingo": "15:00 às 23:00", "Segunda": "FOLGA"},
+            
+            # Turno 3 (Corrigido para 23h às 07h)
+            {"Turno": "T3", "Nome": "WESLEY", "Função": "LÍDER", "Sexta": "FOLGA", "Sábado": "23:00 às 07:00", "Domingo": "23:00 às 07:00", "Segunda": "23:00 às 07:00"},
+            {"Turno": "T3", "Nome": "JOÃO", "Função": "LÍDER/SEGURANÇA", "Sexta": "23:00 às 07:00", "Sábado": "23:00 às 07:00", "Domingo": "23:00 às 07:00", "Segunda": "FOLGA"},
+            {"Turno": "T3", "Nome": "RILDOMAR", "Função": "PICKUP", "Sexta": "23:00 às 07:00", "Sábado": "FOLGA", "Domingo": "23:00 às 07:00", "Segunda": "23:00 às 07:00"},
+            {"Turno": "T3", "Nome": "LUCIANA", "Função": "PICKUP", "Sexta": "FOLGA", "Sábado": "23:00 às 07:00", "Domingo": "FOLGA", "Segunda": "23:00 às 07:00"},
+            {"Turno": "T3", "Nome": "GLAYLDSON", "Função": "SEGURANÇA", "Sexta": "23:00 às 07:00", "Sábado": "23:00 às 07:00", "Domingo": "23:00 às 07:00", "Segunda": "FOLGA"},
+            {"Turno": "T3", "Nome": "TAYANARA", "Função": "DEPART", "Sexta": "23:00 às 07:00", "Sábado": "23:00 às 07:00", "Domingo": "FOLGA", "Segunda": "23:00 às 07:00"},
+            {"Turno": "T3", "Nome": "RUAN", "Função": "DROPOFF", "Sexta": "23:00 às 07:00", "Sábado": "FOLGA", "Domingo": "23:00 às 07:00", "Segunda": "23:00 às 07:00"},
+            {"Turno": "T3", "Nome": "BÁRBARA", "Função": "DROPOFF", "Sexta": "23:00 às 07:00", "Sábado": "23:00 às 07:00", "Domingo": "23:00 às 07:00", "Segunda": "23:00 às 07:00"}
         ]
         linhas_banco = []
         for opt in opcoes_semanas:
@@ -153,7 +162,7 @@ with st.sidebar:
         st.info("💡 DICA: Agora você pode clicar nos botões diretamente na tabela para alterar folgas rapidamente!")
         st.divider()
         
-        # ABA DE CADASTRO
+        # ABA DE CADASTRO REFINADA (COM HORÁRIO AUTOMÁTICO CORRETO)
         st.markdown("**➕ Cadastrar Novo Operador**")
         novo_nome = st.text_input("Nome:").upper().strip()
         nova_funcao = st.text_input("Função:").upper().strip()
@@ -162,7 +171,9 @@ with st.sidebar:
         if st.button("Adicionar ao Sistema", use_container_width=True):
             if novo_nome and nova_funcao:
                 turno_id = "T1" if "1" in novo_turno else "T2" if "2" in novo_turno else "T3"
-                horario_sugerido = "07:00 às 15:00" if turno_id == "T1" else "15:00 às 19:00"
+                # Puxa o horário correto dinamicamente do dicionário global
+                horario_sugerido = horarios_turnos[turno_id]
+                
                 nova_linha = {
                     "SemanaID": id_semana_ativa, "Turno": turno_id, "Nome": novo_nome, "Função": nova_funcao,
                     "Sexta": horario_sugerido, "Sábado": horario_sugerido, "Domingo": horario_sugerido, "Segunda": horario_sugerido
@@ -174,7 +185,7 @@ with st.sidebar:
 
         st.divider()
 
-        # NOVA ABA: REMOVER OPERADOR (Pessoas cadastradas na semana atual)
+        # REMOVER OPERADOR
         st.markdown("**❌ Remover / Desligar Operador**")
         lista_operadores_atuais = sorted(df_banco[df_banco["SemanaID"] == id_semana_ativa]["Nome"].unique())
         
@@ -184,11 +195,9 @@ with st.sidebar:
             
             if st.button("Confirmar Exclusão", type="primary", use_container_width=True):
                 if tipo_remocao == "Apenas da semana atual":
-                    # Remove apenas o registro vinculado à ID da semana ativa
                     df_banco = df_banco[~((df_banco["SemanaID"] == id_semana_ativa) & (df_banco["Nome"] == operador_para_remover))]
                     st.success(f"Removido da escala da semana {id_semana_ativa}!")
                 else:
-                    # Remove completamente o funcionário de qualquer histórico
                     df_banco = df_banco[df_banco["Nome"] != operador_para_remover]
                     st.success(f"{operador_para_remover} deletado do sistema permanentemente!")
                 
@@ -240,7 +249,8 @@ for id_turno, nome_exibicao in mapa_nomes_turnos.items():
                     cols[idx].markdown("<div class='card-folga'>FOLGA<div class='sub-info-folga'>Descanso</div></div>", unsafe_allow_html=True)
                 
                 if st.session_state.autenticado:
-                    horario_retorno = "07:00 às 15:00" if id_turno == "T1" else "15:00 às 19:00"
+                    # Alterna dinamicamente buscando o horário real configurado para o turno atual
+                    horario_retorno = horarios_turnos[id_turno]
                     novo_status = "FOLGA" if "FOLGA" not in status_atual else horario_retorno
                     
                     if cols[idx].button(f"🔄 Alternar", key=f"btn_{row['Nome']}_{dia}_{id_semana_ativa}"):

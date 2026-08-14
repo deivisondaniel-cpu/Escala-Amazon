@@ -18,17 +18,22 @@ st.markdown("""
     footer {visibility: hidden;}
     .stDecoration {display:none !important;}
     
-    /* TOTALMENTE BLINDADO: Esconde o botão de status, a toolbar flutuante e o menu de perfil do cantinho */
+    /* TOTALMENTE BLINDADO: Remove botão de status, footer, badges de visualização e qualquer elemento flutuante */
     div[data-testid="stStatusWidget"],
     div[data-testid="stContainerToolbar"],
     .stActionButton, 
     iframe[title="Managed Hosting Toolbar"],
     #tabs-bnd-pipeline-root,
-    [data-testid="stEmbedHover"] {
+    [data-testid="stEmbedHover"],
+    [data-testid="stFooter"],
+    [style*="viewer-badge"],
+    .viewer-badge {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
         pointer-events: none !important;
+        height: 0 !important;
+        width: 0 !important;
     }
     
     .titulo { text-align: center; color: #131921; font-family: 'Segoe UI', sans-serif; font-weight: bold; margin-bottom: 25px; font-size: 28px; }

@@ -5,12 +5,11 @@ from datetime import datetime, timedelta
 # ============================================================
 # CONFIGURAÇÃO
 # ============================================================
-
 st.set_page_config(
     page_title="Escala Amazon",
     page_icon="amazon.png",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed" # Remove a sidebar por padrão
 )
 
 # ============================================================
@@ -66,7 +65,7 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS
+# CSS ATUALIZADO (SEM SIDEBAR, FOCO NO TOPO)
 # ============================================================
 st.markdown("""
 <style>
@@ -74,23 +73,30 @@ st.markdown("""
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }
 
+/* Remove o espaço que a sidebar deixaria */
+[data-testid="stSidebar"] { display: none; }
+
 [data-testid="stAppViewContainer"] { background-color: #F3F6F9; }
 .stApp { background-color: #F3F6F9; }
 
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
 .titulo {
-    text-align: center;
     color: #232F3E;
     font-family: 'Segoe UI', sans-serif;
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 800;
-    margin-top: 20px;
-    margin-bottom: 4px;
 }
 
 .subtitulo {
-    text-align: center;
     color: #146EB4;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.2px;
     margin-bottom: 25px;
@@ -170,34 +176,6 @@ div[data-baseweb="select"] > div {
 
 .separador { border: 0; border-top: 1px solid #D7DEE7; margin-top: 2px; margin-bottom: 15px; }
 
-section[data-testid="stSidebar"] { background-color: #232F3E; border-right: 1px solid #314154; }
-section[data-testid="stSidebar"] > div { background-color: #232F3E; }
-section[data-testid="stSidebar"] * { color: #FFFFFF; }
-.sidebar-titulo { color: #FF9900; font-size: 18px; font-weight: 800; letter-spacing: 0.2px; }
-
-.sidebar-status {
-    background-color: #EAF3FB;
-    color: #146EB4 !important;
-    padding: 8px 10px;
-    border-radius: 7px;
-    font-size: 12px;
-    font-weight: 800;
-    border-left: 4px solid #FF9900;
-}
-
-section[data-testid="stSidebar"] input { background-color: #FFFFFF !important; color: #232F3E !important; border-radius: 7px !important; }
-section[data-testid="stSidebar"] div[data-baseweb="select"] > div { background-color: #FFFFFF !important; color: #232F3E !important; }
-section[data-testid="stSidebar"] div[data-baseweb="select"] span { color: #232F3E !important; }
-
-section[data-testid="stSidebar"] .stButton > button {
-    background-color: #FF9900;
-    color: #232F3E;
-    border: 1px solid #FF9900;
-    font-weight: 800;
-    border-radius: 7px;
-}
-section[data-testid="stSidebar"] .stButton > button:hover { background-color: #FEBD69; border-color: #FEBD69; color: #232F3E; }
-
 .metric-card {
     background-color: #FFFFFF;
     border: 1px solid #D7DEE7;
@@ -211,19 +189,29 @@ section[data-testid="stSidebar"] .stButton > button:hover { background-color: #F
 .metric-label { font-size: 11px; color: #617184; font-weight: 700; }
 .metric-card:first-child { border-top-color: #FF9900; }
 
-[data-testid="stForm"] { background-color: #1F2A38; border: 1px solid #3C4B5E; border-radius: 10px; padding: 15px; }
+[data-testid="stForm"] { background-color: #FFFFFF; border: none; padding: 0px; }
 .stButton > button { border-radius: 7px; font-weight: 700; border: 1px solid #D7DEE7; }
 div[data-testid="column"] .stButton > button { color: #232F3E; }
 div[data-baseweb="input"] { border-radius: 7px; }
-.stMainBlockContainer { padding-top: 18px !important; padding-bottom: 30px !important; }
+.stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
 .stCaption { color: #617184 !important; }
 
-/* Ajuste específico para os textos dos expanders e abas na barra lateral */
-.stExpander { border: 1px solid #314154 !important; background-color: #1F2A38 !important; border-radius: 7px; }
-.stExpanderSummary { color: #FFFFFF !important; font-weight: 700; }
+/* Estilização dos botões popover no topo */
+div[data-testid="stPopover"] > button {
+    background-color: #232F3E !important;
+    color: #FFFFFF !important;
+    border: 1px solid #232F3E !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+}
+div[data-testid="stPopover"] > button:hover {
+    background-color: #FF9900 !important;
+    border-color: #FF9900 !important;
+    color: #232F3E !important;
+}
 
 @media (max-width: 800px) {
-    .titulo { font-size: 24px; margin-top: 25px; }
+    .titulo { font-size: 24px; }
     .turno-titulo { font-size: 18px; }
     .turno-horario { font-size: 10px; }
     .metric-numero { font-size: 18px; }
@@ -243,19 +231,14 @@ if "autenticado" not in st.session_state:
 def buscar_operadores():
     conn = conectar()
     dados = conn.execute("""
-        SELECT id, nome, funcao, turno
-        FROM operadores
-        WHERE ativo = 1
-        ORDER BY turno, nome
+        SELECT id, nome, funcao, turno FROM operadores WHERE ativo = 1 ORDER BY turno, nome
     """).fetchall()
     conn.close()
     return dados
 
 def cadastrar_operador(nome, funcao, turno):
     conn = conectar()
-    conn.execute("""
-        INSERT INTO operadores (nome, funcao, turno) VALUES (?, ?, ?)
-    """, (nome, funcao, turno))
+    conn.execute("INSERT INTO operadores (nome, funcao, turno) VALUES (?, ?, ?)", (nome, funcao, turno))
     conn.commit()
     conn.close()
 
@@ -313,18 +296,19 @@ def obter_semana(deslocamento=0):
 semanas = [obter_semana(i) for i in range(-2, 5)]
 
 # ============================================================
-# SIDEBAR (PAINEL COMPACTO DE ACESSO/GESTÃO)
+# CABEÇALHO DA APLICAÇÃO (TÍTULO + LOGIN ALINHADOS)
 # ============================================================
-with st.sidebar:
-    st.markdown("<div class='sidebar-titulo'>Amazon Escala</div>", unsafe_allow_html=True)
-    st.divider()
+col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
-    # Menu Expansível Compacto para Autenticação/Configurações
-    menu_label = "⚙️ Área Administrativa" if not st.session_state.autenticado else "🟢 Modo Gestão Ativo"
-    
-    with st.expander(menu_label, expanded=False):
-        if not st.session_state.autenticado:
-            with st.form("login_form"):
+with col_tit:
+    st.markdown("<div class='titulo'>Escala Amazon</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
+
+with col_log:
+    # Caso NÃO esteja logado, exibe apenas o botão discreto de Login no canto superior direito
+    if not st.session_state.autenticado:
+        with st.popover("👤 Área do Gestor", use_container_width=True):
+            with st.form("login_form", clear_on_submit=True):
                 usuario = st.text_input("Usuário")
                 senha = st.text_input("Senha", type="password")
                 entrar = st.form_submit_button("Entrar", use_container_width=True)
@@ -334,51 +318,51 @@ with st.sidebar:
                         st.session_state.autenticado = True
                         st.rerun()
                     else:
-                        st.error("Incorreto.")
-        else:
-            st.markdown("### ➕ Novo operador")
-            novo_nome = st.text_input("Nome", key="novo_nome")
-            nova_funcao = st.text_input("Função", key="nova_funcao")
-            novo_turno = st.selectbox(
-                "Turno", ["T1", "T2", "T3"],
-                format_func=lambda x: f"{NOMES_TURNOS[x]} — {HORARIOS[x]}"
-            )
-
-            if st.button("Cadastrar operador", use_container_width=True):
-                if novo_nome.strip() and nova_funcao.strip():
-                    cadastrar_operador(novo_nome.strip().upper(), nova_funcao.strip().upper(), novo_turno)
-                    st.success("Cadastrado!")
-                    st.rerun()
+                        st.error("Dados incorretos.")
+    else:
+        # Se logado, cria um menu flutuante com as ferramentas administrativas
+        with st.popover("⚙️ Painel de Gestão", use_container_width=True):
+            st.markdown("🟢 **Modo Administrador**")
+            st.divider()
+            
+            # Sub-opções dentro do botão superior
+            menu_admin = st.selectbox("O que deseja fazer?", ["Adicionar Operador", "Remover Operador"])
+            
+            if menu_admin == "Adicionar Operador":
+                novo_nome = st.text_input("Nome").strip().upper()
+                nova_funcao = st.text_input("Função").strip().upper()
+                novo_turno = st.selectbox(
+                    "Turno", ["T1", "T2", "T3"],
+                    format_func=lambda x: f"{NOMES_TURNOS[x]} — {HORARIOS[x]}"
+                )
+                if st.button("Confirmar Cadastro", use_container_width=True):
+                    if novo_nome and nova_funcao:
+                        cadastrar_operador(novo_nome, nova_funcao, novo_turno)
+                        st.success("Operador cadastrado!")
+                        st.rerun()
+                    else:
+                        st.warning("Preencha todos os campos.")
+                        
+            elif menu_admin == "Remover Operador":
+                operadores_lista = buscar_operadores()
+                if operadores_lista:
+                    opcoes_remocao = {f"{x[1]} — {x[2]}": x[0] for x in operadores_lista}
+                    selecionado = st.selectbox("Selecione o operador", list(opcoes_remocao.keys()))
+                    if st.button("Confirmar Remoção", use_container_width=True):
+                        remover_operador(opcoes_remocao[selecionado])
+                        st.success("Operador removido!")
+                        st.rerun()
                 else:
-                    st.warning("Preencha os campos.")
-
+                    st.info("Nenhum operador cadastrado.")
+                    
             st.divider()
-            st.markdown("### ❌ Remover operador")
-            operadores_lista = buscar_operadores()
-
-            if operadores_lista:
-                opcoes_remocao = {f"{x[1]} — {x[2]}": x[0] for x in operadores_lista}
-                selecionado = st.selectbox("Operador", list(opcoes_remocao.keys()))
-
-                if st.button("Remover", use_container_width=True):
-                    remover_operador(opcoes_remocao[selecionado])
-                    st.success("Removido.")
-                    st.rerun()
-            else:
-                st.info("Nenhum operador.")
-
-            st.divider()
-            if st.button("🚪 Sair do Modo Gestão", use_container_width=True):
+            if st.button("🚪 Sair", use_container_width=True):
                 st.session_state.autenticado = False
                 st.rerun()
 
 # ============================================================
-# CONTEÚDO PRINCIPAL
+# FILTRO DE SEMANA
 # ============================================================
-st.markdown("<div class='titulo'>Escala Amazon</div>", unsafe_allow_html=True)
-st.markdown("<div class='subtitulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
-
-# Filtro de Semana Centralizado e mais limpo
 semana_labels = [x["nome"] for x in semanas]
 semana_escolhida = st.selectbox("📅 Período da escala", semana_labels, index=2)
 semana = semanas[semana_labels.index(semana_escolhida)]
@@ -386,7 +370,9 @@ semana_id = semana["id"]
 
 operadores = buscar_operadores()
 
-# Métricas do Painel
+# ============================================================
+# MÉTRICAS DO PAINEL
+# ============================================================
 total = len(operadores)
 t1 = len([x for x in operadores if x[3] == "T1"])
 t2 = len([x for x in operadores if x[3] == "T2"])
@@ -401,11 +387,10 @@ with m4: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t3}<
 st.write("")
 
 # ============================================================
-# ABAS DE NAVEGAÇÃO DOS TURNOS (O MÁXIMO DE ERGONOMIA)
+# ABAS DE NAVEGAÇÃO DOS TURNOS
 # ============================================================
 DIAS = [("Sexta", "sexta"), ("Sábado", "sabado"), ("Domingo", "domingo"), ("Segunda", "segunda")]
 
-# Criando abas horizontais para os Turnos
 aba_t1, aba_t2, aba_t3 = st.tabs(["🌅 Turno 1 (07h às 15h)", "🌆 Turno 2 (15h às 23h)", "🌌 Turno 3 (23h às 07h)"])
 abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
 
@@ -417,7 +402,6 @@ for turno in ["T1", "T2", "T3"]:
             st.info(f"Nenhum operador alocado no {NOMES_TURNOS[turno]} para este período.")
             continue
 
-        # Cabeçalho do Turno dentro da Aba
         st.markdown(f"""
             <div class='turno-header'>
                 <div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div>
@@ -425,7 +409,6 @@ for turno in ["T1", "T2", "T3"]:
             </div>
         """, unsafe_allow_html=True)
 
-        # Cabeçalho da Tabela
         headers = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
         headers[0].markdown("<div class='header-col header-esquerda'>OPERADOR</div>", unsafe_allow_html=True)
         headers[1].markdown("<div class='header-col header-esquerda'>FUNÇÃO</div>", unsafe_allow_html=True)
@@ -435,7 +418,6 @@ for turno in ["T1", "T2", "T3"]:
 
         st.markdown("<div class='separador'></div>", unsafe_allow_html=True)
 
-        # Renderização dos Operadores do Turno Atual
         for operador in operadores_turno:
             operador_id, nome, funcao = operador[0], operador[1], operador[2]
             status = buscar_status(operador_id, semana_id)
@@ -469,7 +451,6 @@ for turno in ["T1", "T2", "T3"]:
                         </div>
                     """, unsafe_allow_html=True)
 
-                # Botão de Alternância (Visível apenas se autenticado)
                 if st.session_state.autenticado:
                     novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
                     if linha[i].button("↔ Alternar", key=f"{operador_id}_{semana_id}_{dia}_{turno}", use_container_width=True):

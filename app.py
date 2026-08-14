@@ -3,60 +3,74 @@ import pandas as pd
 import os
 from datetime import datetime, timedelta
 
-# Configuração da página web - ÍCONE DE CAIXA ADICIONADO (📦)
+# Configuração da página web
 st.set_page_config(page_title="Escala monitoramento", page_icon="📦", layout="wide")
 
 # Nome do arquivo de banco de dados permanente
 ARQUIVO_BANCO = "escala_amazon_db_v2.csv"
 
-# Estilização CSS refinada com remoção completa de elementos do Streamlit
+# 1. TRATOR CSS: Oculta tudo o que for possível por estilo tradicional
 st.markdown("""
     <style>
-    /* REMOVE O CABEÇALHO, MENU E RODAPÉ PADRÃO DO STREAMLIT */
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     footer {visibility: hidden;}
     .stDecoration {display:none !important;}
     
-    /* BLINDAGEM MÁXIMA ANTI-FAIXA VERMELHA E ANTI-POPOVER FLUTUANTE */
+    /* Tenta sumir com os botões flutuantes originais */
     div[data-testid="stStatusWidget"],
     div[data-testid="stContainerToolbar"],
     .stActionButton, 
     iframe[title="Managed Hosting Toolbar"],
-    #tabs-bnd-pipeline-root,
     [data-testid="stEmbedHover"],
     [data-testid="stFooter"],
-    [style*="viewer-badge"],
-    .viewer-badge,
     div[class*="StyledEmbedHoverContainer"],
-    div[data-baseweb="popover"] {
+    div[data-baseweb="popover"],
+    .viewer-badge {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
-        pointer-events: none !important;
         height: 0 !important;
-        width: 0 !important;
     }
     
     .titulo { text-align: center; color: #131921; font-family: 'Segoe UI', sans-serif; font-weight: bold; margin-bottom: 25px; font-size: 28px; }
-    
-    /* Cartões de TRABALHO: Escuro elegante com borda laranja */
     .card-trabalho { background-color: #232F3E; color: white; padding: 6px 8px; border-radius: 6px; text-align: center; font-weight: 600; font-size: 12px; border-left: 4px solid #FF9900; margin-bottom: 12px; }
-    
-    /* Cartões de FOLGA: Amarelo suave/fosco com texto escuro para chamar atenção com elegância */
     .card-folga { background-color: #FDF1AA; color: #403000; padding: 6px 8px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 12px; border-left: 4px solid #E6A100; margin-bottom: 12px; }
-    
     .sub-info { font-size: 10px; color: #FF9900; font-weight: bold; }
     .sub-info-folga { font-size: 10px; color: #8F7014; font-weight: normal; }
-    
     .header-col { text-align: center; font-weight: bold; font-size: 13px; color: #131921; margin-bottom: 10px; }
-    
-    /* Ajuste de espaçamento para o nome e função acompanharem o bloco */
     .nome-operador { padding-top: 8px; font-size: 13px; margin-bottom: 12px; }
     .funcao-operador { padding-top: 8px; font-size: 12px; color: #64748B; margin-bottom: 12px; }
-    
     .stMainBlockContainer { padding-top: 20px !important; padding-bottom: 20px !important; }
     </style>
+""", unsafe_allow_html=True)
+
+# 2. MISSAO IMPOSSÍVEL JAVASCRIPT: Caça o botão e a barra vermelha dinamicamente e deleta da página
+st.markdown("""
+    <script>
+    function eliminarElementosStreamlit() {
+        // Encontra elementos que contenham o badge ou o footer chato
+        const badgedivs = document.querySelectorAll('div');
+        badgedivs.forEach(el => {
+            // Verifica classes dinâmicas do visualizador ou textos do footer da hospedagem
+            if (el.className.includes('viewer-badge') || el.innerHTML.includes('Hosted with Streamlit')) {
+                el.remove();
+            }
+        });
+        
+        // Caça o botão flutuante redondo pelo seletor de link ou imagem
+        const links = document.querySelectorAll('a');
+        links.forEach(link => {
+            if (link.href.includes('streamlit.io') || link.innerHTML.includes('Hosted with Streamlit')) {
+                // Remove o container pai inteiro (a caixinha vermelha e o botão)
+                let pai = link.parentElement;
+                if(pai) pai.remove();
+            }
+        });
+    }
+    // Executa continuamente a cada 500ms para garantir que se o Streamlit recriar, o script apaga de novo
+    setInterval(eliminarElementosStreamlit, 500);
+    </script>
 """, unsafe_allow_html=True)
 
 st.markdown("<h1 class='titulo'>Escala Amazon</h1>", unsafe_allow_html=True)

@@ -25,10 +25,7 @@ BANCO = "escala_amazon.db"
 
 
 def conectar():
-    return sqlite3.connect(
-        BANCO,
-        check_same_thread=False
-    )
+    return sqlite3.connect(BANCO, check_same_thread=False)
 
 
 def criar_banco():
@@ -85,22 +82,25 @@ NOMES_TURNOS = {
 
 
 # ============================================================
-# ESTADOS DO SISTEMA
-# ============================================================
-
-if "autenticado" not in st.session_state:
-    st.session_state.autenticado = False
-
-if "tema" not in st.session_state:
-    st.session_state.tema = "Escuro"
-
-
-# ============================================================
-# CSS BASE
+# CSS
 # ============================================================
 
 st.markdown("""
 <style>
+
+/* ============================================================
+   CORES DA IDENTIDADE
+   AMAZON:
+   Azul escuro / Squid Ink: #232F3E
+   Azul apoio: #146EB4
+   Laranja: #FF9900
+   Branco: #FFFFFF
+   ============================================================ */
+
+
+/* ============================================================
+   ELEMENTOS PADRÃO
+   ============================================================ */
 
 #MainMenu {
     visibility: hidden;
@@ -116,24 +116,56 @@ footer {
 
 
 /* ============================================================
+   FUNDO PRINCIPAL
+   ============================================================ */
+
+[data-testid="stAppViewContainer"] {
+    background-color: #F3F6F9;
+}
+
+.stApp {
+    background-color: #F3F6F9;
+}
+
+
+/* ============================================================
    TÍTULO
    ============================================================ */
 
 .titulo {
     text-align: center;
-    color: #131921;
+    color: #232F3E;
     font-family: 'Segoe UI', sans-serif;
     font-size: 30px;
     font-weight: 800;
+
     margin-top: 35px;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .subtitulo {
     text-align: center;
-    color: #64748B;
+    color: #146EB4;
     font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
     margin-bottom: 25px;
+}
+
+
+/* ============================================================
+   SELEÇÃO DE SEMANA
+   ============================================================ */
+
+div[data-baseweb="select"] > div {
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    background-color: #FFFFFF !important;
+}
+
+div[data-baseweb="select"] > div:focus-within {
+    border-color: #146EB4 !important;
+    box-shadow: 0 0 0 1px #146EB4 !important;
 }
 
 
@@ -144,25 +176,41 @@ footer {
 .turno-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 28px;
-    margin-bottom: 5px;
+    gap: 12px;
+
+    margin-top: 30px;
+    margin-bottom: 8px;
+
+    padding: 10px 14px;
+
+    background-color: #FFFFFF;
+
+    border-left: 5px solid #FF9900;
+    border-bottom: 1px solid #D7DEE7;
+
+    border-radius: 8px;
+
+    box-shadow: 0 2px 7px rgba(35,47,62,0.06);
 }
 
 .turno-titulo {
     font-size: 21px;
     font-weight: 800;
-    color: #131921;
+    color: #232F3E;
 }
 
 .turno-horario {
-    background: #FFF3E0;
-    color: #D97706;
-    border: 1px solid #FDBA74;
-    padding: 4px 10px;
+    background-color: #EAF3FB;
+    color: #146EB4;
+
+    border: 1px solid #B9D7EE;
+
+    padding: 4px 11px;
+
     border-radius: 20px;
+
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 
@@ -172,9 +220,12 @@ footer {
 
 .header-col {
     text-align: center;
+
     font-weight: 800;
     font-size: 12px;
-    color: #475569;
+
+    color: #232F3E;
+
     margin-bottom: 8px;
 }
 
@@ -189,14 +240,19 @@ footer {
 
 .nome-operador {
     padding-top: 9px;
+
     font-size: 13px;
-    color: #111827;
+
+    color: #232F3E;
 }
 
 .funcao-operador {
     padding-top: 9px;
+
     font-size: 11px;
-    color: #64748B;
+
+    color: #617184;
+    font-weight: 600;
 }
 
 
@@ -205,13 +261,9 @@ footer {
    ============================================================ */
 
 .card-trabalho {
-    background: linear-gradient(
-        135deg,
-        #263646,
-        #1F2937
-    );
+    background-color: #232F3E;
 
-    color: white;
+    color: #FFFFFF;
 
     padding: 8px 5px;
 
@@ -227,13 +279,23 @@ footer {
 
     margin-bottom: 4px;
 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    min-height: 43px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    box-shadow: 0 2px 5px rgba(35,47,62,0.10);
 }
 
 .sub-info {
     color: #FFB84D;
+
     font-size: 10px;
+
     margin-top: 3px;
+
+    font-weight: 700;
 }
 
 
@@ -242,9 +304,9 @@ footer {
    ============================================================ */
 
 .card-folga {
-    background: #F1F5F9;
+    background-color: #EAF3FB;
 
-    color: #475569;
+    color: #232F3E;
 
     padding: 8px 5px;
 
@@ -256,15 +318,27 @@ footer {
 
     font-size: 11px;
 
-    border-left: 4px solid #94A3B8;
+    border-left: 4px solid #146EB4;
 
     margin-bottom: 4px;
+
+    min-height: 43px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    box-shadow: 0 2px 5px rgba(20,110,180,0.07);
 }
 
 .sub-info-folga {
-    color: #94A3B8;
+    color: #6B8196;
+
     font-size: 10px;
+
     margin-top: 3px;
+
+    font-weight: 600;
 }
 
 
@@ -274,7 +348,9 @@ footer {
 
 .separador {
     border: 0;
-    border-top: 1px solid #E2E8F0;
+
+    border-top: 1px solid #D7DEE7;
+
     margin-top: 2px;
     margin-bottom: 15px;
 }
@@ -285,22 +361,91 @@ footer {
    ============================================================ */
 
 section[data-testid="stSidebar"] {
-    border-right: 1px solid #E2E8F0;
+    background-color: #232F3E;
+
+    border-right: 1px solid #314154;
+}
+
+section[data-testid="stSidebar"] > div {
+    background-color: #232F3E;
+}
+
+section[data-testid="stSidebar"] * {
+    color: #FFFFFF;
 }
 
 .sidebar-titulo {
     color: #FF9900;
+
     font-size: 20px;
+
     font-weight: 800;
+
+    letter-spacing: 0.2px;
 }
 
 .sidebar-status {
-    background: #ECFDF5;
-    color: #047857;
-    padding: 8px;
+    background-color: #EAF3FB;
+
+    color: #146EB4 !important;
+
+    padding: 8px 10px;
+
     border-radius: 7px;
+
     font-size: 12px;
-    font-weight: 700;
+
+    font-weight: 800;
+
+    border-left: 4px solid #FF9900;
+}
+
+
+/* ============================================================
+   SIDEBAR - CAMPOS
+   ============================================================ */
+
+section[data-testid="stSidebar"] input {
+    background-color: #FFFFFF !important;
+
+    color: #232F3E !important;
+
+    border-radius: 7px !important;
+}
+
+section[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+    background-color: #FFFFFF !important;
+
+    color: #232F3E !important;
+}
+
+section[data-testid="stSidebar"] div[data-baseweb="select"] span {
+    color: #232F3E !important;
+}
+
+
+/* ============================================================
+   SIDEBAR - BOTÕES
+   ============================================================ */
+
+section[data-testid="stSidebar"] .stButton > button {
+    background-color: #FF9900;
+
+    color: #232F3E;
+
+    border: 1px solid #FF9900;
+
+    font-weight: 800;
+
+    border-radius: 7px;
+}
+
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background-color: #FEBD69;
+
+    border-color: #FEBD69;
+
+    color: #232F3E;
 }
 
 
@@ -309,32 +454,90 @@ section[data-testid="stSidebar"] {
    ============================================================ */
 
 .metric-card {
-    background: white;
-    border: 1px solid #E2E8F0;
+    background-color: #FFFFFF;
+
+    border: 1px solid #D7DEE7;
+
+    border-top: 4px solid #146EB4;
+
     border-radius: 10px;
+
     padding: 12px;
+
     text-align: center;
+
+    box-shadow: 0 2px 7px rgba(35,47,62,0.06);
 }
 
 .metric-numero {
     font-size: 22px;
+
     font-weight: 800;
-    color: #131921;
+
+    color: #232F3E;
 }
 
 .metric-label {
     font-size: 11px;
-    color: #64748B;
+
+    color: #617184;
+
+    font-weight: 700;
 }
 
 
 /* ============================================================
-   BOTÕES
+   MÉTRICA PRINCIPAL DE OPERADORES
+   ============================================================ */
+
+.metric-card:first-child {
+    border-top-color: #FF9900;
+}
+
+
+/* ============================================================
+   FORMULÁRIO DE LOGIN
+   ============================================================ */
+
+[data-testid="stForm"] {
+    background-color: #1F2A38;
+
+    border: 1px solid #3C4B5E;
+
+    border-radius: 10px;
+
+    padding: 15px;
+}
+
+
+/* ============================================================
+   BOTÕES PRINCIPAIS
    ============================================================ */
 
 .stButton > button {
     border-radius: 7px;
-    font-weight: 600;
+
+    font-weight: 700;
+
+    border: 1px solid #D7DEE7;
+}
+
+
+/* ============================================================
+   BOTÕES DA ESCALA
+   ============================================================ */
+
+div[data-testid="column"] .stButton > button {
+    color: #232F3E;
+}
+
+
+/* ============================================================
+   INPUT PRINCIPAL
+   ============================================================ */
+
+div[data-baseweb="input"] {
+    border-radius: 7px;
 }
 
 
@@ -347,174 +550,52 @@ section[data-testid="stSidebar"] {
     padding-bottom: 30px !important;
 }
 
+
+/* ============================================================
+   RODAPÉ
+   ============================================================ */
+
+.stCaption {
+    color: #617184 !important;
+}
+
+
+/* ============================================================
+   RESPONSIVIDADE
+   ============================================================ */
+
+@media (max-width: 800px) {
+
+    .titulo {
+        font-size: 24px;
+
+        margin-top: 25px;
+    }
+
+    .turno-titulo {
+        font-size: 18px;
+    }
+
+    .turno-horario {
+        font-size: 10px;
+    }
+
+    .metric-numero {
+        font-size: 18px;
+    }
+
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 
 # ============================================================
-# TEMA - ESCURO
+# LOGIN
 # ============================================================
 
-if st.session_state.tema == "Escuro":
-
-    st.markdown("""
-    <style>
-
-    .stApp {
-        background-color: #0F172A !important;
-    }
-
-    [data-testid="stAppViewContainer"] {
-        background-color: #0F172A !important;
-    }
-
-    .titulo {
-        color: #F8FAFC !important;
-    }
-
-    .subtitulo {
-        color: #FF9900 !important;
-    }
-
-    .turno-titulo {
-        color: #F8FAFC !important;
-    }
-
-    .header-col {
-        color: #CBD5E1 !important;
-    }
-
-    .nome-operador {
-        color: #F8FAFC !important;
-    }
-
-    .funcao-operador {
-        color: #CBD5E1 !important;
-    }
-
-    .turno-horario {
-        background: rgba(255,153,0,0.10) !important;
-        color: #FF9900 !important;
-        border-color: rgba(255,153,0,0.35) !important;
-    }
-
-    .card-folga {
-        background: #1E293B !important;
-        color: #CBD5E1 !important;
-        border-left-color: #64748B !important;
-    }
-
-    .sub-info-folga {
-        color: #94A3B8 !important;
-    }
-
-    .metric-card {
-        background: #1E293B !important;
-        border-color: #334155 !important;
-    }
-
-    .metric-numero {
-        color: #F8FAFC !important;
-    }
-
-    .metric-label {
-        color: #CBD5E1 !important;
-    }
-
-    .separador {
-        border-top-color: #334155 !important;
-    }
-
-    section[data-testid="stSidebar"] {
-        background-color: #111827 !important;
-        border-right-color: #334155 !important;
-    }
-
-    </style>
-    """, unsafe_allow_html=True)
-
-
-# ============================================================
-# TEMA - CLARO
-# ============================================================
-
-else:
-
-    st.markdown("""
-    <style>
-
-    .stApp {
-        background-color: #FFFFFF !important;
-    }
-
-    [data-testid="stAppViewContainer"] {
-        background-color: #FFFFFF !important;
-    }
-
-    .titulo {
-        color: #131921 !important;
-    }
-
-    .subtitulo {
-        color: #64748B !important;
-    }
-
-    .turno-titulo {
-        color: #131921 !important;
-    }
-
-    .header-col {
-        color: #475569 !important;
-    }
-
-    .nome-operador {
-        color: #111827 !important;
-    }
-
-    .funcao-operador {
-        color: #64748B !important;
-    }
-
-    .turno-horario {
-        background: #FFF3E0 !important;
-        color: #D97706 !important;
-        border-color: #FDBA74 !important;
-    }
-
-    .card-folga {
-        background: #F1F5F9 !important;
-        color: #475569 !important;
-        border-left-color: #94A3B8 !important;
-    }
-
-    .sub-info-folga {
-        color: #94A3B8 !important;
-    }
-
-    .metric-card {
-        background: #FFFFFF !important;
-        border-color: #E2E8F0 !important;
-    }
-
-    .metric-numero {
-        color: #131921 !important;
-    }
-
-    .metric-label {
-        color: #64748B !important;
-    }
-
-    .separador {
-        border-top-color: #E2E8F0 !important;
-    }
-
-    section[data-testid="stSidebar"] {
-        background-color: #FFFFFF !important;
-        border-right-color: #E2E8F0 !important;
-    }
-
-    </style>
-    """, unsafe_allow_html=True)
+if "autenticado" not in st.session_state:
+    st.session_state.autenticado = False
 
 
 # ============================================================
@@ -709,22 +790,6 @@ with st.sidebar:
 
 
     # ========================================================
-    # APARÊNCIA
-    # ========================================================
-
-    st.markdown("### 🎨 Aparência")
-
-    st.radio(
-        "Tema",
-        ["Escuro", "Claro"],
-        horizontal=True,
-        key="tema"
-    )
-
-    st.divider()
-
-
-    # ========================================================
     # LOGIN
     # ========================================================
 
@@ -732,6 +797,7 @@ with st.sidebar:
 
         st.markdown("### Acesso")
 
+        # O formulário permite enviar usando ENTER
         with st.form("login_form"):
 
             usuario = st.text_input(
@@ -748,6 +814,8 @@ with st.sidebar:
                 use_container_width=True
             )
 
+
+        # Processa o login depois do submit
         if entrar:
 
             if (
@@ -845,6 +913,7 @@ with st.sidebar:
         st.markdown("### ❌ Remover operador")
 
         operadores = buscar_operadores()
+
 
         if operadores:
 
@@ -1062,15 +1131,12 @@ for turno in ["T1", "T2", "T3"]:
     st.markdown(
         f"""
         <div class='turno-header'>
-
             <div class='turno-titulo'>
                 🕒 {NOMES_TURNOS[turno]}
             </div>
-
             <div class='turno-horario'>
                 {HORARIOS[turno]}
             </div>
-
         </div>
         """,
         unsafe_allow_html=True
@@ -1221,9 +1287,7 @@ for turno in ["T1", "T2", "T3"]:
             2
         ):
 
-            valor = status_lista[
-                i - 2
-            ]
+            valor = status_lista[i - 2]
 
 
             # -----------------------------------------------
@@ -1289,17 +1353,13 @@ for turno in ["T1", "T2", "T3"]:
                     use_container_width=True
                 ):
 
-                    status_lista[
-                        i - 2
-                    ] = novo_valor
-
+                    status_lista[i - 2] = novo_valor
 
                     salvar_status(
                         operador_id,
                         semana_id,
                         *status_lista
                     )
-
 
                     st.rerun()
 

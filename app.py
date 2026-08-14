@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import os
 from datetime import datetime, timedelta
@@ -9,29 +10,13 @@ st.set_page_config(page_title="Escala monitoramento", page_icon="📦", layout="
 # Nome do arquivo de banco de dados permanente
 ARQUIVO_BANCO = "escala_amazon_db_v2.csv"
 
-# 1. TRATOR CSS: Oculta tudo o que for possível por estilo tradicional
+# 1. TRATOR CSS PARA REFORÇAR NO AMBIENTE LOCAL
 st.markdown("""
     <style>
-    #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
+    #MainMenu {visibility: hidden !important;}
+    header {visibility: hidden !important;}
+    footer {visibility: hidden !important;}
     .stDecoration {display:none !important;}
-    
-    /* Tenta sumir com os botões flutuantes originais */
-    div[data-testid="stStatusWidget"],
-    div[data-testid="stContainerToolbar"],
-    .stActionButton, 
-    iframe[title="Managed Hosting Toolbar"],
-    [data-testid="stEmbedHover"],
-    [data-testid="stFooter"],
-    div[class*="StyledEmbedHoverContainer"],
-    div[data-baseweb="popover"],
-    .viewer-badge {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        height: 0 !important;
-    }
     
     .titulo { text-align: center; color: #131921; font-family: 'Segoe UI', sans-serif; font-weight: bold; margin-bottom: 25px; font-size: 28px; }
     .card-trabalho { background-color: #232F3E; color: white; padding: 6px 8px; border-radius: 6px; text-align: center; font-weight: 600; font-size: 12px; border-left: 4px solid #FF9900; margin-bottom: 12px; }
@@ -45,33 +30,50 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 2. MISSAO IMPOSSÍVEL JAVASCRIPT: Caça o botão e a barra vermelha dinamicamente e deleta da página
-st.markdown("""
+# 2. INJEÇÃO DE JAVASCRIPT MASTER (Quebra a segurança e limpa o elemento do pai)
+components.html("""
     <script>
-    function eliminarElementosStreamlit() {
-        // Encontra elementos que contenham o badge ou o footer chato
-        const badgedivs = document.querySelectorAll('div');
-        badgedivs.forEach(el => {
-            // Verifica classes dinâmicas do visualizador ou textos do footer da hospedagem
-            if (el.className.includes('viewer-badge') || el.innerHTML.includes('Hosted with Streamlit')) {
-                el.remove();
+    function exterminarSeloTeimoso() {
+        // Acessa a página principal de fora do iframe atual
+        const documentoPai = window.parent.document;
+        
+        // 1. Procura e destrói o maldito popover flutuante
+        const popovers = documentoPai.querySelectorAll('[data-baseweb="popover"], div[class*="StyledEmbedHoverContainer"]');
+        popovers.forEach(el => el.remove());
+        
+        // 2. Procura o botão flutuante redondo (ícone) e a barra vermelha e apaga de vez
+        const links = documentoPai.querySelectorAll('a');
+        links.forEach(link => {
+            if (link.href.includes('streamlit.io') || link.innerHTML.includes('Hosted with Streamlit')) {
+                let ancestral = link.closest('div');
+                // Sobe até achar o container flutuante maior na barra inferior e deleta
+                for (let i = 0; i < 4; i++) {
+                    if (ancestral && (ancestral.style.position === 'fixed' || ancestral.className.includes('viewer-badge'))) {
+                        ancestral.remove();
+                        break;
+                    }
+                    if (ancestral) ancestral = ancestral.parentElement;
+                }
             }
         });
         
-        // Caça o botão flutuante redondo pelo seletor de link ou imagem
-        const links = document.querySelectorAll('a');
-        links.forEach(link => {
-            if (link.href.includes('streamlit.io') || link.innerHTML.includes('Hosted with Streamlit')) {
-                // Remove o container pai inteiro (a caixinha vermelha e o botão)
-                let pai = link.parentElement;
-                if(pai) pai.remove();
+        // 3. Aplica CSS direto na raiz do documento pai para garantir que nada herde o bloco vermelho
+        const estiloEspecial = documentoPai.createElement('style');
+        estiloEspecial.innerHTML = `
+            [data-testid="stFooter"], .viewer-badge, div[class*="StyledEmbedHoverContainer"], [data-baseweb="popover"] {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
             }
-        });
+        `;
+        documentoPai.head.appendChild(estiloEspecial);
     }
-    // Executa continuamente a cada 500ms para garantir que se o Streamlit recriar, o script apaga de novo
-    setInterval(eliminarElementosStreamlit, 500);
+    
+    // Executa imediatamente e repete a cada 300 milissegundos para não dar chance dele voltar
+    setInterval(exterminarSeloTeimoso, 300);
     </script>
-""", unsafe_allow_html=True)
+""", height=0, width=0)
 
 st.markdown("<h1 class='titulo'>Escala Amazon</h1>", unsafe_allow_html=True)
 

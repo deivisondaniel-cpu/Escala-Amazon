@@ -627,14 +627,14 @@ if df_banco[
 
 
 # ============================================================
-# SIDEBAR - ÁREA DO COORDENADOR
+# SIDEBAR - ÁREA DO GESTOR
 # ============================================================
 
 with st.sidebar:
 
     st.markdown(
         "<h3 style='color:#FF9900; margin-top:0;'>"
-        "🔐 Área do Coordenador"
+        "🔐 Área do Gestor"
         "</h3>",
         unsafe_allow_html=True
     )
@@ -694,7 +694,7 @@ with st.sidebar:
     else:
 
         st.write(
-            "🟢 Modo Coordenador Ativo"
+            "🟢 Modo Gestão ativo"
         )
 
         st.info(

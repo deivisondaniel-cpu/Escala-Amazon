@@ -1,20 +1,54 @@
 import streamlit as st
+import sqlite3
+from datetime import datetime, timedelta
 import pandas as pd
 import os
-from datetime import datetime, timedelta
 
 
 # ============================================================
-# CONFIGURAÇÃO DA PÁGINA
+# CONFIGURAÇÃO
 # ============================================================
 
 st.set_page_config(
-    page_title="Escala monitoramento",
+    page_title="Escala Amazon",
     page_icon="📦",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-ARQUIVO_BANCO = "escala_amazon_db_v2.csv"
+
+# ============================================================
+# BANCO DE DADOS INTERNO
+# NÃO USA EXCEL / GOOGLE SHEETS / CSV
+# ============================================================
+
+ARQUIVO_BANCO = "escala_amazon.db"
+
+
+# ============================================================
+# HORÁRIOS OFICIAIS DOS TURNOS
+# ============================================================
+
+HORARIOS_TURNOS = {
+    "T1": "07:00 às 15:00",
+    "T2": "15:00 às 23:00",
+    "T3": "23:00 às 07:00"
+}
+
+
+NOMES_TURNOS = {
+    "T1": "Turno 1",
+    "T2": "Turno 2",
+    "T3": "Turno 3"
+}
+
+
+DIAS = [
+    "Sexta",
+    "Sábado",
+    "Domingo",
+    "Segunda"
+]
 
 
 # ============================================================
@@ -22,134 +56,656 @@ ARQUIVO_BANCO = "escala_amazon_db_v2.csv"
 # ============================================================
 
 st.markdown("""
-    <style>
+<style>
 
-    /* ========================================================
-       ELEMENTOS PADRÃO DESNECESSÁRIOS DO STREAMLIT
-       NÃO ESCONDER O HEADER.
-       O HEADER CONTÉM O CONTROLE DA SIDEBAR.
-       ======================================================== */
+/* ============================================================
+   STREAMLIT
+   ============================================================ */
 
-    #MainMenu {
-        visibility: hidden;
-    }
+#MainMenu {
+    visibility: hidden;
+}
 
-    footer {
-        visibility: hidden;
-    }
+footer {
+    visibility: hidden;
+}
 
-    .stDecoration {
-        display: none !important;
-    }
+.stDecoration {
+    display: none !important;
+}
 
 
-    /* ========================================================
-       TÍTULO
-       ======================================================== */
+/* ============================================================
+   TÍTULO
+   ============================================================ */
 
-    .titulo {
-        text-align: center;
-        color: #131921;
-        font-family: 'Segoe UI', sans-serif;
-        font-weight: bold;
-        margin-bottom: 25px;
-        font-size: 28px;
-    }
+.titulo {
+    text-align: center;
+    color: #131921;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 700;
+    margin-top: 5px;
+    margin-bottom: 8px;
+    font-size: 30px;
+}
 
-
-    /* ========================================================
-       CARD - TRABALHO
-       ======================================================== */
-
-    .card-trabalho {
-        background-color: #232F3E;
-        color: white;
-        padding: 6px 8px;
-        border-radius: 6px;
-        text-align: center;
-        font-weight: 600;
-        font-size: 12px;
-        border-left: 4px solid #FF9900;
-        margin-bottom: 12px;
-    }
+.subtitulo {
+    text-align: center;
+    color: #64748B;
+    font-size: 13px;
+    margin-bottom: 25px;
+}
 
 
-    /* ========================================================
-       CARD - FOLGA
-       ======================================================== */
+/* ============================================================
+   CABEÇALHO DO TURNO
+   ============================================================ */
 
-    .card-folga {
-        background-color: #FDF1AA;
-        color: #403000;
-        padding: 6px 8px;
-        border-radius: 6px;
-        text-align: center;
-        font-weight: bold;
-        font-size: 12px;
-        border-left: 4px solid #E6A100;
-        margin-bottom: 12px;
-    }
+.turno-header {
+    background: linear-gradient(
+        90deg,
+        #232F3E 0%,
+        #2D3B4D 100%
+    );
 
+    color: white;
 
-    /* ========================================================
-       INFORMAÇÕES DOS CARDS
-       ======================================================== */
+    border-radius: 10px;
 
-    .sub-info {
-        font-size: 10px;
-        color: #FF9900;
-        font-weight: bold;
-    }
+    padding: 13px 18px;
 
-    .sub-info-folga {
-        font-size: 10px;
-        color: #8F7014;
-        font-weight: normal;
-    }
+    margin-top: 28px;
+    margin-bottom: 12px;
 
+    border-left: 5px solid #FF9900;
 
-    /* ========================================================
-       CABEÇALHOS
-       ======================================================== */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
 
-    .header-col {
-        text-align: center;
-        font-weight: bold;
-        font-size: 13px;
-        color: #131921;
-        margin-bottom: 10px;
-    }
+.turno-titulo {
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.turno-horario {
+    color: #FF9900;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 2px;
+}
 
 
-    /* ========================================================
-       NOME E FUNÇÃO
-       ======================================================== */
+/* ============================================================
+   RESUMO DO TURNO
+   ============================================================ */
 
-    .nome-operador {
-        padding-top: 8px;
-        font-size: 13px;
-        margin-bottom: 12px;
-    }
+.resumo-turno {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
 
-    .funcao-operador {
-        padding-top: 8px;
-        font-size: 12px;
-        color: #64748B;
-        margin-bottom: 12px;
-    }
+.resumo-item {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 7px;
+    padding: 6px 11px;
+    font-size: 11px;
+    color: #475569;
+}
+
+.resumo-numero {
+    font-weight: 700;
+    color: #131921;
+}
 
 
-    /* ========================================================
-       ESPAÇAMENTO
-       ======================================================== */
+/* ============================================================
+   CABEÇALHO DA TABELA
+   ============================================================ */
 
-    .stMainBlockContainer {
-        padding-top: 20px !important;
-        padding-bottom: 20px !important;
-    }
+.header-col {
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    color: #475569;
+    margin-bottom: 8px;
+    line-height: 1.25;
+}
 
-    </style>
+.header-col-esquerda {
+    text-align: left;
+}
+
+
+/* ============================================================
+   NOME / FUNÇÃO
+   ============================================================ */
+
+.nome-operador {
+    padding-top: 9px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    color: #131921;
+}
+
+.funcao-operador {
+    padding-top: 9px;
+    font-size: 11px;
+    color: #64748B;
+    margin-bottom: 12px;
+}
+
+
+/* ============================================================
+   CARD TRABALHO
+   ============================================================ */
+
+.card-trabalho {
+    background: #232F3E;
+    color: white;
+
+    padding: 7px 5px;
+
+    border-radius: 7px;
+
+    text-align: center;
+
+    font-weight: 700;
+    font-size: 10px;
+
+    border-left: 4px solid #FF9900;
+
+    margin-bottom: 6px;
+
+    min-height: 42px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.sub-info {
+    font-size: 9px;
+    color: #FF9900;
+    font-weight: 700;
+    margin-top: 3px;
+}
+
+
+/* ============================================================
+   CARD FOLGA
+   ============================================================ */
+
+.card-folga {
+    background: #F1F5F9;
+    color: #475569;
+
+    padding: 7px 5px;
+
+    border-radius: 7px;
+
+    text-align: center;
+
+    font-weight: 700;
+    font-size: 10px;
+
+    border-left: 4px solid #94A3B8;
+
+    margin-bottom: 6px;
+
+    min-height: 42px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.sub-info-folga {
+    font-size: 9px;
+    color: #94A3B8;
+    font-weight: 500;
+    margin-top: 3px;
+}
+
+
+/* ============================================================
+   DIVISÓRIA
+   ============================================================ */
+
+.divisor {
+    border-top: 1px solid #E2E8F0;
+    margin: 4px 0 12px 0;
+}
+
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+.sidebar-titulo {
+    color: #FF9900;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.sidebar-info {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 11px;
+    color: #475569;
+    margin-bottom: 10px;
+}
+
+
+/* ============================================================
+   LEGENDA
+   ============================================================ */
+
+.legenda {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.legenda-item {
+    font-size: 11px;
+    color: #64748B;
+}
+
+
+/* ============================================================
+   RODAPÉ INTERNO
+   ============================================================ */
+
+.rodape {
+    text-align: center;
+    color: #94A3B8;
+    font-size: 10px;
+    margin-top: 30px;
+    padding: 15px;
+}
+
+</style>
 """, unsafe_allow_html=True)
+
+
+# ============================================================
+# BANCO SQLITE
+# ============================================================
+
+def conectar_banco():
+    return sqlite3.connect(ARQUIVO_BANCO)
+
+
+def criar_banco():
+
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    # --------------------------------------------------------
+    # OPERADORES
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS operadores (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL UNIQUE,
+            funcao TEXT NOT NULL,
+            turno TEXT NOT NULL,
+            ativo INTEGER DEFAULT 1
+        )
+    """)
+
+    # --------------------------------------------------------
+    # ESCALAS
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS escalas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            operador_id INTEGER NOT NULL,
+            semana_id TEXT NOT NULL,
+            sexta TEXT NOT NULL,
+            sabado TEXT NOT NULL,
+            domingo TEXT NOT NULL,
+            segunda TEXT NOT NULL,
+
+            UNIQUE(operador_id, semana_id),
+
+            FOREIGN KEY(operador_id)
+            REFERENCES operadores(id)
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+criar_banco()
+
+
+# ============================================================
+# OPERADORES PADRÃO
+# SÓ SÃO CRIADOS SE O BANCO ESTIVER VAZIO
+# ============================================================
+
+def criar_operadores_iniciais():
+
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM operadores"
+    )
+
+    quantidade = cursor.fetchone()[0]
+
+    if quantidade > 0:
+        conn.close()
+        return
+
+    operadores = [
+
+        # T1
+        ("ALAN ARÁUJO", "ANALISTA", "T1"),
+        ("MARGARIDA", "PICKUP", "T1"),
+        ("JOSÉ BRUNO PALHANO", "PICKUP", "T1"),
+        ("CRISTOVÃO MIKELLYS", "DEPART", "T1"),
+        ("PEDRO LUCAS", "DROPOFF", "T1"),
+        ("FELIPE ALLAN", "DROPOFF", "T1"),
+        ("BRUNA BLENDA", "DROPOFF", "T1"),
+        ("CONCEIÇÃO DAIANE", "SEGURANÇA (ONISYS)", "T1"),
+        ("MATHEUS LUSTOSA", "SEGURANÇA/ELOG", "T1"),
+
+        # T2
+        ("MANUELA PINHEIRO", "LÍDER", "T2"),
+        ("ISABEL", "LÍDER/SEGURANÇA", "T2"),
+        ("ANDREZA OLIVEIRA", "PICKUP", "T2"),
+        ("ROZIANE DA SILVA", "PICKUP", "T2"),
+        ("DAIANE", "SEGURANÇA", "T2"),
+        ("EMANUEL ROBERTO", "DEPART", "T2"),
+        ("TAMMYRIS DA SILVA", "DROPOFF", "T2"),
+        ("RAPHAEL DO NASCIMENTO", "DROPOFF", "T2"),
+        ("LUDMILLA RODRIGUES", "DROPOFF", "T2"),
+        ("MARIA NATHALIA", "SEGURANÇA", "T2"),
+        ("CINAMOR", "ELOG", "T2"),
+
+        # T3
+        ("WESLEY", "LÍDER", "T3"),
+        ("JOÃO", "LÍDER/SEGURANÇA", "T3"),
+        ("RILDOMAR", "PICKUP", "T3"),
+        ("LUCIANA", "PICKUP", "T3"),
+        ("GLAYLDSON", "SEGURANÇA", "T3"),
+        ("TAYANARA", "DEPART", "T3"),
+        ("RUAN", "DROPOFF", "T3"),
+        ("BÁRBARA", "DROPOFF", "T3")
+    ]
+
+    for nome, funcao, turno in operadores:
+
+        cursor.execute("""
+            INSERT INTO operadores
+            (nome, funcao, turno)
+            VALUES (?, ?, ?)
+        """, (nome, funcao, turno))
+
+    conn.commit()
+    conn.close()
+
+
+criar_operadores_iniciais()
+
+
+# ============================================================
+# DATAS
+# ============================================================
+
+def obter_datas_semana(deslocamento_semanas=0):
+
+    hoje = datetime.now()
+
+    dias_para_sexta = (hoje.weekday() - 4) % 7
+
+    sexta = hoje - timedelta(
+        days=dias_para_sexta
+    )
+
+    sexta = sexta + timedelta(
+        weeks=deslocamento_semanas
+    )
+
+    sabado = sexta + timedelta(days=1)
+    domingo = sexta + timedelta(days=2)
+    segunda = sexta + timedelta(days=3)
+
+    return {
+
+        "id_semana":
+            sexta.strftime("%Y_W%W"),
+
+        "rotulo":
+            f"Semana de {sexta.strftime('%d/%m')} "
+            f"até {segunda.strftime('%d/%m')}",
+
+        "Sexta":
+            sexta.strftime("%d/%m"),
+
+        "Sábado":
+            sabado.strftime("%d/%m"),
+
+        "Domingo":
+            domingo.strftime("%d/%m"),
+
+        "Segunda":
+            segunda.strftime("%d/%m")
+    }
+
+
+# ============================================================
+# SEMANAS DISPONÍVEIS
+# ============================================================
+
+opcoes_semanas = [
+    obter_datas_semana(i)
+    for i in range(-1, 5)
+]
+
+formatos_semanas = {
+    item["rotulo"]: item
+    for item in opcoes_semanas
+}
+
+
+# ============================================================
+# LOGIN
+# ============================================================
+
+if (
+    "logged_in" in st.query_params
+    and st.query_params["logged_in"] == "true"
+):
+
+    st.session_state.autenticado = True
+
+elif "autenticado" not in st.session_state:
+
+    st.session_state.autenticado = False
+
+
+# ============================================================
+# GARANTE QUE A SEMANA TENHA ESCALA
+# ============================================================
+
+def garantir_escala_semana(semana_id):
+
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, turno
+        FROM operadores
+        WHERE ativo = 1
+    """)
+
+    operadores = cursor.fetchall()
+
+    for operador_id, turno in operadores:
+
+        cursor.execute("""
+            SELECT id
+            FROM escalas
+            WHERE operador_id = ?
+            AND semana_id = ?
+        """, (
+            operador_id,
+            semana_id
+        ))
+
+        existe = cursor.fetchone()
+
+        if not existe:
+
+            horario = HORARIOS_TURNOS[turno]
+
+            cursor.execute("""
+                INSERT INTO escalas
+                (
+                    operador_id,
+                    semana_id,
+                    sexta,
+                    sabado,
+                    domingo,
+                    segunda
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                operador_id,
+                semana_id,
+                horario,
+                horario,
+                horario,
+                horario
+            ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# LEITURA DA ESCALA
+# ============================================================
+
+def carregar_escala(semana_id):
+
+    conn = conectar_banco()
+
+    query = """
+        SELECT
+            o.id,
+            o.nome,
+            o.funcao,
+            o.turno,
+            e.sexta,
+            e.sabado,
+            e.domingo,
+            e.segunda
+
+        FROM operadores o
+
+        INNER JOIN escalas e
+            ON o.id = e.operador_id
+
+        WHERE o.ativo = 1
+        AND e.semana_id = ?
+
+        ORDER BY
+            o.turno,
+            o.nome
+    """
+
+    df = pd.read_sql_query(
+        query,
+        conn,
+        params=(semana_id,)
+    )
+
+    conn.close()
+
+    return df
+
+
+# ============================================================
+# TOGGLE DE ESCALA
+# ============================================================
+
+def alternar_status(
+    operador_id,
+    semana_id,
+    dia,
+    turno
+):
+
+    coluna = {
+        "Sexta": "sexta",
+        "Sábado": "sabado",
+        "Domingo": "domingo",
+        "Segunda": "segunda"
+    }[dia]
+
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        f"""
+        SELECT {coluna}
+        FROM escalas
+        WHERE operador_id = ?
+        AND semana_id = ?
+        """,
+        (
+            operador_id,
+            semana_id
+        )
+    )
+
+    resultado = cursor.fetchone()
+
+    if not resultado:
+        conn.close()
+        return
+
+    status_atual = resultado[0]
+
+    if status_atual == "FOLGA":
+
+        novo_status = HORARIOS_TURNOS[turno]
+
+    else:
+
+        novo_status = "FOLGA"
+
+    cursor.execute(
+        f"""
+        UPDATE escalas
+        SET {coluna} = ?
+        WHERE operador_id = ?
+        AND semana_id = ?
+        """,
+        (
+            novo_status,
+            operador_id,
+            semana_id
+        )
+    )
+
+    conn.commit()
+    conn.close()
 
 
 # ============================================================
@@ -157,665 +713,66 @@ st.markdown("""
 # ============================================================
 
 st.markdown(
-    "<h1 class='titulo'>Escala Amazon</h1>",
+    "<div class='titulo'>📦 Escala Amazon</div>",
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    "<div class='subtitulo'>"
+    "Monitoramento Operacional • Gestão de Escala"
+    "</div>",
     unsafe_allow_html=True
 )
 
 
 # ============================================================
-# PERSISTÊNCIA DO LOGIN
+# FILTROS PRINCIPAIS
 # ============================================================
 
-if (
-    "logged_in" in st.query_params
-    and st.query_params["logged_in"] == "true"
-):
-    st.session_state.autenticado = True
+col1, col2, col3 = st.columns(
+    [2.5, 2, 2]
+)
 
-elif "autenticado" not in st.session_state:
-    st.session_state.autenticado = False
+with col1:
 
-
-# ============================================================
-# HORÁRIOS OFICIAIS DOS TURNOS
-#
-# IMPORTANTE:
-# ESTES HORÁRIOS SÃO A FONTE OFICIAL DO SISTEMA.
-#
-# NÃO VÊM DE:
-# - GOOGLE SHEETS
-# - CSV
-# - EXCEL
-#
-# ============================================================
-
-horarios_turnos = {
-    "T1": "07:00 às 15:00",
-    "T2": "15:00 às 23:00",
-    "T3": "23:00 às 07:00"
-}
-
-
-# ============================================================
-# FUNÇÃO CENTRAL DO HORÁRIO
-#
-# QUALQUER LUGAR DO SISTEMA QUE PRECISAR DO HORÁRIO
-# DEVE USAR ESTA FUNÇÃO.
-# ============================================================
-
-def obter_horario_turno(turno):
-
-    return horarios_turnos.get(
-        turno,
-        "HORÁRIO NÃO CONFIGURADO"
-    )
-
-
-# ============================================================
-# DATAS AUTOMÁTICAS
-# ============================================================
-
-def obter_datas_semana(deslocamento_semanas=0):
-
-    hoje = datetime.now()
-
-    dias_para_atras = (hoje.weekday() - 4) % 7
-
-    sexta_atual = hoje - timedelta(
-        days=dias_para_atras
-    )
-
-    sexta_alvo = sexta_atual + timedelta(
-        weeks=deslocamento_semanas
-    )
-
-    sabado_alvo = sexta_alvo + timedelta(days=1)
-
-    domingo_alvo = sexta_alvo + timedelta(days=2)
-
-    segunda_alvo = sexta_alvo + timedelta(days=3)
-
-    return {
-        "id_semana":
-            sexta_alvo.strftime("%Y_W%W"),
-
-        "rotulo":
-            f"Semana de {sexta_alvo.strftime('%d/%m')} "
-            f"até {segunda_alvo.strftime('%d/%m')}",
-
-        "Sexta":
-            sexta_alvo.strftime("%d/%m"),
-
-        "Sábado":
-            sabado_alvo.strftime("%d/%m"),
-
-        "Domingo":
-            domingo_alvo.strftime("%d/%m"),
-
-        "Segunda":
-            segunda_alvo.strftime("%d/%m")
-    }
-
-
-# ============================================================
-# OPÇÕES DE SEMANA
-# ============================================================
-
-opcoes_semanas = [
-    obter_datas_semana(i)
-    for i in range(-1, 4)
-]
-
-formatos_semanas = {
-    opt["rotulo"]: opt
-    for opt in opcoes_semanas
-}
-
-
-# ============================================================
-# SELEÇÃO DA SEMANA
-# ============================================================
-
-col_topo1, _ = st.columns([3, 3])
-
-with col_topo1:
-
-    semana_selecionada_rotulo = st.selectbox(
-        "📅 Período da Escala:",
+    semana_selecionada = st.selectbox(
+        "📅 Período da Escala",
         list(formatos_semanas.keys()),
         index=1
     )
 
 
-dados_semana_ativa = formatos_semanas[
-    semana_selecionada_rotulo
+dados_semana = formatos_semanas[
+    semana_selecionada
 ]
 
-id_semana_ativa = dados_semana_ativa[
-    "id_semana"
-]
+semana_id = dados_semana["id_semana"]
 
 
-# ============================================================
-# OPERADORES PADRÃO
-#
-# ESTES SÃO OS DADOS INICIAIS DO SISTEMA.
-# ============================================================
-
-operadores_padrao = [
-
-    # ========================================================
-    # T1
-    # ========================================================
-
-    {
-        "Turno": "T1",
-        "Nome": "ALAN ARÁUJO",
-        "Função": "ANALISTA",
-        "Sexta": "07:00 às 15:00",
-        "Sábado": "FOLGA",
-        "Domingo": "07:00 às 15:00",
-        "Segunda": "07:00 às 15:00"
-    },
-
-    {
-        "Turno": "T1",
-        "Nome": "MARGARIDA",
-        "Função": "PICKUP",
-        "Sexta": "07:00 às 15:00",
-        "Sábado": "FOLGA",
-        "Domingo": "07:00 às 15:00",
-        "Segunda": "07:00 às 15:00"
-    },
-
-    {
-        "Turno": "T1",
-        "Nome": "JOSÉ BRUNO PALHANO",
-        "Função": "PICKUP",
-        "Sexta": "FOLGA",
-        "Sábado": "07:00 às 15:00",
-        "Domingo": "07:00 às 15:00",
-        "Segunda": "07:00 às 15:00"
-    },
-
-    {
-        "Turno": "T1",
-        "Nome": "CRISTOVÃO MIKELLYS",
-        "Função": "DEPART",
-        "Sexta": "07:00 às 15:00",
-        "Sábado": "07:00 às 15:00",
-        "Domingo": "FOLGA",
-        "Segunda": "07:00 às 15:00"
-    },
-
-    {
-        "Turno": "T1",
-        "Nome": "PEDRO LUCAS",
-        "Função": "DROPOFF",
-        "Sexta": "07:00 às 15:00",
-        "Sábado": "FOLGA",
-        "Domingo": "07:00 às 15:00",
-        "Segunda": "07:00 às 15:00"
-    },
-
-    {
-        "Turno": "T1",
-        "Nome": "FELIPE ALLAN",
-        "Função": "DROPOFF",
-        "Sexta": "07:00 às 15:00",
-        "Sábado": "07:00 às 15:00",
-        "Domingo": "FOLGA",
-        "Segunda": "07:00 às 15:00"
-    },
-
-    {
-        "Turno": "T1",
-        "Nome": "BRUNA BLENDA",
-        "Função": "DROPOFF",
-        "Sexta": "FOLGA",
-        "Sábado": "07:00 às 15:00",
-        "Domingo": "07:00 às 15:00",
-        "Segunda": "07:00 às 15:00"
-    },
-
-    {
-        "Turno": "T1",
-        "Nome": "CONCEIÇÃO DAIANE",
-        "Função": "SEGURANÇA (ONISYS)",
-        "Sexta": "07:00 às 15:00",
-        "Sábado": "FOLGA",
-        "Domingo": "07:00 às 15:00",
-        "Segunda": "07:00 às 15:00"
-    },
-
-    {
-        "Turno": "T1",
-        "Nome": "MATHEUS LUSTOSA",
-        "Função": "SEGURANÇA/ELOG",
-        "Sexta": "FOLGA",
-        "Sábado": "07:00 às 15:00",
-        "Domingo": "07:00 às 15:00",
-        "Segunda": "07:00 às 15:00"
-    },
-
-
-    # ========================================================
-    # T2
-    # ========================================================
-
-    {
-        "Turno": "T2",
-        "Nome": "MANUELA PINHEIRO",
-        "Função": "LÍDER",
-        "Sexta": "15:00 às 23:00",
-        "Sábado": "15:00 às 23:00",
-        "Domingo": "FOLGA",
-        "Segunda": "15:00 às 23:00"
-    },
-
-    {
-        "Turno": "T2",
-        "Nome": "ISABEL",
-        "Função": "LÍDER/SEGURANÇA",
-        "Sexta": "15:00 às 23:00",
-        "Sábado": "FOLGA",
-        "Domingo": "15:00 às 23:00",
-        "Segunda": "15:00 às 23:00"
-    },
-
-    {
-        "Turno": "T2",
-        "Nome": "ANDREZA OLIVEIRA",
-        "Função": "PICKUP",
-        "Sexta": "15:00 às 23:00",
-        "Sábado": "FOLGA",
-        "Domingo": "15:00 às 23:00",
-        "Segunda": "15:00 às 23:00"
-    },
-
-    {
-        "Turno": "T2",
-        "Nome": "ROZIANE DA SILVA",
-        "Função": "PICKUP",
-        "Sexta": "FOLGA",
-        "Sábado": "15:00 às 23:00",
-        "Domingo": "15:00 às 23:00",
-        "Segunda": "15:00 às 23:00"
-    },
-
-    {
-        "Turno": "T2",
-        "Nome": "DAIANE",
-        "Função": "SEGURANÇA",
-        "Sexta": "FOLGA",
-        "Sábado": "15:00 às 23:00",
-        "Domingo": "15:00 às 23:00",
-        "Segunda": "15:00 às 23:00"
-    },
-
-    {
-        "Turno": "T2",
-        "Nome": "EMANUEL ROBERTO",
-        "Função": "DEPART",
-        "Sexta": "FOLGA",
-        "Sábado": "15:00 às 23:00",
-        "Domingo": "15:00 às 23:00",
-        "Segunda": "15:00 às 23:00"
-    },
-
-    {
-        "Turno": "T2",
-        "Nome": "TAMMYRIS DA SILVA",
-        "Função": "DROPOFF",
-        "Sexta": "15:00 às 23:00",
-        "Sábado": "FOLGA",
-        "Domingo": "15:00 às 23:00",
-        "Segunda": "15:00 às 23:00"
-    },
-
-    {
-        "Turno": "T2",
-        "Nome": "RAPHAEL DO NASCIMENTO",
-        "Função": "DROPOFF",
-        "Sexta": "15:00 às 23:00",
-        "Sábado": "15:00 às 23:00",
-        "Domingo": "FOLGA",
-        "Segunda": "15:00 às 23:00"
-    },
-
-    {
-        "Turno": "T2",
-        "Nome": "LUDMILLA RODRIGUES",
-        "Função": "DROPOFF",
-        "Sexta": "15:00 às 23:00",
-        "Sábado": "15:00 às 23:00",
-        "Domingo": "15:00 às 23:00",
-        "Segunda": "FOLGA"
-    },
-
-    {
-        "Turno": "T2",
-        "Nome": "MARIA NATHALIA",
-        "Função": "SEGURANÇA",
-        "Sexta": "15:00 às 23:00",
-        "Sábado": "15:00 às 23:00",
-        "Domingo": "FOLGA",
-        "Segunda": "15:00 às 23:00"
-    },
-
-    {
-        "Turno": "T2",
-        "Nome": "CINAMOR",
-        "Função": "ELOG",
-        "Sexta": "15:00 às 23:00",
-        "Sábado": "15:00 às 23:00",
-        "Domingo": "15:00 às 23:00",
-        "Segunda": "FOLGA"
-    },
-
-
-    # ========================================================
-    # T3
-    # ========================================================
-
-    {
-        "Turno": "T3",
-        "Nome": "WESLEY",
-        "Função": "LÍDER",
-        "Sexta": "FOLGA",
-        "Sábado": "23:00 às 07:00",
-        "Domingo": "23:00 às 07:00",
-        "Segunda": "23:00 às 07:00"
-    },
-
-    {
-        "Turno": "T3",
-        "Nome": "JOÃO",
-        "Função": "LÍDER/SEGURANÇA",
-        "Sexta": "23:00 às 07:00",
-        "Sábado": "23:00 às 07:00",
-        "Domingo": "23:00 às 07:00",
-        "Segunda": "FOLGA"
-    },
-
-    {
-        "Turno": "T3",
-        "Nome": "RILDOMAR",
-        "Função": "PICKUP",
-        "Sexta": "23:00 às 07:00",
-        "Sábado": "FOLGA",
-        "Domingo": "23:00 às 07:00",
-        "Segunda": "23:00 às 07:00"
-    },
-
-    {
-        "Turno": "T3",
-        "Nome": "LUCIANA",
-        "Função": "PICKUP",
-        "Sexta": "FOLGA",
-        "Sábado": "23:00 às 07:00",
-        "Domingo": "FOLGA",
-        "Segunda": "23:00 às 07:00"
-    },
-
-    {
-        "Turno": "T3",
-        "Nome": "GLAYLDSON",
-        "Função": "SEGURANÇA",
-        "Sexta": "23:00 às 07:00",
-        "Sábado": "23:00 às 07:00",
-        "Domingo": "23:00 às 07:00",
-        "Segunda": "FOLGA"
-    },
-
-    {
-        "Turno": "T3",
-        "Nome": "TAYANARA",
-        "Função": "DEPART",
-        "Sexta": "23:00 às 07:00",
-        "Sábado": "23:00 às 07:00",
-        "Domingo": "FOLGA",
-        "Segunda": "23:00 às 07:00"
-    },
-
-    {
-        "Turno": "T3",
-        "Nome": "RUAN",
-        "Função": "DROPOFF",
-        "Sexta": "23:00 às 07:00",
-        "Sábado": "FOLGA",
-        "Domingo": "23:00 às 07:00",
-        "Segunda": "23:00 às 07:00"
-    },
-
-    {
-        "Turno": "T3",
-        "Nome": "BÁRBARA",
-        "Função": "DROPOFF",
-        "Sexta": "23:00 às 07:00",
-        "Sábado": "23:00 às 07:00",
-        "Domingo": "23:00 às 07:00",
-        "Segunda": "23:00 às 07:00"
-    }
-]
-
-
-# ============================================================
-# CRIAÇÃO DO BANCO LOCAL
-#
-# O CSV É APENAS UM BANCO DE DADOS LOCAL.
-# NÃO É FONTE DE HORÁRIO.
-# ============================================================
-
-def inicializar_banco():
-
-    if not os.path.exists(ARQUIVO_BANCO):
-
-        linhas_banco = []
-
-        for opt in opcoes_semanas:
-
-            for operador in operadores_padrao:
-
-                item = operador.copy()
-
-                item["SemanaID"] = opt["id_semana"]
-
-                linhas_banco.append(item)
-
-        pd.DataFrame(
-            linhas_banco
-        ).to_csv(
-            ARQUIVO_BANCO,
-            index=False
-        )
-
-
-# ============================================================
-# INICIALIZA BANCO
-# ============================================================
-
-inicializar_banco()
-
-
-# ============================================================
-# CARREGA BANCO
-# ============================================================
-
-df_banco = pd.read_csv(
-    ARQUIVO_BANCO
+garantir_escala_semana(
+    semana_id
 )
 
 
-# ============================================================
-# GARANTE COLUNAS NECESSÁRIAS
-# ============================================================
+with col2:
 
-colunas_necessarias = [
-    "SemanaID",
-    "Turno",
-    "Nome",
-    "Função",
-    "Sexta",
-    "Sábado",
-    "Domingo",
-    "Segunda"
-]
-
-for coluna in colunas_necessarias:
-
-    if coluna not in df_banco.columns:
-
-        df_banco[coluna] = ""
-
-
-# ============================================================
-# CORREÇÃO AUTOMÁTICA DOS HORÁRIOS
-#
-# ESTA É A PARTE MAIS IMPORTANTE.
-#
-# O SISTEMA IGNORA QUALQUER HORÁRIO ANTIGO DO CSV.
-#
-# SE FOR TRABALHO:
-#   T1 = 07:00 às 15:00
-#   T2 = 15:00 às 23:00
-#   T3 = 23:00 às 07:00
-#
-# SE FOR FOLGA:
-#   CONTINUA FOLGA.
-# ============================================================
-
-dias_lista = [
-    "Sexta",
-    "Sábado",
-    "Domingo",
-    "Segunda"
-]
-
-
-for indice in df_banco.index:
-
-    turno = str(
-        df_banco.at[indice, "Turno"]
-    ).strip()
-
-    horario_correto = obter_horario_turno(
-        turno
+    filtro_turno = st.selectbox(
+        "🕒 Turno",
+        [
+            "Todos",
+            "Turno 1",
+            "Turno 2",
+            "Turno 3"
+        ]
     )
 
-    for dia in dias_lista:
 
-        valor = str(
-            df_banco.at[indice, dia]
-        ).strip()
+with col3:
 
-        if "FOLGA" in valor.upper():
-
-            df_banco.at[
-                indice,
-                dia
-            ] = "FOLGA"
-
-        else:
-
-            df_banco.at[
-                indice,
-                dia
-            ] = horario_correto
-
-
-# ============================================================
-# SALVA A CORREÇÃO
-# ============================================================
-
-df_banco.to_csv(
-    ARQUIVO_BANCO,
-    index=False
-)
-
-
-# ============================================================
-# CRIA SEMANA NOVA AUTOMATICAMENTE
-# ============================================================
-
-if df_banco[
-    df_banco["SemanaID"] == id_semana_ativa
-].empty:
-
-    semanas_existentes = df_banco[
-        "SemanaID"
-    ].dropna().unique()
-
-    if len(semanas_existentes) > 0:
-
-        ultima_semana = semanas_existentes[-1]
-
-        ultimos_dados = df_banco[
-            df_banco["SemanaID"] ==
-            ultima_semana
-        ].copy()
-
-        ultimos_dados[
-            "SemanaID"
-        ] = id_semana_ativa
-
-        df_banco = pd.concat(
-            [
-                df_banco,
-                ultimos_dados
-            ],
-            ignore_index=True
-        )
-
-        # Corrige horários da nova semana
-        for indice in df_banco.index:
-
-            turno = str(
-                df_banco.at[
-                    indice,
-                    "Turno"
-                ]
-            ).strip()
-
-            horario_correto = obter_horario_turno(
-                turno
-            )
-
-            if (
-                df_banco.at[
-                    indice,
-                    "SemanaID"
-                ] == id_semana_ativa
-            ):
-
-                for dia in dias_lista:
-
-                    valor = str(
-                        df_banco.at[
-                            indice,
-                            dia
-                        ]
-                    ).strip()
-
-                    if "FOLGA" in valor.upper():
-
-                        df_banco.at[
-                            indice,
-                            dia
-                        ] = "FOLGA"
-
-                    else:
-
-                        df_banco.at[
-                            indice,
-                            dia
-                        ] = horario_correto
-
-
-        df_banco.to_csv(
-            ARQUIVO_BANCO,
-            index=False
-        )
+    busca_nome = st.text_input(
+        "🔎 Buscar operador",
+        placeholder="Digite um nome..."
+    )
 
 
 # ============================================================
@@ -825,41 +782,43 @@ if df_banco[
 with st.sidebar:
 
     st.markdown(
-        "<h3 style='color:#FF9900; margin-top:0;'>"
+        "<div class='sidebar-titulo'>"
         "🔐 Área do Gestor"
-        "</h3>",
+        "</div>",
         unsafe_allow_html=True
     )
 
+    st.divider()
 
-    # ========================================================
+    # --------------------------------------------------------
     # LOGIN
-    # ========================================================
+    # --------------------------------------------------------
 
     if not st.session_state.autenticado:
 
+        st.caption(
+            "Acesso restrito à gestão da escala."
+        )
+
         with st.form(
-            key="formulario_login"
+            "login_form"
         ):
 
             usuario = st.text_input(
-                "Usuário:",
-                key="user_input"
+                "Usuário"
             )
 
             senha = st.text_input(
-                "Senha:",
-                type="password",
-                key="pass_input"
+                "Senha",
+                type="password"
             )
 
-            botao_entrar = st.form_submit_button(
+            entrar = st.form_submit_button(
                 "Entrar",
                 use_container_width=True
             )
 
-
-            if botao_entrar:
+            if entrar:
 
                 if (
                     usuario.lower() == "admin"
@@ -877,237 +836,260 @@ with st.sidebar:
                 else:
 
                     st.error(
-                        "Dados incorretos."
+                        "Usuário ou senha incorretos."
                     )
 
 
-    # ========================================================
-    # ÁREA LOGADA
-    # ========================================================
+    # --------------------------------------------------------
+    # GESTÃO
+    # --------------------------------------------------------
 
     else:
 
-        st.write(
+        st.success(
             "🟢 Modo Gestão ativo"
         )
 
-        st.info(
-            "💡 DICA: Agora você pode clicar nos "
-            "botões diretamente na tabela para "
-            "alterar folgas rapidamente!"
+        st.markdown(
+            "<div class='sidebar-info'>"
+            "<b>Como funciona:</b><br><br>"
+            "Os horários são definidos automaticamente "
+            "pelo turno do operador.<br><br>"
+            "Você só precisa cadastrar o nome, função "
+            "e turno."
+            "</div>",
+            unsafe_allow_html=True
         )
 
         st.divider()
-
 
         # ====================================================
         # CADASTRAR OPERADOR
         # ====================================================
 
         st.markdown(
-            "**➕ Cadastrar Novo Operador**"
+            "### ➕ Novo Operador"
         )
 
         novo_nome = st.text_input(
-            "Nome:"
-        ).upper().strip()
+            "Nome",
+            key="novo_nome"
+        )
 
         nova_funcao = st.text_input(
-            "Função:"
-        ).upper().strip()
+            "Função",
+            key="nova_funcao"
+        )
 
         novo_turno = st.selectbox(
-            "Turno:",
+            "Turno",
             [
                 "Turno 1",
                 "Turno 2",
                 "Turno 3"
-            ]
+            ],
+            key="novo_turno"
         )
 
+        turno_id_novo = (
+            "T1"
+            if novo_turno == "Turno 1"
+            else
+            "T2"
+            if novo_turno == "Turno 2"
+            else
+            "T3"
+        )
+
+        st.caption(
+            f"⏰ Horário automático: "
+            f"**{HORARIOS_TURNOS[turno_id_novo]}**"
+        )
 
         if st.button(
-            "Adicionar ao Sistema",
+            "Adicionar Operador",
             use_container_width=True
         ):
 
-            if novo_nome and nova_funcao:
+            nome = novo_nome.upper().strip()
+            funcao = nova_funcao.upper().strip()
 
-                if "1" in novo_turno:
+            if not nome or not funcao:
 
-                    turno_id = "T1"
-
-                elif "2" in novo_turno:
-
-                    turno_id = "T2"
-
-                else:
-
-                    turno_id = "T3"
-
-
-                horario_sugerido = obter_horario_turno(
-                    turno_id
+                st.warning(
+                    "Preencha nome e função."
                 )
 
+            else:
 
-                nova_linha = {
+                conn = conectar_banco()
+                cursor = conn.cursor()
 
-                    "SemanaID":
-                        id_semana_ativa,
+                try:
 
-                    "Turno":
-                        turno_id,
+                    cursor.execute("""
+                        INSERT INTO operadores
+                        (nome, funcao, turno)
+                        VALUES (?, ?, ?)
+                    """, (
+                        nome,
+                        funcao,
+                        turno_id_novo
+                    ))
 
-                    "Nome":
-                        novo_nome,
+                    conn.commit()
 
-                    "Função":
-                        nova_funcao,
+                    operador_id = cursor.lastrowid
 
-                    "Sexta":
-                        horario_sugerido,
+                    horario = HORARIOS_TURNOS[
+                        turno_id_novo
+                    ]
 
-                    "Sábado":
-                        horario_sugerido,
-
-                    "Domingo":
-                        horario_sugerido,
-
-                    "Segunda":
-                        horario_sugerido
-                }
-
-
-                df_banco = pd.concat(
-                    [
-                        df_banco,
-                        pd.DataFrame(
-                            [nova_linha]
+                    cursor.execute("""
+                        INSERT INTO escalas
+                        (
+                            operador_id,
+                            semana_id,
+                            sexta,
+                            sabado,
+                            domingo,
+                            segunda
                         )
-                    ],
-                    ignore_index=True
-                )
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    """, (
+                        operador_id,
+                        semana_id,
+                        horario,
+                        horario,
+                        horario,
+                        horario
+                    ))
 
+                    conn.commit()
 
-                df_banco.to_csv(
-                    ARQUIVO_BANCO,
-                    index=False
-                )
+                    st.success(
+                        f"{nome} cadastrado!"
+                    )
 
+                except sqlite3.IntegrityError:
 
-                st.success(
-                    f"{novo_nome} adicionado!"
-                )
+                    st.error(
+                        "Esse operador já está cadastrado."
+                    )
+
+                conn.close()
 
                 st.rerun()
 
-
         st.divider()
-
 
         # ====================================================
         # REMOVER OPERADOR
         # ====================================================
 
         st.markdown(
-            "**❌ Remover / Desligar Operador**"
+            "### ❌ Remover Operador"
         )
 
+        conn = conectar_banco()
 
-        lista_operadores_atuais = sorted(
-            df_banco[
-                df_banco["SemanaID"] ==
-                id_semana_ativa
-            ]["Nome"].unique()
+        df_operadores = pd.read_sql_query(
+            """
+            SELECT id, nome
+            FROM operadores
+            WHERE ativo = 1
+            ORDER BY nome
+            """,
+            conn
         )
 
+        conn.close()
 
-        if lista_operadores_atuais:
+        if not df_operadores.empty:
 
-            operador_para_remover = st.selectbox(
-                "Selecione quem remover:",
-                lista_operadores_atuais
+            nomes = df_operadores[
+                "nome"
+            ].tolist()
+
+            operador_remover = st.selectbox(
+                "Selecione o operador",
+                nomes
             )
 
-
             tipo_remocao = st.radio(
-                "Escopo da remoção:",
+                "Tipo de remoção",
                 [
-                    "Apenas da semana atual",
-                    "De todo o sistema (Definitivo)"
+                    "Somente da escala atual",
+                    "Definitivamente"
                 ]
             )
 
-
             if st.button(
-                "Confirmar Exclusão",
+                "Confirmar remoção",
                 type="primary",
                 use_container_width=True
             ):
 
-                if (
-                    tipo_remocao ==
-                    "Apenas da semana atual"
-                ):
+                conn = conectar_banco()
+                cursor = conn.cursor()
 
-                    df_banco = df_banco[
-                        ~(
-                            (
-                                df_banco["SemanaID"] ==
-                                id_semana_ativa
-                            )
-                            &
-                            (
-                                df_banco["Nome"] ==
-                                operador_para_remover
-                            )
-                        )
-                    ]
+                operador_id = int(
+                    df_operadores[
+                        df_operadores["nome"]
+                        == operador_remover
+                    ]["id"].iloc[0]
+                )
+
+                if tipo_remocao == "Somente da escala atual":
+
+                    cursor.execute("""
+                        DELETE FROM escalas
+                        WHERE operador_id = ?
+                        AND semana_id = ?
+                    """, (
+                        operador_id,
+                        semana_id
+                    ))
 
                     st.success(
-                        f"Removido da escala da semana "
-                        f"{id_semana_ativa}!"
+                        f"{operador_remover} removido "
+                        "da semana atual."
                     )
-
 
                 else:
 
-                    df_banco = df_banco[
-                        df_banco["Nome"] !=
-                        operador_para_remover
-                    ]
+                    cursor.execute("""
+                        DELETE FROM escalas
+                        WHERE operador_id = ?
+                    """, (
+                        operador_id,
+                    ))
+
+                    cursor.execute("""
+                        DELETE FROM operadores
+                        WHERE id = ?
+                    """, (
+                        operador_id,
+                    ))
 
                     st.success(
-                        f"{operador_para_remover} "
-                        f"deletado do sistema permanentemente!"
+                        f"{operador_remover} removido "
+                        "definitivamente."
                     )
 
-
-                df_banco.to_csv(
-                    ARQUIVO_BANCO,
-                    index=False
-                )
+                conn.commit()
+                conn.close()
 
                 st.rerun()
 
-
-        else:
-
-            st.caption(
-                "Nenhum operador listado nesta semana."
-            )
-
-
         st.divider()
 
-
         # ====================================================
-        # SAIR
+        # LOGOUT
         # ====================================================
 
         if st.button(
-            "🚪 Sair (Deslogar)",
+            "🚪 Sair",
             use_container_width=True
         ):
 
@@ -1119,48 +1101,238 @@ with st.sidebar:
 
 
 # ============================================================
-# EXIBIÇÃO DA ESCALA
+# CARREGA ESCALA
 # ============================================================
 
-df_tela = df_banco[
-    df_banco["SemanaID"] ==
-    id_semana_ativa
-]
-
-
-mapa_nomes_turnos = {
-    "T1": "Turno 1",
-    "T2": "Turno 2",
-    "T3": "Turno 3"
-}
+df = carregar_escala(
+    semana_id
+)
 
 
 # ============================================================
-# LOOP DOS TURNOS
+# FILTRO DE TURNO
 # ============================================================
 
-for id_turno, nome_exibicao in mapa_nomes_turnos.items():
+if filtro_turno != "Todos":
 
-    df_turno = df_tela[
-        df_tela["Turno"] == id_turno
+    turno_filtro_id = {
+        "Turno 1": "T1",
+        "Turno 2": "T2",
+        "Turno 3": "T3"
+    }[filtro_turno]
+
+    df = df[
+        df["turno"] == turno_filtro_id
     ]
 
 
-    if not df_turno.empty:
+# ============================================================
+# FILTRO DE NOME
+# ============================================================
 
-        st.markdown(
-            f"### 🕒 {nome_exibicao}"
+if busca_nome:
+
+    df = df[
+        df["nome"].str.contains(
+            busca_nome,
+            case=False,
+            na=False
+        )
+    ]
+
+
+# ============================================================
+# LEGENDA
+# ============================================================
+
+st.markdown("""
+<div class='legenda'>
+
+<div class='legenda-item'>
+🔵 <b>Trabalho</b>
+</div>
+
+<div class='legenda-item'>
+⚪ <b>Folga</b>
+</div>
+
+<div class='legenda-item'>
+🔄 <b>Alternar</b>
+</div>
+
+</div>
+""", unsafe_allow_html=True)
+
+
+# ============================================================
+# EXIBIÇÃO DOS TURNOS
+# ============================================================
+
+for turno_id in [
+    "T1",
+    "T2",
+    "T3"
+]:
+
+    df_turno = df[
+        df["turno"] == turno_id
+    ].copy()
+
+    if df_turno.empty:
+        continue
+
+
+    # ========================================================
+    # CONTADORES
+    # ========================================================
+
+    total_operadores = len(
+        df_turno
+    )
+
+    trabalhando = 0
+    folgas = 0
+
+    for _, linha in df_turno.iterrows():
+
+        for dia in [
+            "sexta",
+            "sabado",
+            "domingo",
+            "segunda"
+        ]:
+
+            if linha[dia] == "FOLGA":
+                folgas += 1
+            else:
+                trabalhando += 1
+
+
+    # ========================================================
+    # CABEÇALHO DO TURNO
+    # ========================================================
+
+    st.markdown(
+        f"""
+        <div class='turno-header'>
+
+            <div class='turno-titulo'>
+                🕒 {NOMES_TURNOS[turno_id]}
+            </div>
+
+            <div class='turno-horario'>
+                ⏰ {HORARIOS_TURNOS[turno_id]}
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    # ========================================================
+    # RESUMO
+    # ========================================================
+
+    st.markdown(
+        f"""
+        <div class='resumo-turno'>
+
+            <div class='resumo-item'>
+                👥 Operadores:
+                <span class='resumo-numero'>
+                    {total_operadores}
+                </span>
+            </div>
+
+            <div class='resumo-item'>
+                🟢 Dias trabalhados:
+                <span class='resumo-numero'>
+                    {trabalhando}
+                </span>
+            </div>
+
+            <div class='resumo-item'>
+                ⚪ Folgas:
+                <span class='resumo-numero'>
+                    {folgas}
+                </span>
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    # ========================================================
+    # CABEÇALHO DAS COLUNAS
+    # ========================================================
+
+    cols_header = st.columns(
+        [
+            2.4,
+            1.8,
+            1.8,
+            1.8,
+            1.8,
+            1.8
+        ]
+    )
+
+
+    cols_header[0].markdown(
+        "<div class='header-col header-col-esquerda'>"
+        "OPERADOR"
+        "</div>",
+        unsafe_allow_html=True
+    )
+
+
+    cols_header[1].markdown(
+        "<div class='header-col header-col-esquerda'>"
+        "FUNÇÃO"
+        "</div>",
+        unsafe_allow_html=True
+    )
+
+
+    for i, dia in enumerate(
+        DIAS,
+        2
+    ):
+
+        data_dia = dados_semana[dia]
+
+        cols_header[i].markdown(
+            f"""
+            <div class='header-col'>
+                {dia.upper()}<br>
+                <span style='font-size:9px;color:#94A3B8;'>
+                    {data_dia}
+                </span>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
 
-        # ====================================================
-        # CABEÇALHO
-        # ====================================================
+    st.markdown(
+        "<div class='divisor'></div>",
+        unsafe_allow_html=True
+    )
 
-        cols_header = st.columns(
+
+    # ========================================================
+    # OPERADORES
+    # ========================================================
+
+    for _, row in df_turno.iterrows():
+
+        cols = st.columns(
             [
-                2.5,
-                2,
+                2.4,
+                1.8,
                 1.8,
                 1.8,
                 1.8,
@@ -1169,229 +1341,146 @@ for id_turno, nome_exibicao in mapa_nomes_turnos.items():
         )
 
 
-        cols_header[0].markdown(
-            "<div class='header-col' "
-            "style='text-align:left;'>"
-            "OPERADOR"
-            "</div>",
+        # ----------------------------------------------------
+        # NOME
+        # ----------------------------------------------------
+
+        cols[0].markdown(
+            f"""
+            <div class='nome-operador'>
+                <b>{row['nome']}</b>
+            </div>
+            """,
             unsafe_allow_html=True
         )
 
 
-        cols_header[1].markdown(
-            "<div class='header-col' "
-            "style='text-align:left; color:#64748B;'>"
-            "FUNÇÃO"
-            "</div>",
+        # ----------------------------------------------------
+        # FUNÇÃO
+        # ----------------------------------------------------
+
+        cols[1].markdown(
+            f"""
+            <div class='funcao-operador'>
+                {row['funcao']}
+            </div>
+            """,
             unsafe_allow_html=True
         )
+
+
+        # ----------------------------------------------------
+        # DIAS
+        # ----------------------------------------------------
+
+        colunas_dias = {
+            "Sexta": "sexta",
+            "Sábado": "sabado",
+            "Domingo": "domingo",
+            "Segunda": "segunda"
+        }
 
 
         for idx, dia in enumerate(
-            dias_lista,
+            DIAS,
             2
         ):
 
-            data_do_dia = dados_semana_ativa[
-                dia
-            ]
+            coluna_banco = colunas_dias[dia]
 
-
-            cols_header[idx].markdown(
-                f"<div class='header-col'>"
-                f"{dia.upper()} ({data_do_dia})"
-                f"</div>",
-                unsafe_allow_html=True
+            status = str(
+                row[coluna_banco]
             )
 
 
-        st.markdown(
-            "<hr style='margin-top:0; "
-            "margin-bottom:15px;' />",
-            unsafe_allow_html=True
-        )
+            # -----------------------------------------------
+            # TRABALHO
+            # -----------------------------------------------
 
+            if status != "FOLGA":
 
-        # ====================================================
-        # OPERADORES
-        # ====================================================
-
-        for _, row in df_turno.iterrows():
-
-            cols = st.columns(
-                [
-                    2.5,
-                    2,
-                    1.8,
-                    1.8,
-                    1.8,
-                    1.8
-                ]
-            )
-
-
-            cols[0].markdown(
-                f"<div class='nome-operador'>"
-                f"<b>{row['Nome']}</b>"
-                f"</div>",
-                unsafe_allow_html=True
-            )
-
-
-            cols[1].markdown(
-                f"<div class='funcao-operador'>"
-                f"{row['Função']}"
-                f"</div>",
-                unsafe_allow_html=True
-            )
-
-
-            # =================================================
-            # HORÁRIO OFICIAL DO TURNO
-            #
-            # NUNCA PEGA DO CSV.
-            # =================================================
-
-            horario_oficial = obter_horario_turno(
-                id_turno
-            )
-
-
-            # =================================================
-            # DIAS
-            # =================================================
-
-            for idx, dia in enumerate(
-                dias_lista,
-                2
-            ):
-
-                valor_original = str(
-                    row[dia]
-                ).strip()
-
-
-                # =============================================
-                # VERIFICA FOLGA
-                # =============================================
-
-                esta_de_folga = (
-                    "FOLGA"
-                    in valor_original.upper()
+                cols[idx].markdown(
+                    f"""
+                    <div class='card-trabalho'>
+                        TRABALHO
+                        <div class='sub-info'>
+                            {status}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
                 )
 
 
-                # =============================================
-                # TRABALHO
-                # =============================================
+            # -----------------------------------------------
+            # FOLGA
+            # -----------------------------------------------
 
-                if not esta_de_folga:
+            else:
 
-                    cols[idx].markdown(
+                cols[idx].markdown(
+                    """
+                    <div class='card-folga'>
+                        FOLGA
+                        <div class='sub-info-folga'>
+                            Descanso
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
-                        f"<div class='card-trabalho'>"
-                        f"TRABALHO"
-                        f"<div class='sub-info'>"
-                        f"{horario_oficial}"
-                        f"</div>"
-                        f"</div>",
 
-                        unsafe_allow_html=True
+            # -----------------------------------------------
+            # BOTÃO GESTOR
+            # -----------------------------------------------
+
+            if st.session_state.autenticado:
+
+                if cols[idx].button(
+                    "🔄 Alternar",
+                    key=(
+                        f"alternar_"
+                        f"{row['id']}_"
+                        f"{dia}_"
+                        f"{semana_id}"
+                    ),
+                    use_container_width=True
+                ):
+
+                    alternar_status(
+                        int(row["id"]),
+                        semana_id,
+                        dia,
+                        turno_id
                     )
 
-
-                # =============================================
-                # FOLGA
-                # =============================================
-
-                else:
-
-                    cols[idx].markdown(
-
-                        "<div class='card-folga'>"
-                        "FOLGA"
-                        "<div class='sub-info-folga'>"
-                        "Descanso"
-                        "</div>"
-                        "</div>",
-
-                        unsafe_allow_html=True
-                    )
+                    st.rerun()
 
 
-                # =================================================
-                # BOTÃO DO GESTOR
-                # =================================================
-
-                if st.session_state.autenticado:
-
-                    # ---------------------------------------------
-                    # Se está trabalhando → vira folga
-                    # ---------------------------------------------
-
-                    if not esta_de_folga:
-
-                        novo_status = "FOLGA"
+    st.write("")
 
 
-                    # ---------------------------------------------
-                    # Se está de folga → volta para horário oficial
-                    # ---------------------------------------------
+# ============================================================
+# MENSAGEM QUANDO NÃO HÁ RESULTADOS
+# ============================================================
 
-                    else:
+if df.empty:
 
-                        novo_status = horario_oficial
-
-
-                    if cols[idx].button(
-
-                        "🔄 Alternar",
-
-                        key=(
-                            f"btn_"
-                            f"{row['Nome']}_"
-                            f"{dia}_"
-                            f"{id_semana_ativa}"
-                        )
-                    ):
-
-                        indices_encontrados = df_banco[
-                            (
-                                df_banco["SemanaID"] ==
-                                id_semana_ativa
-                            )
-                            &
-                            (
-                                df_banco["Nome"] ==
-                                row["Nome"]
-                            )
-                        ].index
+    st.info(
+        "Nenhum operador encontrado com os filtros selecionados."
+    )
 
 
-                        if len(indices_encontrados) > 0:
+# ============================================================
+# RODAPÉ
+# ============================================================
 
-                            idx_banco = (
-                                indices_encontrados[0]
-                            )
-
-
-                            # ---------------------------------
-                            # SALVA SOMENTE FOLGA OU HORÁRIO
-                            # ---------------------------------
-
-                            df_banco.at[
-                                idx_banco,
-                                dia
-                            ] = novo_status
-
-
-                            df_banco.to_csv(
-                                ARQUIVO_BANCO,
-                                index=False
-                            )
-
-
-                            st.rerun()
-
-
-        st.write("")
+st.markdown(
+    """
+    <div class='rodape'>
+        Escala Amazon • Sistema de Monitoramento Operacional
+    </div>
+    """,
+    unsafe_allow_html=True
+)

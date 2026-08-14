@@ -16,22 +16,23 @@ st.set_page_config(
 
 
 # ============================================================
-# CORES AMAZON
+# IDENTIDADE VISUAL AMAZON
 # ============================================================
 
 AZUL = "#232F3E"
-AZUL_2 = "#146EB4"
+AZUL_MEDIO = "#146EB4"
 LARANJA = "#FF9900"
 LARANJA_CLARO = "#FEBD69"
 
 FUNDO = "#F3F6F9"
 BRANCO = "#FFFFFF"
 CINZA = "#64748B"
-BORDA = "#D7DEE7"
+CINZA_CLARO = "#E2E8F0"
+VERDE = "#16A34A"
 
 
 # ============================================================
-# BANCO
+# BANCO DE DADOS
 # ============================================================
 
 BANCO = "escala_amazon.db"
@@ -49,7 +50,8 @@ def criar_banco():
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS operadores (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
@@ -57,9 +59,11 @@ def criar_banco():
             turno TEXT NOT NULL,
             ativo INTEGER DEFAULT 1
         )
-    """)
+        """
+    )
 
-    cursor.execute("""
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS escala (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             operador_id INTEGER NOT NULL,
@@ -71,7 +75,8 @@ def criar_banco():
             FOREIGN KEY (operador_id)
             REFERENCES operadores(id)
         )
-    """)
+        """
+    )
 
     conn.commit()
     conn.close()
@@ -107,7 +112,7 @@ st.markdown(
     <style>
 
     /* ========================================================
-       GERAL
+       BASE
        ======================================================== */
 
     #MainMenu {{
@@ -119,14 +124,18 @@ st.markdown(
     }}
 
     .stApp {{
-        background: {FUNDO};
+        background-color: {FUNDO};
     }}
 
     [data-testid="stAppViewContainer"] {{
-        background: {FUNDO};
+        background-color: {FUNDO};
     }}
 
-    .stMainBlockContainer {{
+    [data-testid="stHeader"] {{
+        background-color: transparent;
+    }}
+
+    .block-container {{
         padding-top: 1.5rem !important;
         padding-bottom: 3rem !important;
         max-width: 1500px;
@@ -134,45 +143,46 @@ st.markdown(
 
 
     /* ========================================================
-       HEADER
+       TOPO
        ======================================================== */
 
-    .topo {{
-        background: {AZUL};
+    .topo-amazon {{
+        background-color: {AZUL};
         border-radius: 14px;
-        padding: 18px 24px;
+        padding: 18px 22px;
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 15px;
         margin-bottom: 20px;
-        box-shadow: 0 4px 15px rgba(35,47,62,0.15);
+        border-bottom: 4px solid {LARANJA};
+        box-shadow: 0 4px 14px rgba(35, 47, 62, 0.14);
     }}
 
-    .logo {{
-        width: 46px;
-        height: 46px;
-        min-width: 46px;
-        background: {LARANJA};
-        color: {AZUL};
+    .logo-amazon {{
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
         border-radius: 10px;
+        background-color: {LARANJA};
+        color: {AZUL};
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 25px;
+        font-size: 27px;
         font-weight: 900;
     }}
 
-    .topo-titulo {{
-        color: white;
+    .titulo-amazon {{
+        color: #FFFFFF;
         font-size: 25px;
         font-weight: 800;
         line-height: 1.1;
     }}
 
-    .topo-subtitulo {{
-        color: #B9C4D0;
+    .subtitulo-amazon {{
+        color: #B8C3CF;
         font-size: 12px;
-        margin-top: 4px;
+        margin-top: 5px;
     }}
 
 
@@ -180,15 +190,14 @@ st.markdown(
        TÍTULOS
        ======================================================== */
 
-    .secao-titulo {{
+    .titulo-secao {{
         color: {AZUL};
-        font-size: 18px;
+        font-size: 19px;
         font-weight: 800;
-        margin-top: 12px;
-        margin-bottom: 4px;
+        margin-top: 8px;
     }}
 
-    .secao-subtitulo {{
+    .subtitulo-secao {{
         color: {CINZA};
         font-size: 12px;
         margin-bottom: 15px;
@@ -196,30 +205,30 @@ st.markdown(
 
 
     /* ========================================================
-       MÉTRICAS
+       CARDS DE MÉTRICA
        ======================================================== */
 
-    .metric-card {{
-        background: {BRANCO};
-        border: 1px solid {BORDA};
-        border-radius: 12px;
-        padding: 15px;
+    .metric-amazon {{
+        background-color: {BRANCO};
+        border: 1px solid {CINZA_CLARO};
+        border-radius: 11px;
+        padding: 14px;
         text-align: center;
-        box-shadow: 0 2px 8px rgba(35,47,62,0.05);
         min-height: 88px;
+        box-shadow: 0 2px 8px rgba(35, 47, 62, 0.05);
     }}
 
-    .metric-card-laranja {{
+    .metric-principal {{
         border-top: 4px solid {LARANJA};
     }}
 
-    .metric-card-azul {{
-        border-top: 4px solid {AZUL_2};
+    .metric-turno {{
+        border-top: 4px solid {AZUL_MEDIO};
     }}
 
     .metric-numero {{
         color: {AZUL};
-        font-size: 25px;
+        font-size: 26px;
         font-weight: 900;
         line-height: 1;
     }}
@@ -229,21 +238,21 @@ st.markdown(
         font-size: 10px;
         font-weight: 800;
         margin-top: 7px;
-        letter-spacing: .3px;
+        letter-spacing: 0.3px;
     }}
 
 
     /* ========================================================
-       PAINEL DE VISUALIZAÇÃO
+       PAINEL
        ======================================================== */
 
     .painel {{
-        background: {BRANCO};
-        border: 1px solid {BORDA};
-        border-radius: 14px;
+        background-color: {BRANCO};
+        border: 1px solid {CINZA_CLARO};
+        border-radius: 13px;
         padding: 18px;
         margin-top: 20px;
-        box-shadow: 0 3px 12px rgba(35,47,62,0.05);
+        box-shadow: 0 2px 10px rgba(35, 47, 62, 0.05);
     }}
 
     .painel-titulo {{
@@ -263,44 +272,40 @@ st.markdown(
        TURNO
        ======================================================== */
 
-    .turno-header {{
-        background: {AZUL};
+    .turno-barra {{
+        background-color: {AZUL};
         border-radius: 10px;
-        padding: 13px 16px;
-        margin-top: 18px;
+        padding: 12px 15px;
+        margin-top: 16px;
         margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        border-left: 5px solid {LARANJA};
     }}
 
     .turno-nome {{
-        color: white;
+        color: #FFFFFF;
         font-size: 17px;
         font-weight: 800;
     }}
 
     .turno-horario {{
-        background: {LARANJA};
-        color: {AZUL};
-        padding: 5px 11px;
-        border-radius: 20px;
+        color: {LARANJA_CLARO};
         font-size: 11px;
-        font-weight: 900;
+        font-weight: 700;
+        margin-top: 2px;
     }}
 
 
     /* ========================================================
-       CABEÇALHO DA ESCALA
+       CABEÇALHO DA TABELA
        ======================================================== */
 
-    .cabecalho {{
+    .cabecalho-tabela {{
         color: {CINZA};
         font-size: 10px;
         font-weight: 900;
         text-align: center;
         padding-bottom: 7px;
-        border-bottom: 2px solid {BORDA};
+        border-bottom: 2px solid {CINZA_CLARO};
     }}
 
     .cabecalho-esquerda {{
@@ -309,21 +314,21 @@ st.markdown(
 
 
     /* ========================================================
-       OPERADORES
+       OPERADOR
        ======================================================== */
 
-    .nome {{
+    .nome-operador {{
         color: {AZUL};
         font-size: 12px;
         font-weight: 800;
         padding-top: 10px;
     }}
 
-    .funcao {{
+    .funcao-operador {{
         color: {CINZA};
         font-size: 10px;
-        padding-top: 10px;
         font-weight: 600;
+        padding-top: 10px;
     }}
 
 
@@ -331,23 +336,22 @@ st.markdown(
        TRABALHO
        ======================================================== */
 
-    .trabalho {{
-        background: {AZUL};
-        color: white;
+    .status-trabalho {{
+        background-color: {AZUL};
+        color: #FFFFFF;
         border-left: 4px solid {LARANJA};
         border-radius: 7px;
-        padding: 8px 4px;
+        padding: 7px 4px;
+        margin-top: 5px;
         text-align: center;
         font-size: 10px;
         font-weight: 900;
-        margin-top: 5px;
     }}
 
-    .trabalho-horario {{
+    .horario-trabalho {{
         color: {LARANJA_CLARO};
         font-size: 9px;
         margin-top: 3px;
-        font-weight: 700;
     }}
 
 
@@ -355,20 +359,20 @@ st.markdown(
        FOLGA
        ======================================================== */
 
-    .folga {{
-        background: #EAF3FB;
+    .status-folga {{
+        background-color: #EAF3FB;
         color: {AZUL};
-        border-left: 4px solid {AZUL_2};
+        border-left: 4px solid {AZUL_MEDIO};
         border-radius: 7px;
-        padding: 8px 4px;
+        padding: 7px 4px;
+        margin-top: 5px;
         text-align: center;
         font-size: 10px;
         font-weight: 900;
-        margin-top: 5px;
     }}
 
-    .folga-info {{
-        color: #6B8196;
+    .descanso {{
+        color: #718096;
         font-size: 9px;
         margin-top: 3px;
     }}
@@ -381,7 +385,9 @@ st.markdown(
     .stButton > button {{
         border-radius: 7px !important;
         font-weight: 700 !important;
-        border: 1px solid {BORDA} !important;
+        border: 1px solid {CINZA_CLARO} !important;
+        background-color: {BRANCO} !important;
+        color: {AZUL} !important;
     }}
 
     .stButton > button:hover {{
@@ -395,25 +401,41 @@ st.markdown(
        ======================================================== */
 
     div[data-baseweb="select"] > div {{
+        background-color: {BRANCO} !important;
         border-radius: 8px !important;
-        border-color: {BORDA} !important;
-        background: white !important;
+        border-color: {CINZA_CLARO} !important;
     }}
 
     div[data-baseweb="select"] > div:focus-within {{
-        border-color: {AZUL_2} !important;
-        box-shadow: 0 0 0 1px {AZUL_2} !important;
+        border-color: {AZUL_MEDIO} !important;
+        box-shadow: 0 0 0 1px {AZUL_MEDIO} !important;
     }}
 
 
     /* ========================================================
-       EXPANDER LOGIN
+       RADIO DE TURNO
+       ======================================================== */
+
+    div[role="radiogroup"] {{
+        gap: 8px;
+    }}
+
+    div[role="radiogroup"] label {{
+        background-color: {BRANCO};
+        border: 1px solid {CINZA_CLARO};
+        border-radius: 8px;
+        padding: 8px 13px;
+    }}
+
+
+    /* ========================================================
+       LOGIN
        ======================================================== */
 
     [data-testid="stExpander"] {{
-        border: 1px solid {BORDA};
+        background-color: {BRANCO};
+        border: 1px solid {CINZA_CLARO};
         border-radius: 10px;
-        background: white;
     }}
 
     [data-testid="stExpander"] summary {{
@@ -423,34 +445,24 @@ st.markdown(
 
 
     /* ========================================================
-       DIVISOR
-       ======================================================== */
-
-    hr {{
-        border-color: {BORDA} !important;
-    }}
-
-
-    /* ========================================================
-       MOBILE
+       RESPONSIVO
        ======================================================== */
 
     @media (max-width: 900px) {{
 
-        .topo {{
-            padding: 15px;
+        .titulo-amazon {{
+            font-size: 20px;
         }}
 
-        .topo-titulo {{
-            font-size: 20px;
+        .logo-amazon {{
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            font-size: 23px;
         }}
 
         .metric-numero {{
-            font-size: 20px;
-        }}
-
-        .painel {{
-            padding: 10px;
+            font-size: 21px;
         }}
 
     }}
@@ -462,7 +474,7 @@ st.markdown(
 
 
 # ============================================================
-# LOGIN
+# ESTADO DO LOGIN
 # ============================================================
 
 if "autenticado" not in st.session_state:
@@ -470,14 +482,15 @@ if "autenticado" not in st.session_state:
 
 
 # ============================================================
-# FUNÇÕES BANCO
+# FUNÇÕES DO BANCO
 # ============================================================
 
 def buscar_operadores():
 
     conn = conectar()
 
-    dados = conn.execute("""
+    dados = conn.execute(
+        """
         SELECT id, nome, funcao, turno
         FROM operadores
         WHERE ativo = 1
@@ -488,7 +501,8 @@ def buscar_operadores():
                 WHEN 'T3' THEN 3
             END,
             nome
-    """).fetchall()
+        """
+    ).fetchall()
 
     conn.close()
 
@@ -499,15 +513,18 @@ def cadastrar_operador(nome, funcao, turno):
 
     conn = conectar()
 
-    conn.execute("""
+    conn.execute(
+        """
         INSERT INTO operadores
         (nome, funcao, turno)
         VALUES (?, ?, ?)
-    """, (
-        nome,
-        funcao,
-        turno
-    ))
+        """,
+        (
+            nome,
+            funcao,
+            turno
+        )
+    )
 
     conn.commit()
     conn.close()
@@ -517,11 +534,14 @@ def remover_operador(operador_id):
 
     conn = conectar()
 
-    conn.execute("""
+    conn.execute(
+        """
         UPDATE operadores
         SET ativo = 0
         WHERE id = ?
-    """, (operador_id,))
+        """,
+        (operador_id,)
+    )
 
     conn.commit()
     conn.close()
@@ -531,15 +551,22 @@ def buscar_status(operador_id, semana_id):
 
     conn = conectar()
 
-    resultado = conn.execute("""
-        SELECT sexta, sabado, domingo, segunda
+    resultado = conn.execute(
+        """
+        SELECT
+            sexta,
+            sabado,
+            domingo,
+            segunda
         FROM escala
         WHERE operador_id = ?
         AND semana_id = ?
-    """, (
-        operador_id,
-        semana_id
-    )).fetchone()
+        """,
+        (
+            operador_id,
+            semana_id
+        )
+    ).fetchone()
 
     conn.close()
 
@@ -557,38 +584,46 @@ def salvar_status(
 
     conn = conectar()
 
-    existente = conn.execute("""
+    existente = conn.execute(
+        """
         SELECT id
         FROM escala
         WHERE operador_id = ?
         AND semana_id = ?
-    """, (
-        operador_id,
-        semana_id
-    )).fetchone()
+        """,
+        (
+            operador_id,
+            semana_id
+        )
+    ).fetchone()
 
     if existente:
 
-        conn.execute("""
+        conn.execute(
+            """
             UPDATE escala
-            SET sexta = ?,
+            SET
+                sexta = ?,
                 sabado = ?,
                 domingo = ?,
                 segunda = ?
             WHERE operador_id = ?
             AND semana_id = ?
-        """, (
-            sexta,
-            sabado,
-            domingo,
-            segunda,
-            operador_id,
-            semana_id
-        ))
+            """,
+            (
+                sexta,
+                sabado,
+                domingo,
+                segunda,
+                operador_id,
+                semana_id
+            )
+        )
 
     else:
 
-        conn.execute("""
+        conn.execute(
+            """
             INSERT INTO escala
             (
                 operador_id,
@@ -599,21 +634,23 @@ def salvar_status(
                 segunda
             )
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (
-            operador_id,
-            semana_id,
-            sexta,
-            sabado,
-            domingo,
-            segunda
-        ))
+            """,
+            (
+                operador_id,
+                semana_id,
+                sexta,
+                sabado,
+                domingo,
+                segunda
+            )
+        )
 
     conn.commit()
     conn.close()
 
 
 # ============================================================
-# SEMANAS
+# DATAS
 # ============================================================
 
 def obter_semana(deslocamento=0):
@@ -655,23 +692,23 @@ semanas = [
 
 
 # ============================================================
-# HEADER
+# TOPO
 # ============================================================
 
 st.markdown(
     """
-    <div class="topo">
+    <div class="topo-amazon">
 
-        <div class="logo">
+        <div class="logo-amazon">
             A
         </div>
 
         <div>
-            <div class="topo-titulo">
+            <div class="titulo-amazon">
                 Escala Amazon
             </div>
 
-            <div class="topo-subtitulo">
+            <div class="subtitulo-amazon">
                 Painel de Monitoramento Operacional
             </div>
         </div>
@@ -683,25 +720,29 @@ st.markdown(
 
 
 # ============================================================
-# LOGIN COMPACTO
+# LOGIN / GESTÃO
 # ============================================================
 
 with st.expander(
-    "🔐 Login / Gestão",
+    "🔐 Gestão",
     expanded=False
 ):
 
     if not st.session_state.autenticado:
 
+        st.markdown(
+            "### Acesso administrativo"
+        )
+
         col1, col2, col3 = st.columns(
-            [1, 1, 0.7]
+            [1, 1, 0.6]
         )
 
         with col1:
 
             usuario = st.text_input(
                 "Usuário",
-                key="login_usuario"
+                key="usuario_login"
             )
 
         with col2:
@@ -709,7 +750,7 @@ with st.expander(
             senha = st.text_input(
                 "Senha",
                 type="password",
-                key="login_senha"
+                key="senha_login"
             )
 
         with col3:
@@ -724,13 +765,11 @@ with st.expander(
         if entrar:
 
             if (
-                usuario.lower().strip() == "admin"
+                usuario.strip().lower() == "admin"
                 and senha == "Amazon123"
             ):
 
                 st.session_state.autenticado = True
-
-                st.success("Modo gestão ativado.")
 
                 st.rerun()
 
@@ -743,38 +782,51 @@ with st.expander(
     else:
 
         st.success(
-            "🟢 Modo Gestão ativo"
+            "🟢 Modo gestão ativo"
         )
 
-        col1, col2, col3 = st.columns(
-            [1, 1, 1]
+        tab_cadastro, tab_remocao, tab_sessao = st.tabs(
+            [
+                "➕ Cadastrar",
+                "🗑️ Remover",
+                "🚪 Sessão"
+            ]
         )
 
-        with col1:
+        # ----------------------------------------------------
+        # CADASTRO
+        # ----------------------------------------------------
 
-            st.markdown(
-                "**Cadastrar operador**"
-            )
+        with tab_cadastro:
 
-            novo_nome = st.text_input(
-                "Nome",
-                key="novo_nome"
-            )
+            col1, col2, col3 = st.columns(3)
 
-            nova_funcao = st.text_input(
-                "Função",
-                key="nova_funcao"
-            )
+            with col1:
 
-            novo_turno = st.selectbox(
-                "Turno",
-                ["T1", "T2", "T3"],
-                format_func=lambda x:
-                    f"{NOMES_TURNOS[x]} — {HORARIOS[x]}"
-            )
+                novo_nome = st.text_input(
+                    "Nome do operador",
+                    key="novo_nome"
+                )
+
+            with col2:
+
+                nova_funcao = st.text_input(
+                    "Função",
+                    key="nova_funcao"
+                )
+
+            with col3:
+
+                novo_turno = st.selectbox(
+                    "Turno",
+                    ["T1", "T2", "T3"],
+                    format_func=lambda x:
+                        f"{NOMES_TURNOS[x]} — {HORARIOS[x]}",
+                    key="novo_turno"
+                )
 
             if st.button(
-                "Cadastrar",
+                "Cadastrar operador",
                 use_container_width=True
             ):
 
@@ -790,7 +842,7 @@ with st.expander(
                     )
 
                     st.success(
-                        "Operador cadastrado."
+                        "Operador cadastrado com sucesso."
                     )
 
                     st.rerun()
@@ -801,33 +853,34 @@ with st.expander(
                         "Preencha nome e função."
                     )
 
-        with col2:
+        # ----------------------------------------------------
+        # REMOÇÃO
+        # ----------------------------------------------------
 
-            st.markdown(
-                "**Remover operador**"
-            )
+        with tab_remocao:
 
-            operadores_temp = buscar_operadores()
+            operadores_remocao = buscar_operadores()
 
-            if operadores_temp:
+            if operadores_remocao:
 
-                opcoes = {
-                    f"{x[1]} — {x[2]}": x[0]
-                    for x in operadores_temp
+                opcoes_remocao = {
+                    f"{x[1]} — {x[2]} — {x[3]}": x[0]
+                    for x in operadores_remocao
                 }
 
-                escolhido = st.selectbox(
+                selecionado = st.selectbox(
                     "Operador",
-                    list(opcoes.keys())
+                    list(opcoes_remocao.keys()),
+                    key="operador_remocao"
                 )
 
                 if st.button(
-                    "Remover",
+                    "Remover operador",
                     use_container_width=True
                 ):
 
                     remover_operador(
-                        opcoes[escolhido]
+                        opcoes_remocao[selecionado]
                     )
 
                     st.success(
@@ -836,16 +889,24 @@ with st.expander(
 
                     st.rerun()
 
-        with col3:
+            else:
 
-            st.markdown(
-                "**Sessão**"
+                st.info(
+                    "Nenhum operador cadastrado."
+                )
+
+        # ----------------------------------------------------
+        # SESSÃO
+        # ----------------------------------------------------
+
+        with tab_sessao:
+
+            st.write(
+                "Você está conectado como administrador."
             )
 
-            st.write("")
-
             if st.button(
-                "🚪 Sair da gestão",
+                "Sair da gestão",
                 use_container_width=True
             ):
 
@@ -855,16 +916,16 @@ with st.expander(
 
 
 # ============================================================
-# TÍTULO
+# TÍTULO DA PÁGINA
 # ============================================================
 
 st.markdown(
     """
-    <div class="secao-titulo">
+    <div class="titulo-secao">
         Monitoramento Amazon
     </div>
 
-    <div class="secao-subtitulo">
+    <div class="subtitulo-secao">
         Gestão de operadores e escala operacional
     </div>
     """,
@@ -873,18 +934,18 @@ st.markdown(
 
 
 # ============================================================
-# SEMANA
+# PERÍODO
 # ============================================================
 
-col_periodo, col_vazia = st.columns(
-    [2, 4]
+col_periodo, col_espaco = st.columns(
+    [2, 5]
 )
 
 with col_periodo:
 
     semana_labels = [
-        x["nome"]
-        for x in semanas
+        semana["nome"]
+        for semana in semanas
     ]
 
     semana_escolhida = st.selectbox(
@@ -911,26 +972,30 @@ operadores = buscar_operadores()
 
 
 # ============================================================
-# MÉTRICAS
+# CONTAGEM
 # ============================================================
 
 total = len(operadores)
 
-t1 = len([
-    x for x in operadores
-    if x[3] == "T1"
-])
+t1 = sum(
+    1 for operador in operadores
+    if operador[3] == "T1"
+)
 
-t2 = len([
-    x for x in operadores
-    if x[3] == "T2"
-])
+t2 = sum(
+    1 for operador in operadores
+    if operador[3] == "T2"
+)
 
-t3 = len([
-    x for x in operadores
-    if x[3] == "T3"
-])
+t3 = sum(
+    1 for operador in operadores
+    if operador[3] == "T3"
+)
 
+
+# ============================================================
+# MÉTRICAS
+# ============================================================
 
 m1, m2, m3, m4 = st.columns(4)
 
@@ -939,7 +1004,7 @@ with m1:
 
     st.markdown(
         f"""
-        <div class="metric-card metric-card-laranja">
+        <div class="metric-amazon metric-principal">
 
             <div class="metric-numero">
                 {total}
@@ -959,7 +1024,7 @@ with m2:
 
     st.markdown(
         f"""
-        <div class="metric-card metric-card-azul">
+        <div class="metric-amazon metric-turno">
 
             <div class="metric-numero">
                 {t1}
@@ -979,7 +1044,7 @@ with m3:
 
     st.markdown(
         f"""
-        <div class="metric-card metric-card-azul">
+        <div class="metric-amazon metric-turno">
 
             <div class="metric-numero">
                 {t2}
@@ -999,7 +1064,7 @@ with m4:
 
     st.markdown(
         f"""
-        <div class="metric-card metric-card-azul">
+        <div class="metric-amazon metric-turno">
 
             <div class="metric-numero">
                 {t3}
@@ -1016,19 +1081,19 @@ with m4:
 
 
 # ============================================================
-# SELETOR DE TURNO
+# SELEÇÃO DE TURNO
 # ============================================================
 
 st.write("")
 
 st.markdown(
     """
-    <div class="secao-titulo">
+    <div class="titulo-secao">
         Visualização da operação
     </div>
 
-    <div class="secao-subtitulo">
-        Selecione o turno que deseja visualizar
+    <div class="subtitulo-secao">
+        Selecione o turno que deseja acompanhar
     </div>
     """,
     unsafe_allow_html=True
@@ -1036,10 +1101,10 @@ st.markdown(
 
 
 turno_selecionado = st.radio(
-    "Turno",
+    "Escolha o turno",
     ["T1", "T2", "T3"],
-    format_func=lambda x:
-        f"{NOMES_TURNOS[x]}  •  {HORARIOS[x]}",
+    format_func=lambda turno:
+        f"{NOMES_TURNOS[turno]}  •  {HORARIOS[turno]}",
     horizontal=True,
     label_visibility="collapsed"
 )
@@ -1050,13 +1115,14 @@ turno_selecionado = st.radio(
 # ============================================================
 
 operadores_turno = [
-    x for x in operadores
-    if x[3] == turno_selecionado
+    operador
+    for operador in operadores
+    if operador[3] == turno_selecionado
 ]
 
 
 # ============================================================
-# PAINEL
+# PAINEL DO TURNO
 # ============================================================
 
 st.markdown(
@@ -1069,8 +1135,8 @@ st.markdown(
 
         <div class="painel-subtitulo">
             {HORARIOS[turno_selecionado]}
-            &nbsp; • &nbsp;
-            {len(operadores_turno)} operadores
+            •
+            {len(operadores_turno)} operadores escalados
         </div>
 
     </div>
@@ -1080,12 +1146,12 @@ st.markdown(
 
 
 # ============================================================
-# CABEÇALHO TURNO
+# BARRA DO TURNO
 # ============================================================
 
 st.markdown(
     f"""
-    <div class="turno-header">
+    <div class="turno-barra">
 
         <div class="turno-nome">
             🕒 {NOMES_TURNOS[turno_selecionado]}
@@ -1117,10 +1183,10 @@ DIAS = [
 # CABEÇALHO
 # ============================================================
 
-headers = st.columns(
+cabecalho = st.columns(
     [
-        2.4,
-        1.7,
+        2.5,
+        1.8,
         1.7,
         1.7,
         1.7,
@@ -1129,9 +1195,9 @@ headers = st.columns(
 )
 
 
-headers[0].markdown(
+cabecalho[0].markdown(
     """
-    <div class="cabecalho cabecalho-esquerda">
+    <div class="cabecalho-tabela cabecalho-esquerda">
         OPERADOR
     </div>
     """,
@@ -1139,9 +1205,9 @@ headers[0].markdown(
 )
 
 
-headers[1].markdown(
+cabecalho[1].markdown(
     """
-    <div class="cabecalho cabecalho-esquerda">
+    <div class="cabecalho-tabela cabecalho-esquerda">
         FUNÇÃO
     </div>
     """,
@@ -1149,18 +1215,20 @@ headers[1].markdown(
 )
 
 
-for i, (dia, _) in enumerate(
+for indice, (dia, _) in enumerate(
     DIAS,
     2
 ):
 
-    headers[i].markdown(
+    cabecalho[indice].markdown(
         f"""
-        <div class="cabecalho">
+        <div class="cabecalho-tabela">
 
-            {dia.upper()}<br>
+            {dia.upper()}
 
-            <span style="font-weight:600;">
+            <br>
+
+            <span>
                 ({semana[dia]})
             </span>
 
@@ -1171,7 +1239,7 @@ for i, (dia, _) in enumerate(
 
 
 # ============================================================
-# LINHAS
+# ESCALA
 # ============================================================
 
 for operador in operadores_turno:
@@ -1180,6 +1248,10 @@ for operador in operadores_turno:
     nome = operador[1]
     funcao = operador[2]
 
+
+    # --------------------------------------------------------
+    # BUSCA STATUS
+    # --------------------------------------------------------
 
     status = buscar_status(
         operador_id,
@@ -1214,10 +1286,14 @@ for operador in operadores_turno:
     status_lista = list(status)
 
 
+    # --------------------------------------------------------
+    # LINHA
+    # --------------------------------------------------------
+
     linha = st.columns(
         [
-            2.4,
-            1.7,
+            2.5,
+            1.8,
             1.7,
             1.7,
             1.7,
@@ -1232,7 +1308,7 @@ for operador in operadores_turno:
 
     linha[0].markdown(
         f"""
-        <div class="nome">
+        <div class="nome-operador">
             {nome}
         </div>
         """,
@@ -1246,7 +1322,7 @@ for operador in operadores_turno:
 
     linha[1].markdown(
         f"""
-        <div class="funcao">
+        <div class="funcao-operador">
             {funcao}
         </div>
         """,
@@ -1258,40 +1334,29 @@ for operador in operadores_turno:
     # DIAS
     # --------------------------------------------------------
 
-    for i, (dia, _) in enumerate(
+    for indice, (dia, _) in enumerate(
         DIAS,
         2
     ):
 
-        valor = status_lista[i - 2]
+        valor = status_lista[
+            indice - 2
+        ]
 
 
-        if valor == "FOLGA":
+        # ====================================================
+        # TRABALHO
+        # ====================================================
 
-            linha[i].markdown(
-                """
-                <div class="folga">
+        if valor != "FOLGA":
 
-                    FOLGA
-
-                    <div class="folga-info">
-                        Descanso
-                    </div>
-
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        else:
-
-            linha[i].markdown(
+            linha[indice].markdown(
                 f"""
-                <div class="trabalho">
+                <div class="status-trabalho">
 
                     TRABALHO
 
-                    <div class="trabalho-horario">
+                    <div class="horario-trabalho">
                         {HORARIOS[turno_selecionado]}
                     </div>
 
@@ -1301,9 +1366,31 @@ for operador in operadores_turno:
             )
 
 
-        # ----------------------------------------------------
-        # GESTÃO
-        # ----------------------------------------------------
+        # ====================================================
+        # FOLGA
+        # ====================================================
+
+        else:
+
+            linha[indice].markdown(
+                """
+                <div class="status-folga">
+
+                    FOLGA
+
+                    <div class="descanso">
+                        Descanso
+                    </div>
+
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+        # ====================================================
+        # BOTÃO DE GESTÃO
+        # ====================================================
 
         if st.session_state.autenticado:
 
@@ -1318,24 +1405,30 @@ for operador in operadores_turno:
                 novo_valor = "FOLGA"
 
 
-            if linha[i].button(
+            if linha[indice].button(
                 "Alternar",
                 key=(
-                    f"btn_"
-                    f"{operador_id}_"
-                    f"{semana_id}_"
-                    f"{dia}"
+                    "alternar_"
+                    + str(operador_id)
+                    + "_"
+                    + semana_id
+                    + "_"
+                    + dia
                 ),
                 use_container_width=True
             ):
 
-                status_lista[i - 2] = novo_valor
+                status_lista[
+                    indice - 2
+                ] = novo_valor
+
 
                 salvar_status(
                     operador_id,
                     semana_id,
                     *status_lista
                 )
+
 
                 st.rerun()
 
@@ -1347,7 +1440,8 @@ for operador in operadores_turno:
 if not operadores_turno:
 
     st.info(
-        f"Nenhum operador cadastrado no {NOMES_TURNOS[turno_selecionado]}."
+        f"Nenhum operador cadastrado no "
+        f"{NOMES_TURNOS[turno_selecionado]}."
     )
 
 

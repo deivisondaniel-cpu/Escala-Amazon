@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta
 
 # Configuração da página web
-st.set_page_config(page_title="Sistema Escala Amazon", layout="wide")
+st.set_page_config(page_title="Escala Monitoramento", layout="wide")
 
 # Nome do arquivo de banco de dados permanente
 ARQUIVO_BANCO = "escala_amazon_db_v2.csv"

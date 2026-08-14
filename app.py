@@ -3,15 +3,21 @@ import pandas as pd
 import os
 from datetime import datetime, timedelta
 
-# Configuração da página web
-st.set_page_config(page_title="Escala monitoramento", layout="wide")
+# Configuração da página web - ÍCONE DE CAIXA ADICIONADO (📦)
+st.set_page_config(page_title="Escala monitoramento", page_icon="📦", layout="wide")
 
 # Nome do arquivo de banco de dados permanente
 ARQUIVO_BANCO = "escala_amazon_db_v2.csv"
 
-# Estilização CSS refinada com cartões de FOLGA em Amarelo Suave/Corporativo
+# Estilização CSS refinada com remoção completa de elementos do Streamlit
 st.markdown("""
     <style>
+    /* REMOVE O CABEÇALHO, MENU E RODAPÉ PADRÃO DO STREAMLIT */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    .stDecoration {display:none !important;}
+    
     .titulo { text-align: center; color: #131921; font-family: 'Segoe UI', sans-serif; font-weight: bold; margin-bottom: 25px; font-size: 28px; }
     
     /* Cartões de TRABALHO: Escuro elegante com borda laranja */

@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import os
 from datetime import datetime, timedelta
@@ -9,32 +10,14 @@ st.set_page_config(page_title="Escala monitoramento", page_icon="📦", layout="
 # Nome do arquivo de banco de dados permanente
 ARQUIVO_BANCO = "escala_amazon_db_v2.csv"
 
-# 1. TRATOR CSS ATUALIZADO (Bloqueia elementos nativos do Streamlit Cloud)
+# 1. TRATOR CSS PARA REFORÇAR NO AMBIENTE LOCAL
 st.markdown("""
     <style>
-    /* Esconde ferramentas nativas, cabeçalho e rodapé padrão */
     #MainMenu {visibility: hidden !important;}
     header {visibility: hidden !important;}
     footer {visibility: hidden !important;}
     .stDecoration {display:none !important;}
-    [data-testid="stHeader"] {display: none !important;}
-    [data-testid="stFooter"] {display: none !important;}
-    [data-testid="stToolbar"] {display: none !important;}
     
-    /* Remove as margens e padding gerados automaticamente na área do viewer */
-    div[class*="StyledEmbedHoverContainer"],
-    div[class*="viewerBadge"],
-    .viewer-badge,
-    [data-baseweb="popover"] {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        height: 0 !important;
-        width: 0 !important;
-        pointer-events: none !important;
-    }
-    
-    /* Estilos customizados da aplicação */
     .titulo { text-align: center; color: #131921; font-family: 'Segoe UI', sans-serif; font-weight: bold; margin-bottom: 25px; font-size: 28px; }
     .card-trabalho { background-color: #232F3E; color: white; padding: 6px 8px; border-radius: 6px; text-align: center; font-weight: 600; font-size: 12px; border-left: 4px solid #FF9900; margin-bottom: 12px; }
     .card-folga { background-color: #FDF1AA; color: #403000; padding: 6px 8px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 12px; border-left: 4px solid #E6A100; margin-bottom: 12px; }
@@ -46,6 +29,51 @@ st.markdown("""
     .stMainBlockContainer { padding-top: 20px !important; padding-bottom: 20px !important; }
     </style>
 """, unsafe_allow_html=True)
+
+# 2. INJEÇÃO DE JAVASCRIPT MASTER (Quebra a segurança e limpa o elemento do pai)
+components.html("""
+    <script>
+    function exterminarSeloTeimoso() {
+        // Acessa a página principal de fora do iframe atual
+        const documentoPai = window.parent.document;
+        
+        // 1. Procura e destrói o maldito popover flutuante
+        const popovers = documentoPai.querySelectorAll('[data-baseweb="popover"], div[class*="StyledEmbedHoverContainer"]');
+        popovers.forEach(el => el.remove());
+        
+        // 2. Procura o botão flutuante redondo (ícone) e a barra vermelha e apaga de vez
+        const links = documentoPai.querySelectorAll('a');
+        links.forEach(link => {
+            if (link.href.includes('streamlit.io') || link.innerHTML.includes('Hosted with Streamlit')) {
+                let ancestral = link.closest('div');
+                // Sobe até achar o container flutuante maior na barra inferior e deleta
+                for (let i = 0; i < 4; i++) {
+                    if (ancestral && (ancestral.style.position === 'fixed' || ancestral.className.includes('viewer-badge'))) {
+                        ancestral.remove();
+                        break;
+                    }
+                    if (ancestral) ancestral = ancestral.parentElement;
+                }
+            }
+        });
+        
+        // 3. Aplica CSS direto na raiz do documento pai para garantir que nada herde o bloco vermelho
+        const estiloEspecial = documentoPai.createElement('style');
+        estiloEspecial.innerHTML = `
+            [data-testid="stFooter"], .viewer-badge, div[class*="StyledEmbedHoverContainer"], [data-baseweb="popover"] {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+            }
+        `;
+        documentoPai.head.appendChild(estiloEspecial);
+    }
+    
+    // Executa imediatamente e repete a cada 300 milissegundos para não dar chance dele voltar
+    setInterval(exterminarSeloTeimoso, 300);
+    </script>
+""", height=0, width=0)
 
 st.markdown("<h1 class='titulo'>Escala Amazon</h1>", unsafe_allow_html=True)
 
@@ -105,13 +133,5 @@ def inicializar_banco():
             {"Turno": "T2", "Nome": "ISABEL", "Função": "LÍDER/SEGURANÇA", "Sexta": "15:00 às 19:00", "Sábado": "FOLGA", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
             {"Turno": "T2", "Nome": "ANDREZA OLIVEIRA", "Função": "PICKUP", "Sexta": "15:00 às 19:00", "Sábado": "FOLGA", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
             {"Turno": "T2", "Nome": "ROZIANE DA SILVA", "Função": "PICKUP", "Sexta": "FOLGA", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
-            {"Turno": "T2", "Nome": "DAIANE", "Função": "SEGURANÇA", "Sexta": "FOLGA", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"}
-        ]
-        df = pd.DataFrame(operadores_padrao)
-        df["ID_Semana"] = id_semana_ativa
-        df.to_csv(ARQUIVO_BANCO, index=False)
-
-inicializar_banco()
-
-# Mensagem informativa temporária no final para indicar que o script rodou limpo
-st.caption("Sistema de Escala — Visualização Otimizada.")
+            {"Turno": "T2", "Nome": "DAIANE", "Função": "SEGURANÇA", "Sexta": "FOLGA", "Sábado": "15:00 às 19:00", "Domingo": "15:00 às 19:00", "Segunda": "15:00 às 19:00"},
+            {"Turno": "T2",

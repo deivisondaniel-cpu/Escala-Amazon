@@ -1,3 +1,45 @@
+# Estilização CSS refinada com remoção completa de elementos do Streamlit
+st.markdown("""
+    <style>
+    /* REMOVE O CABEÇALHO, MENU E RODAPÉ PADRÃO DO STREAMLIT */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    .stDecoration {display:none !important;}
+    
+    /* TOTALMENTE BLINDADO: Esconde o botão de status, a toolbar flutuante e o menu de perfil do cantinho */
+    div[data-testid="stStatusWidget"],
+    div[data-testid="stContainerToolbar"],
+    .stActionButton, 
+    iframe[title="Managed Hosting Toolbar"],
+    #tabs-bnd-pipeline-root,
+    [data-testid="stEmbedHover"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    
+    .titulo { text-align: center; color: #131921; font-family: 'Segoe UI', sans-serif; font-weight: bold; margin-bottom: 25px; font-size: 28px; }
+    
+    /* Cartões de TRABALHO: Escuro elegante com borda laranja */
+    .card-trabalho { background-color: #232F3E; color: white; padding: 6px 8px; border-radius: 6px; text-align: center; font-weight: 600; font-size: 12px; border-left: 4px solid #FF9900; margin-bottom: 12px; }
+    
+    /* Cartões de FOLGA: Amarelo suave/fosco com texto escuro para chamar atenção com elegância */
+    .card-folga { background-color: #FDF1AA; color: #403000; padding: 6px 8px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 12px; border-left: 4px solid #E6A100; margin-bottom: 12px; }
+    
+    .sub-info { font-size: 10px; color: #FF9900; font-weight: bold; }
+    .sub-info-folga { font-size: 10px; color: #8F7014; font-weight: normal; }
+    
+    .header-col { text-align: center; font-weight: bold; font-size: 13px; color: #131921; margin-bottom: 10px; }
+    
+    /* Ajuste de espaçamento para o nome e função acompanharem o bloco */
+    .nome-operador { padding-top: 8px; font-size: 13px; margin-bottom: 12px; }
+    .funcao-operador { padding-top: 8px; font-size: 12px; color: #64748B; margin-bottom: 12px; }
+    
+    .stMainBlockContainer { padding-top: 20px !important; padding-bottom: 20px !important; }
+    </style>
+""", unsafe_allow_html=True)
 import streamlit as st
 import pandas as pd
 import os

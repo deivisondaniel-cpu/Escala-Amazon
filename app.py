@@ -88,498 +88,252 @@ NOMES_TURNOS = {
 st.markdown("""
 <style>
 
-
-
-\#MainMenu {
-
-&#x20;   visibility: hidden;
-
+#MainMenu {
+    visibility: hidden;
 }
-
-
 
 footer {
-
-&#x20;   visibility: hidden;
-
+    visibility: hidden;
 }
-
-
 
 .stDecoration {
-
-&#x20;   display: none !important;
-
+    display: none !important;
 }
 
 
-
-
-
-/\* ============================================================
-
-&#x20;  TÍTULO
-
-&#x20;  ============================================================ \*/
-
-
+/* ============================================================
+   TÍTULO
+   ============================================================ */
 
 .titulo {
-
-&#x20;   text-align: center;
-
-&#x20;   color: #131921;
-
-&#x20;   font-family: 'Segoe UI', sans-serif;
-
-&#x20;   font-size: 30px;
-
-&#x20;   font-weight: 800;
-
-&#x20;   margin-top: 5px;
-
-&#x20;   margin-bottom: 5px;
-
+    text-align: center;
+    color: #131921;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
-
-
 
 .subtitulo {
-
-&#x20;   text-align: center;
-
-&#x20;   color: #64748B;
-
-&#x20;   font-size: 13px;
-
-&#x20;   margin-bottom: 25px;
-
+    text-align: center;
+    color: #64748B;
+    font-size: 13px;
+    margin-bottom: 25px;
 }
 
 
-
-
-
-/\* ============================================================
-
-&#x20;  CABEÇALHO DOS TURNOS
-
-&#x20;  ============================================================ \*/
-
-
+/* ============================================================
+   CABEÇALHO DOS TURNOS
+   ============================================================ */
 
 .turno-header {
-
-&#x20;   display: flex;
-
-&#x20;   align-items: center;
-
-&#x20;   gap: 10px;
-
-&#x20;   margin-top: 28px;
-
-&#x20;   margin-bottom: 5px;
-
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px;
+    margin-bottom: 5px;
 }
-
-
 
 .turno-titulo {
-
-&#x20;   font-size: 21px;
-
-&#x20;   font-weight: 800;
-
-&#x20;   color: #131921;
-
+    font-size: 21px;
+    font-weight: 800;
+    color: #131921;
 }
-
-
 
 .turno-horario {
-
-&#x20;   background: #FFF3E0;
-
-&#x20;   color: #D97706;
-
-&#x20;   border: 1px solid #FDBA74;
-
-&#x20;   padding: 4px 10px;
-
-&#x20;   border-radius: 20px;
-
-&#x20;   font-size: 12px;
-
-&#x20;   font-weight: 700;
-
+    background: #FFF3E0;
+    color: #D97706;
+    border: 1px solid #FDBA74;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
 }
 
 
-
-
-
-/\* ============================================================
-
-&#x20;  CABEÇALHOS
-
-&#x20;  ============================================================ \*/
-
-
+/* ============================================================
+   CABEÇALHOS
+   ============================================================ */
 
 .header-col {
-
-&#x20;   text-align: center;
-
-&#x20;   font-weight: 800;
-
-&#x20;   font-size: 12px;
-
-&#x20;   color: #475569;
-
-&#x20;   margin-bottom: 8px;
-
+    text-align: center;
+    font-weight: 800;
+    font-size: 12px;
+    color: #475569;
+    margin-bottom: 8px;
 }
-
-
 
 .header-esquerda {
-
-&#x20;   text-align: left;
-
+    text-align: left;
 }
 
 
-
-
-
-/\* ============================================================
-
-&#x20;  OPERADOR
-
-&#x20;  ============================================================ \*/
-
-
+/* ============================================================
+   OPERADOR
+   ============================================================ */
 
 .nome-operador {
-
-&#x20;   padding-top: 9px;
-
-&#x20;   font-size: 13px;
-
-&#x20;   color: #111827;
-
+    padding-top: 9px;
+    font-size: 13px;
+    color: #111827;
 }
-
-
 
 .funcao-operador {
-
-&#x20;   padding-top: 9px;
-
-&#x20;   font-size: 11px;
-
-&#x20;   color: #64748B;
-
+    padding-top: 9px;
+    font-size: 11px;
+    color: #64748B;
 }
 
 
-
-
-
-/\* ============================================================
-
-&#x20;  CARD TRABALHO
-
-&#x20;  ============================================================ \*/
-
-
+/* ============================================================
+   CARD TRABALHO
+   ============================================================ */
 
 .card-trabalho {
+    background: linear-gradient(
+        135deg,
+        #263646,
+        #1F2937
+    );
 
-&#x20;   background: linear-gradient(
+    color: white;
 
-&#x20;       135deg,
+    padding: 8px 5px;
 
-&#x20;       #263646,
+    border-radius: 7px;
 
-&#x20;       #1F2937
+    text-align: center;
 
-&#x20;   );
+    font-weight: 700;
 
+    font-size: 11px;
 
+    border-left: 4px solid #FF9900;
 
-&#x20;   color: white;
+    margin-bottom: 4px;
 
-
-
-&#x20;   padding: 8px 5px;
-
-
-
-&#x20;   border-radius: 7px;
-
-
-
-&#x20;   text-align: center;
-
-
-
-&#x20;   font-weight: 700;
-
-
-
-&#x20;   font-size: 11px;
-
-
-
-&#x20;   border-left: 4px solid #FF9900;
-
-
-
-&#x20;   margin-bottom: 4px;
-
-
-
-&#x20;   box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
 }
-
-
 
 .sub-info {
-
-&#x20;   color: #FFB84D;
-
-&#x20;   font-size: 10px;
-
-&#x20;   margin-top: 3px;
-
+    color: #FFB84D;
+    font-size: 10px;
+    margin-top: 3px;
 }
 
 
-
-
-
-/\* ============================================================
-
-&#x20;  CARD FOLGA
-
-&#x20;  ============================================================ \*/
-
-
+/* ============================================================
+   CARD FOLGA
+   ============================================================ */
 
 .card-folga {
+    background: #F1F5F9;
 
-&#x20;   background: #F1F5F9;
+    color: #475569;
 
+    padding: 8px 5px;
 
+    border-radius: 7px;
 
-&#x20;   color: #475569;
+    text-align: center;
 
+    font-weight: 800;
 
+    font-size: 11px;
 
-&#x20;   padding: 8px 5px;
+    border-left: 4px solid #94A3B8;
 
-
-
-&#x20;   border-radius: 7px;
-
-
-
-&#x20;   text-align: center;
-
-
-
-&#x20;   font-weight: 800;
-
-
-
-&#x20;   font-size: 11px;
-
-
-
-&#x20;   border-left: 4px solid #94A3B8;
-
-
-
-&#x20;   margin-bottom: 4px;
-
+    margin-bottom: 4px;
 }
-
-
 
 .sub-info-folga {
-
-&#x20;   color: #94A3B8;
-
-&#x20;   font-size: 10px;
-
-&#x20;   margin-top: 3px;
-
+    color: #94A3B8;
+    font-size: 10px;
+    margin-top: 3px;
 }
 
 
-
-
-
-/\* ============================================================
-
-&#x20;  SEPARADOR
-
-&#x20;  ============================================================ \*/
-
-
+/* ============================================================
+   SEPARADOR
+   ============================================================ */
 
 .separador {
-
-&#x20;   border: 0;
-
-&#x20;   border-top: 1px solid #E2E8F0;
-
-&#x20;   margin-top: 2px;
-
-&#x20;   margin-bottom: 15px;
-
+    border: 0;
+    border-top: 1px solid #E2E8F0;
+    margin-top: 2px;
+    margin-bottom: 15px;
 }
 
 
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
 
-
-
-/\* ============================================================
-
-&#x20;  SIDEBAR
-
-&#x20;  ============================================================ \*/
-
-
-
-section\[data-testid="stSidebar"] {
-
-&#x20;   border-right: 1px solid #E2E8F0;
-
+section[data-testid="stSidebar"] {
+    border-right: 1px solid #E2E8F0;
 }
-
-
 
 .sidebar-titulo {
-
-&#x20;   color: #FF9900;
-
-&#x20;   font-size: 20px;
-
-&#x20;   font-weight: 800;
-
+    color: #FF9900;
+    font-size: 20px;
+    font-weight: 800;
 }
-
-
 
 .sidebar-status {
-
-&#x20;   background: #ECFDF5;
-
-&#x20;   color: #047857;
-
-&#x20;   padding: 8px;
-
-&#x20;   border-radius: 7px;
-
-&#x20;   font-size: 12px;
-
-&#x20;   font-weight: 700;
-
+    background: #ECFDF5;
+    color: #047857;
+    padding: 8px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 700;
 }
 
 
-
-
-
-/\* ============================================================
-
-&#x20;  MÉTRICAS
-
-&#x20;  ============================================================ \*/
-
-
+/* ============================================================
+   MÉTRICAS
+   ============================================================ */
 
 .metric-card {
-
-&#x20;   background: white;
-
-&#x20;   border: 1px solid #E2E8F0;
-
-&#x20;   border-radius: 10px;
-
-&#x20;   padding: 12px;
-
-&#x20;   text-align: center;
-
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
 }
-
-
 
 .metric-numero {
-
-&#x20;   font-size: 22px;
-
-&#x20;   font-weight: 800;
-
-&#x20;   color: #131921;
-
+    font-size: 22px;
+    font-weight: 800;
+    color: #131921;
 }
-
-
 
 .metric-label {
-
-&#x20;   font-size: 11px;
-
-&#x20;   color: #64748B;
-
+    font-size: 11px;
+    color: #64748B;
 }
 
 
-
-
-
-/\* ============================================================
-
-&#x20;  BOTÕES
-
-&#x20;  ============================================================ \*/
-
-
+/* ============================================================
+   BOTÕES
+   ============================================================ */
 
 .stButton > button {
-
-&#x20;   border-radius: 7px;
-
-&#x20;   font-weight: 600;
-
+    border-radius: 7px;
+    font-weight: 600;
 }
 
 
-
-
-
-/\* ============================================================
-
-&#x20;  CONTAINER PRINCIPAL
-
-&#x20;  ============================================================ \*/
-
-
+/* ============================================================
+   CONTAINER PRINCIPAL
+   ============================================================ */
 
 .stMainBlockContainer {
-
-&#x20;   padding-top: 18px !important;
-
-&#x20;   padding-bottom: 30px !important;
-
+    padding-top: 18px !important;
+    padding-bottom: 30px !important;
 }
 
-
-
+</style>
 """, unsafe_allow_html=True)
 
 
@@ -1210,7 +964,7 @@ for turno in ["T1", "T2", "T3"]:
         linha[0].markdown(
             f"""
             <div class='nome-operador'>
-                {nome}
+                <b>{nome}</b>
             </div>
             """,
             unsafe_allow_html=True

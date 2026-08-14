@@ -319,9 +319,11 @@ with st.sidebar:
     st.markdown("<div class='sidebar-titulo'>Amazon Escala</div>", unsafe_allow_html=True)
     st.divider()
 
-    # Se NÃO estiver autenticado, exibe apenas um botão flutuante discreto de Login
-    if not st.session_state.autenticado:
-        with st.popover("⚙️ Entrar como Admin", use_container_width=True):
+    # Menu Expansível Compacto para Autenticação/Configurações
+    menu_label = "⚙️ Área Administrativa" if not st.session_state.autenticado else "🟢 Modo Gestão Ativo"
+    
+    with st.expander(menu_label, expanded=False):
+        if not st.session_state.autenticado:
             with st.form("login_form"):
                 usuario = st.text_input("Usuário")
                 senha = st.text_input("Senha", type="password")
@@ -333,13 +335,8 @@ with st.sidebar:
                         st.rerun()
                     else:
                         st.error("Incorreto.")
-                        
-    # Se ESTIVER autenticado, mostra o Modo Gestão de forma organizada
-    else:
-        st.markdown("<div class='sidebar-status'>🟢 Modo Gestão Ativo</div>", unsafe_allow_html=True)
-        st.divider()
-        
-        with st.expander("➕ Novo Operador", expanded=False):
+        else:
+            st.markdown("### ➕ Novo operador")
             novo_nome = st.text_input("Nome", key="novo_nome")
             nova_funcao = st.text_input("Função", key="nova_funcao")
             novo_turno = st.selectbox(
@@ -355,8 +352,10 @@ with st.sidebar:
                 else:
                     st.warning("Preencha os campos.")
 
-        with st.expander("❌ Remover Operador", expanded=False):
+            st.divider()
+            st.markdown("### ❌ Remover operador")
             operadores_lista = buscar_operadores()
+
             if operadores_lista:
                 opcoes_remocao = {f"{x[1]} — {x[2]}": x[0] for x in operadores_lista}
                 selecionado = st.selectbox("Operador", list(opcoes_remocao.keys()))
@@ -368,10 +367,10 @@ with st.sidebar:
             else:
                 st.info("Nenhum operador.")
 
-        st.divider()
-        if st.button("🚪 Sair do Modo Gestão", use_container_width=True):
-            st.session_state.autenticado = False
-            st.rerun()
+            st.divider()
+            if st.button("🚪 Sair do Modo Gestão", use_container_width=True):
+                st.session_state.autenticado = False
+                st.rerun()
 
 # ============================================================
 # CONTEÚDO PRINCIPAL

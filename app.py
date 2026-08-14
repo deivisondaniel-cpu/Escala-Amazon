@@ -18,6 +18,11 @@ st.markdown("""
     footer {visibility: hidden;}
     .stDecoration {display:none !important;}
     
+    /* REMOVE O SELO 'HOSTED WITH STREAMLIT' NO CANTO INFERIOR DIREITO */
+    div[data-testid="stStatusWidget"] {
+        display: none !important;
+    }
+    
     .titulo { text-align: center; color: #131921; font-family: 'Segoe UI', sans-serif; font-weight: bold; margin-bottom: 25px; font-size: 28px; }
     
     /* Cartões de TRABALHO: Escuro elegante com borda laranja */
@@ -174,7 +179,7 @@ with st.sidebar:
 
         st.divider()
 
-        # NOVA ABA: REMOVER OPERADOR (Pessoas cadastradas na semana atual)
+        # REMOVER OPERADOR (Pessoas cadastradas na semana atual)
         st.markdown("**❌ Remover / Desligar Operador**")
         lista_operadores_atuais = sorted(df_banco[df_banco["SemanaID"] == id_semana_ativa]["Nome"].unique())
         
@@ -184,11 +189,9 @@ with st.sidebar:
             
             if st.button("Confirmar Exclusão", type="primary", use_container_width=True):
                 if tipo_remocao == "Apenas da semana atual":
-                    # Remove apenas o registro vinculado à ID da semana ativa
                     df_banco = df_banco[~((df_banco["SemanaID"] == id_semana_ativa) & (df_banco["Nome"] == operador_para_remover))]
                     st.success(f"Removido da escala da semana {id_semana_ativa}!")
                 else:
-                    # Remove completamente o funcionário de qualquer histórico
                     df_banco = df_banco[df_banco["Nome"] != operador_para_remover]
                     st.success(f"{operador_para_remover} deletado do sistema permanentemente!")
                 

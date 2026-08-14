@@ -169,7 +169,7 @@ if df_banco[df_banco["SemanaID"] == id_semana_ativa].empty:
 
 # --- PAINEL LATERAL (GESTÃO E AUTENTICAÇÃO) ---
 with st.sidebar:
-    st.markdown("<h3 style='color:#FF9900; margin-top:0;'>🔐 Área do Coordenador</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color:#FF9900; margin-top:0;'>🔐 Área do Gestor</h3>", unsafe_allow_html=True)
     
     if not st.session_state.autenticado:
         with st.form(key="formulario_login"):
@@ -185,7 +185,7 @@ with st.sidebar:
                 else:
                     st.error("Dados incorretos.")
     else:
-        st.write("🟢 Modo Coordenador Ativo")
+        st.write("🟢 Ativo")
         st.info("💡 DICA: Agora você pode clicar nos botões diretamente na tabela para alterar folgas rapidamente!")
         st.divider()
         

@@ -1,84 +1,26 @@
 import streamlit as st
-import sqlite3
+import pandas as pd
+import os
 from datetime import datetime, timedelta
 
 
 # ============================================================
-# CONFIGURAÇÃO
+# CONFIGURAÇÃO DA PÁGINA
 # ============================================================
 
 st.set_page_config(
-    page_title="Escala Amazon",
-    page_icon="📦",
+    page_title="Escala do Turno",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 
 # ============================================================
-# BANCO INTERNO
-# ============================================================
-# Não utiliza CSV, Excel ou Google Sheets.
-# O próprio aplicativo possui seu banco SQLite.
-
-BANCO = "escala_amazon.db"
-
-
-def conectar():
-    return sqlite3.connect(BANCO, check_same_thread=False)
-
-
-def criar_banco():
-
-    conn = conectar()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS operadores (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            funcao TEXT NOT NULL,
-            turno TEXT NOT NULL,
-            ativo INTEGER DEFAULT 1
-        )
-    """)
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS escala (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            operador_id INTEGER NOT NULL,
-            semana_id TEXT NOT NULL,
-            sexta TEXT NOT NULL,
-            sabado TEXT NOT NULL,
-            domingo TEXT NOT NULL,
-            segunda TEXT NOT NULL,
-            FOREIGN KEY (operador_id) REFERENCES operadores(id)
-        )
-    """)
-
-    conn.commit()
-    conn.close()
-
-
-criar_banco()
-
-
-# ============================================================
-# HORÁRIOS OFICIAIS
+# ARQUIVO LOCAL DO SISTEMA
 # ============================================================
 
-HORARIOS = {
-    "T1": "07:00 às 15:00",
-    "T2": "15:00 às 23:00",
-    "T3": "23:00 às 07:00"
-}
-
-
-NOMES_TURNOS = {
-    "T1": "Turno 1",
-    "T2": "Turno 2",
-    "T3": "Turno 3"
-}
+ARQUIVO_BANCO = "escala_amazon_db.csv"
 
 
 # ============================================================
@@ -88,438 +30,736 @@ NOMES_TURNOS = {
 st.markdown("""
 <style>
 
-#MainMenu {
-    visibility: hidden;
-}
+    /* ========================================================
+       OCULTAR ELEMENTOS DESNECESSÁRIOS
+       ======================================================== */
 
-footer {
-    visibility: hidden;
-}
+    #MainMenu {
+        visibility: hidden;
+    }
 
-.stDecoration {
-    display: none !important;
-}
+    footer {
+        visibility: hidden;
+    }
 
-
-/* ============================================================
-   TÍTULO
-   ============================================================ */
-
-.titulo {
-    text-align: center;
-    color: #131921;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 30px;
-    font-weight: 800;
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-.subtitulo {
-    text-align: center;
-    color: #64748B;
-    font-size: 13px;
-    margin-bottom: 25px;
-}
+    .stDecoration {
+        display: none !important;
+    }
 
 
-/* ============================================================
-   CABEÇALHO DOS TURNOS
-   ============================================================ */
+    /* ========================================================
+       ESPAÇAMENTO SUPERIOR
+       ======================================================== */
 
-.turno-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 28px;
-    margin-bottom: 5px;
-}
-
-.turno-titulo {
-    font-size: 21px;
-    font-weight: 800;
-    color: #131921;
-}
-
-.turno-horario {
-    background: #FFF3E0;
-    color: #D97706;
-    border: 1px solid #FDBA74;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-}
+    .stMainBlockContainer {
+        padding-top: 55px !important;
+        padding-bottom: 30px !important;
+    }
 
 
-/* ============================================================
-   CABEÇALHOS
-   ============================================================ */
+    /* ========================================================
+       TÍTULO PRINCIPAL
+       ======================================================== */
 
-.header-col {
-    text-align: center;
-    font-weight: 800;
-    font-size: 12px;
-    color: #475569;
-    margin-bottom: 8px;
-}
-
-.header-esquerda {
-    text-align: left;
-}
-
-
-/* ============================================================
-   OPERADOR
-   ============================================================ */
-
-.nome-operador {
-    padding-top: 9px;
-    font-size: 13px;
-    color: #111827;
-}
-
-.funcao-operador {
-    padding-top: 9px;
-    font-size: 11px;
-    color: #64748B;
-}
+    .titulo-principal {
+        text-align: center;
+        color: #131921;
+        font-family: "Segoe UI", sans-serif;
+        font-weight: 700;
+        font-size: 32px;
+        margin-top: 15px;
+        margin-bottom: 4px;
+        line-height: 1.3;
+    }
 
 
-/* ============================================================
-   CARD TRABALHO
-   ============================================================ */
+    /* ========================================================
+       SUBTÍTULO
+       ======================================================== */
 
-.card-trabalho {
-    background: linear-gradient(
-        135deg,
-        #263646,
-        #1F2937
-    );
-
-    color: white;
-
-    padding: 8px 5px;
-
-    border-radius: 7px;
-
-    text-align: center;
-
-    font-weight: 700;
-
-    font-size: 11px;
-
-    border-left: 4px solid #FF9900;
-
-    margin-bottom: 4px;
-
-    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-}
-
-.sub-info {
-    color: #FFB84D;
-    font-size: 10px;
-    margin-top: 3px;
-}
+    .subtitulo-principal {
+        text-align: center;
+        color: #64748B;
+        font-family: "Segoe UI", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 32px;
+    }
 
 
-/* ============================================================
-   CARD FOLGA
-   ============================================================ */
+    /* ========================================================
+       TÍTULO DO TURNO
+       ======================================================== */
 
-.card-folga {
-    background: #F1F5F9;
-
-    color: #475569;
-
-    padding: 8px 5px;
-
-    border-radius: 7px;
-
-    text-align: center;
-
-    font-weight: 800;
-
-    font-size: 11px;
-
-    border-left: 4px solid #94A3B8;
-
-    margin-bottom: 4px;
-}
-
-.sub-info-folga {
-    color: #94A3B8;
-    font-size: 10px;
-    margin-top: 3px;
-}
+    .titulo-turno {
+        color: #131921;
+        font-family: "Segoe UI", sans-serif;
+        font-weight: 700;
+        font-size: 22px;
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
 
 
-/* ============================================================
-   SEPARADOR
-   ============================================================ */
+    /* ========================================================
+       CARDS DE TRABALHO
+       ======================================================== */
 
-.separador {
-    border: 0;
-    border-top: 1px solid #E2E8F0;
-    margin-top: 2px;
-    margin-bottom: 15px;
-}
-
-
-/* ============================================================
-   SIDEBAR
-   ============================================================ */
-
-section[data-testid="stSidebar"] {
-    border-right: 1px solid #E2E8F0;
-}
-
-.sidebar-titulo {
-    color: #FF9900;
-    font-size: 20px;
-    font-weight: 800;
-}
-
-.sidebar-status {
-    background: #ECFDF5;
-    color: #047857;
-    padding: 8px;
-    border-radius: 7px;
-    font-size: 12px;
-    font-weight: 700;
-}
+    .card-trabalho {
+        background: #232F3E;
+        color: white;
+        padding: 9px 7px;
+        border-radius: 7px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 12px;
+        border-left: 4px solid #FF9900;
+        margin-bottom: 8px;
+        min-height: 38px;
+    }
 
 
-/* ============================================================
-   MÉTRICAS
-   ============================================================ */
-
-.metric-card {
-    background: white;
-    border: 1px solid #E2E8F0;
-    border-radius: 10px;
-    padding: 12px;
-    text-align: center;
-}
-
-.metric-numero {
-    font-size: 22px;
-    font-weight: 800;
-    color: #131921;
-}
-
-.metric-label {
-    font-size: 11px;
-    color: #64748B;
-}
+    .sub-info {
+        font-size: 10px;
+        color: #FFB84D;
+        font-weight: 600;
+        margin-top: 2px;
+    }
 
 
-/* ============================================================
-   BOTÕES
-   ============================================================ */
+    /* ========================================================
+       CARDS DE FOLGA
+       ======================================================== */
 
-.stButton > button {
-    border-radius: 7px;
-    font-weight: 600;
-}
+    .card-folga {
+        background: #F3F4F6;
+        color: #374151;
+        padding: 9px 7px;
+        border-radius: 7px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 12px;
+        border-left: 4px solid #94A3B8;
+        margin-bottom: 8px;
+        min-height: 38px;
+    }
 
 
-/* ============================================================
-   CONTAINER PRINCIPAL
-   ============================================================ */
+    .sub-info-folga {
+        font-size: 10px;
+        color: #64748B;
+        font-weight: 500;
+        margin-top: 2px;
+    }
 
-.stMainBlockContainer {
-    padding-top: 18px !important;
-    padding-bottom: 30px !important;
-}
+
+    /* ========================================================
+       CABEÇALHOS
+       ======================================================== */
+
+    .header-col {
+        text-align: center;
+        font-weight: 700;
+        font-size: 12px;
+        color: #131921;
+        margin-bottom: 8px;
+        line-height: 1.25;
+    }
+
+
+    /* ========================================================
+       NOME
+       ======================================================== */
+
+    .nome-operador {
+        padding-top: 9px;
+        font-size: 13px;
+        margin-bottom: 10px;
+        color: #131921;
+    }
+
+
+    /* ========================================================
+       FUNÇÃO
+       ======================================================== */
+
+    .funcao-operador {
+        padding-top: 9px;
+        font-size: 12px;
+        color: #64748B;
+        margin-bottom: 10px;
+    }
+
+
+    /* ========================================================
+       LINHA DIVISÓRIA
+       ======================================================== */
+
+    .linha-divisoria {
+        border: none;
+        border-top: 1px solid #E5E7EB;
+        margin-top: 0px;
+        margin-bottom: 18px;
+    }
+
+
+    /* ========================================================
+       SIDEBAR
+       ======================================================== */
+
+    section[data-testid="stSidebar"] {
+        background-color: #131921;
+    }
+
+
+    section[data-testid="stSidebar"] * {
+        color: white;
+    }
+
+
+    section[data-testid="stSidebar"] input {
+        color: #131921 !important;
+    }
+
+
+    section[data-testid="stSidebar"] .stSelectbox label,
+    section[data-testid="stSidebar"] .stTextInput label,
+    section[data-testid="stSidebar"] .stRadio label {
+        color: white !important;
+    }
+
+
+    /* ========================================================
+       BOTÕES
+       ======================================================== */
+
+    .stButton > button {
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+
+    /* ========================================================
+       RESPONSIVIDADE
+       ======================================================== */
+
+    @media (max-width: 900px) {
+
+        .titulo-principal {
+            font-size: 25px;
+        }
+
+        .subtitulo-principal {
+            font-size: 13px;
+        }
+
+    }
 
 </style>
 """, unsafe_allow_html=True)
 
 
 # ============================================================
+# CABEÇALHO
+# ============================================================
+
+st.markdown(
+    """
+    <div class="titulo-principal">
+        Escala do Turno
+    </div>
+
+    <div class="subtitulo-principal">
+        Monitoramento Amazon
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
 # LOGIN
 # ============================================================
 
-if "autenticado" not in st.session_state:
+if (
+    "logged_in" in st.query_params
+    and st.query_params["logged_in"] == "true"
+):
+    st.session_state.autenticado = True
+
+elif "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
 
 # ============================================================
-# FUNÇÕES DE BANCO
+# HORÁRIOS OFICIAIS DOS TURNOS
 # ============================================================
 
-def buscar_operadores():
-
-    conn = conectar()
-
-    dados = conn.execute("""
-        SELECT id, nome, funcao, turno
-        FROM operadores
-        WHERE ativo = 1
-        ORDER BY turno, nome
-    """).fetchall()
-
-    conn.close()
-
-    return dados
-
-
-def cadastrar_operador(nome, funcao, turno):
-
-    conn = conectar()
-
-    conn.execute("""
-        INSERT INTO operadores
-        (nome, funcao, turno)
-        VALUES (?, ?, ?)
-    """, (
-        nome,
-        funcao,
-        turno
-    ))
-
-    conn.commit()
-    conn.close()
-
-
-def remover_operador(operador_id):
-
-    conn = conectar()
-
-    conn.execute("""
-        UPDATE operadores
-        SET ativo = 0
-        WHERE id = ?
-    """, (operador_id,))
-
-    conn.commit()
-    conn.close()
-
-
-def buscar_status(operador_id, semana_id):
-
-    conn = conectar()
-
-    resultado = conn.execute("""
-        SELECT sexta, sabado, domingo, segunda
-        FROM escala
-        WHERE operador_id = ?
-        AND semana_id = ?
-    """, (
-        operador_id,
-        semana_id
-    )).fetchone()
-
-    conn.close()
-
-    return resultado
-
-
-def salvar_status(
-    operador_id,
-    semana_id,
-    sexta,
-    sabado,
-    domingo,
-    segunda
-):
-
-    conn = conectar()
-
-    existente = conn.execute("""
-        SELECT id
-        FROM escala
-        WHERE operador_id = ?
-        AND semana_id = ?
-    """, (
-        operador_id,
-        semana_id
-    )).fetchone()
-
-    if existente:
-
-        conn.execute("""
-            UPDATE escala
-            SET sexta = ?,
-                sabado = ?,
-                domingo = ?,
-                segunda = ?
-            WHERE operador_id = ?
-            AND semana_id = ?
-        """, (
-            sexta,
-            sabado,
-            domingo,
-            segunda,
-            operador_id,
-            semana_id
-        ))
-
-    else:
-
-        conn.execute("""
-            INSERT INTO escala
-            (
-                operador_id,
-                semana_id,
-                sexta,
-                sabado,
-                domingo,
-                segunda
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (
-            operador_id,
-            semana_id,
-            sexta,
-            sabado,
-            domingo,
-            segunda
-        ))
-
-    conn.commit()
-    conn.close()
+HORARIOS_TURNOS = {
+    "T1": "07:00 às 15:00",
+    "T2": "15:00 às 23:00",
+    "T3": "23:00 às 07:00"
+}
 
 
 # ============================================================
-# DATAS
+# FUNÇÃO DE DATAS
 # ============================================================
 
-def obter_semana(deslocamento=0):
+def obter_datas_semana(deslocamento_semanas=0):
 
     hoje = datetime.now()
 
     dias_para_sexta = (hoje.weekday() - 4) % 7
 
-    sexta = (
-        hoje
-        - timedelta(days=dias_para_sexta)
-        + timedelta(weeks=deslocamento)
+    sexta_atual = hoje - timedelta(
+        days=dias_para_sexta
     )
 
-    sabado = sexta + timedelta(days=1)
-    domingo = sexta + timedelta(days=2)
-    segunda = sexta + timedelta(days=3)
+    sexta_alvo = sexta_atual + timedelta(
+        weeks=deslocamento_semanas
+    )
+
+    sabado = sexta_alvo + timedelta(days=1)
+    domingo = sexta_alvo + timedelta(days=2)
+    segunda = sexta_alvo + timedelta(days=3)
 
     return {
-        "id": sexta.strftime("%Y-%m-%d"),
 
-        "nome":
-            f"{sexta.strftime('%d/%m')} "
-            f"até {segunda.strftime('%d/%m')}",
+        "id_semana":
+            sexta_alvo.strftime("%Y_W%W"),
 
-        "Sexta": sexta.strftime("%d/%m"),
-        "Sábado": sabado.strftime("%d/%m"),
-        "Domingo": domingo.strftime("%d/%m"),
-        "Segunda": segunda.strftime("%d/%m")
+        "rotulo":
+            f"Semana de "
+            f"{sexta_alvo.strftime('%d/%m')} "
+            f"até "
+            f"{segunda.strftime('%d/%m')}",
+
+        "Sexta":
+            sexta_alvo.strftime("%d/%m"),
+
+        "Sábado":
+            sabado.strftime("%d/%m"),
+
+        "Domingo":
+            domingo.strftime("%d/%m"),
+
+        "Segunda":
+            segunda.strftime("%d/%m")
     }
 
 
-semanas = [
-    obter_semana(i)
-    for i in range(-2, 5)
+# ============================================================
+# SEMANAS DISPONÍVEIS
+# ============================================================
+
+opcoes_semanas = [
+    obter_datas_semana(i)
+    for i in range(-1, 5)
 ]
+
+formatos_semanas = {
+    item["rotulo"]: item
+    for item in opcoes_semanas
+}
+
+
+# ============================================================
+# SELEÇÃO DE SEMANA
+# ============================================================
+
+col_semana, _ = st.columns([3, 3])
+
+with col_semana:
+
+    semana_selecionada = st.selectbox(
+        "📅 Período da Escala",
+        list(formatos_semanas.keys()),
+        index=1
+    )
+
+
+dados_semana = formatos_semanas[
+    semana_selecionada
+]
+
+id_semana = dados_semana["id_semana"]
+
+
+# ============================================================
+# OPERADORES PADRÃO
+# ============================================================
+
+OPERADORES_PADRAO = [
+
+    # ========================================================
+    # T1
+    # ========================================================
+
+    {
+        "Turno": "T1",
+        "Nome": "ALAN ARÁUJO",
+        "Função": "ANALISTA"
+    },
+
+    {
+        "Turno": "T1",
+        "Nome": "MARGARIDA",
+        "Função": "PICKUP"
+    },
+
+    {
+        "Turno": "T1",
+        "Nome": "JOSÉ BRUNO PALHANO",
+        "Função": "PICKUP"
+    },
+
+    {
+        "Turno": "T1",
+        "Nome": "CRISTOVÃO MIKELLYS",
+        "Função": "DEPART"
+    },
+
+    {
+        "Turno": "T1",
+        "Nome": "PEDRO LUCAS",
+        "Função": "DROPOFF"
+    },
+
+    {
+        "Turno": "T1",
+        "Nome": "FELIPE ALLAN",
+        "Função": "DROPOFF"
+    },
+
+    {
+        "Turno": "T1",
+        "Nome": "BRUNA BLENDA",
+        "Função": "DROPOFF"
+    },
+
+    {
+        "Turno": "T1",
+        "Nome": "CONCEIÇÃO DAIANE",
+        "Função": "SEGURANÇA (ONISYS)"
+    },
+
+    {
+        "Turno": "T1",
+        "Nome": "MATHEUS LUSTOSA",
+        "Função": "SEGURANÇA/ELOG"
+    },
+
+
+    # ========================================================
+    # T2
+    # ========================================================
+
+    {
+        "Turno": "T2",
+        "Nome": "MANUELA PINHEIRO",
+        "Função": "LÍDER"
+    },
+
+    {
+        "Turno": "T2",
+        "Nome": "ISABEL",
+        "Função": "LÍDER/SEGURANÇA"
+    },
+
+    {
+        "Turno": "T2",
+        "Nome": "ANDREZA OLIVEIRA",
+        "Função": "PICKUP"
+    },
+
+    {
+        "Turno": "T2",
+        "Nome": "ROZIANE DA SILVA",
+        "Função": "PICKUP"
+    },
+
+    {
+        "Turno": "T2",
+        "Nome": "DAIANE",
+        "Função": "SEGURANÇA"
+    },
+
+    {
+        "Turno": "T2",
+        "Nome": "EMANUEL ROBERTO",
+        "Função": "DEPART"
+    },
+
+    {
+        "Turno": "T2",
+        "Nome": "TAMMYRIS DA SILVA",
+        "Função": "DROPOFF"
+    },
+
+    {
+        "Turno": "T2",
+        "Nome": "RAPHAEL DO NASCIMENTO",
+        "Função": "DROPOFF"
+    },
+
+    {
+        "Turno": "T2",
+        "Nome": "LUDMILLA RODRIGUES",
+        "Função": "DROPOFF"
+    },
+
+    {
+        "Turno": "T2",
+        "Nome": "MARIA NATHALIA",
+        "Função": "SEGURANÇA"
+    },
+
+    {
+        "Turno": "T2",
+        "Nome": "CINAMOR",
+        "Função": "ELOG"
+    },
+
+
+    # ========================================================
+    # T3
+    # ========================================================
+
+    {
+        "Turno": "T3",
+        "Nome": "WESLEY",
+        "Função": "LÍDER"
+    },
+
+    {
+        "Turno": "T3",
+        "Nome": "JOÃO",
+        "Função": "LÍDER/SEGURANÇA"
+    },
+
+    {
+        "Turno": "T3",
+        "Nome": "RILDOMAR",
+        "Função": "PICKUP"
+    },
+
+    {
+        "Turno": "T3",
+        "Nome": "LUCIANA",
+        "Função": "PICKUP"
+    },
+
+    {
+        "Turno": "T3",
+        "Nome": "GLAYLDSON",
+        "Função": "SEGURANÇA"
+    },
+
+    {
+        "Turno": "T3",
+        "Nome": "TAYANARA",
+        "Função": "DEPART"
+    },
+
+    {
+        "Turno": "T3",
+        "Nome": "RUAN",
+        "Função": "DROPOFF"
+    },
+
+    {
+        "Turno": "T3",
+        "Nome": "BÁRBARA",
+        "Função": "DROPOFF"
+    }
+]
+
+
+# ============================================================
+# ESCALA DE FOLGAS PADRÃO
+# ============================================================
+
+FOLGAS_PADRAO = {
+
+    "ALAN ARÁUJO": ["Sábado"],
+    "MARGARIDA": ["Sábado"],
+    "JOSÉ BRUNO PALHANO": ["Sexta"],
+    "CRISTOVÃO MIKELLYS": ["Domingo"],
+    "PEDRO LUCAS": ["Sábado"],
+    "FELIPE ALLAN": ["Domingo"],
+    "BRUNA BLENDA": ["Sexta"],
+    "CONCEIÇÃO DAIANE": ["Sábado"],
+    "MATHEUS LUSTOSA": ["Sexta"],
+
+    "MANUELA PINHEIRO": ["Domingo"],
+    "ISABEL": ["Sábado"],
+    "ANDREZA OLIVEIRA": ["Sábado"],
+    "ROZIANE DA SILVA": ["Sexta"],
+    "DAIANE": ["Sexta"],
+    "EMANUEL ROBERTO": ["Sexta"],
+    "TAMMYRIS DA SILVA": ["Sábado"],
+    "RAPHAEL DO NASCIMENTO": ["Domingo"],
+    "LUDMILLA RODRIGUES": ["Segunda"],
+    "MARIA NATHALIA": ["Domingo"],
+    "CINAMOR": ["Segunda"],
+
+    "WESLEY": ["Sexta"],
+    "JOÃO": ["Segunda"],
+    "RILDOMAR": ["Sábado"],
+    "LUCIANA": ["Sexta", "Domingo"],
+    "GLAYLDSON": ["Segunda"],
+    "TAYANARA": ["Domingo"],
+    "RUAN": ["Sábado"],
+    "BÁRBARA": []
+}
+
+
+# ============================================================
+# CRIAÇÃO DO BANCO
+# ============================================================
+
+def criar_semana_padrao(id_da_semana):
+
+    linhas = []
+
+    for operador in OPERADORES_PADRAO:
+
+        turno = operador["Turno"]
+        nome = operador["Nome"]
+
+        horario = HORARIOS_TURNOS[turno]
+
+        linha = {
+
+            "SemanaID":
+                id_da_semana,
+
+            "Turno":
+                turno,
+
+            "Nome":
+                nome,
+
+            "Função":
+                operador["Função"],
+
+            "Sexta":
+                "FOLGA"
+                if "Sexta" in FOLGAS_PADRAO.get(nome, [])
+                else horario,
+
+            "Sábado":
+                "FOLGA"
+                if "Sábado" in FOLGAS_PADRAO.get(nome, [])
+                else horario,
+
+            "Domingo":
+                "FOLGA"
+                if "Domingo" in FOLGAS_PADRAO.get(nome, [])
+                else horario,
+
+            "Segunda":
+                "FOLGA"
+                if "Segunda" in FOLGAS_PADRAO.get(nome, [])
+                else horario
+        }
+
+        linhas.append(linha)
+
+    return pd.DataFrame(linhas)
+
+
+# ============================================================
+# INICIALIZAÇÃO DO BANCO LOCAL
+# ============================================================
+
+def inicializar_banco():
+
+    if not os.path.exists(ARQUIVO_BANCO):
+
+        df_inicial = pd.DataFrame()
+
+        for semana in opcoes_semanas:
+
+            df_semana = criar_semana_padrao(
+                semana["id_semana"]
+            )
+
+            df_inicial = pd.concat(
+                [
+                    df_inicial,
+                    df_semana
+                ],
+                ignore_index=True
+            )
+
+        df_inicial.to_csv(
+            ARQUIVO_BANCO,
+            index=False,
+            encoding="utf-8-sig"
+        )
+
+
+# ============================================================
+# CARREGAR BANCO
+# ============================================================
+
+inicializar_banco()
+
+df_banco = pd.read_csv(
+    ARQUIVO_BANCO,
+    encoding="utf-8-sig"
+)
+
+
+# ============================================================
+# CRIAR SEMANA AUTOMATICAMENTE
+# ============================================================
+
+if df_banco[
+    df_banco["SemanaID"] == id_semana
+].empty:
+
+    semanas_existentes = df_banco["SemanaID"].unique()
+
+    if len(semanas_existentes) > 0:
+
+        ultima_semana = semanas_existentes[-1]
+
+        df_nova = df_banco[
+            df_banco["SemanaID"] == ultima_semana
+        ].copy()
+
+        df_nova["SemanaID"] = id_semana
+
+        df_banco = pd.concat(
+            [
+                df_banco,
+                df_nova
+            ],
+            ignore_index=True
+        )
+
+    else:
+
+        df_nova = criar_semana_padrao(
+            id_semana
+        )
+
+        df_banco = pd.concat(
+            [
+                df_banco,
+                df_nova
+            ],
+            ignore_index=True
+        )
+
+    df_banco.to_csv(
+        ARQUIVO_BANCO,
+        index=False,
+        encoding="utf-8-sig"
+    )
 
 
 # ============================================================
@@ -529,94 +769,164 @@ semanas = [
 with st.sidebar:
 
     st.markdown(
-        "<div class='sidebar-titulo'>🔐 Gestão da Escala</div>",
+        """
+        <h2 style="
+            color:#FF9900;
+            margin-top:0;
+            margin-bottom:4px;
+        ">
+            Área do Gestor
+        </h2>
+
+        <div style="
+            color:#94A3B8;
+            font-size:12px;
+            margin-bottom:20px;
+        ">
+            Administração da escala
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
-    st.divider()
+
+    # ========================================================
+    # LOGIN
+    # ========================================================
 
     if not st.session_state.autenticado:
 
-        st.markdown("### Acesso")
+        with st.form("login_form"):
 
-        usuario = st.text_input(
-            "Usuário"
-        )
+            usuario = st.text_input(
+                "Usuário"
+            )
 
-        senha = st.text_input(
-            "Senha",
-            type="password"
-        )
+            senha = st.text_input(
+                "Senha",
+                type="password"
+            )
 
-        if st.button(
-            "Entrar",
-            use_container_width=True
-        ):
+            entrar = st.form_submit_button(
+                "Entrar",
+                use_container_width=True
+            )
 
-            if (
-                usuario.lower().strip() == "admin"
-                and senha == "Amazon123"
-            ):
+            if entrar:
 
-                st.session_state.autenticado = True
+                if (
+                    usuario.lower().strip() == "admin"
+                    and senha == "Amazon123"
+                ):
 
-                st.rerun()
+                    st.session_state.autenticado = True
 
-            else:
+                    st.query_params["logged_in"] = "true"
 
-                st.error(
-                    "Usuário ou senha incorretos."
-                )
+                    st.rerun()
+
+                else:
+
+                    st.error(
+                        "Usuário ou senha incorretos."
+                    )
+
+
+    # ========================================================
+    # ÁREA ADMINISTRATIVA
+    # ========================================================
 
     else:
 
-        st.markdown(
-            "<div class='sidebar-status'>"
-            "🟢 Modo Gestão ativo"
-            "</div>",
-            unsafe_allow_html=True
+        st.success(
+            "Modo Gestão ativo"
         )
 
         st.divider()
+
 
         # ====================================================
         # CADASTRAR
         # ====================================================
 
-        st.markdown("### ➕ Novo operador")
+        st.markdown(
+            "### ➕ Novo operador"
+        )
 
         novo_nome = st.text_input(
-            "Nome",
-            key="novo_nome"
-        )
+            "Nome"
+        ).upper().strip()
 
         nova_funcao = st.text_input(
-            "Função",
-            key="nova_funcao"
-        )
+            "Função"
+        ).upper().strip()
 
         novo_turno = st.selectbox(
             "Turno",
-            ["T1", "T2", "T3"],
-            format_func=lambda x:
-                f"{NOMES_TURNOS[x]} — {HORARIOS[x]}"
+            [
+                "T1 — 07:00 às 15:00",
+                "T2 — 15:00 às 23:00",
+                "T3 — 23:00 às 07:00"
+            ]
         )
 
+
         if st.button(
-            "Cadastrar operador",
+            "Adicionar operador",
             use_container_width=True
         ):
 
-            if novo_nome.strip() and nova_funcao.strip():
+            if novo_nome and nova_funcao:
 
-                cadastrar_operador(
-                    novo_nome.strip().upper(),
-                    nova_funcao.strip().upper(),
-                    novo_turno
+                turno_id = novo_turno[:2]
+
+                horario = HORARIOS_TURNOS[
+                    turno_id
+                ]
+
+                nova_linha = {
+
+                    "SemanaID":
+                        id_semana,
+
+                    "Turno":
+                        turno_id,
+
+                    "Nome":
+                        novo_nome,
+
+                    "Função":
+                        nova_funcao,
+
+                    "Sexta":
+                        horario,
+
+                    "Sábado":
+                        horario,
+
+                    "Domingo":
+                        horario,
+
+                    "Segunda":
+                        horario
+                }
+
+                df_banco = pd.concat(
+                    [
+                        df_banco,
+                        pd.DataFrame([nova_linha])
+                    ],
+                    ignore_index=True
+                )
+
+                df_banco.to_csv(
+                    ARQUIVO_BANCO,
+                    index=False,
+                    encoding="utf-8-sig"
                 )
 
                 st.success(
-                    f"{novo_nome.upper()} cadastrado!"
+                    f"{novo_nome} adicionado."
                 )
 
                 st.rerun()
@@ -627,44 +937,85 @@ with st.sidebar:
                     "Preencha nome e função."
                 )
 
+
         st.divider()
+
 
         # ====================================================
         # REMOVER
         # ====================================================
 
-        st.markdown("### ❌ Remover operador")
+        st.markdown(
+            "### ❌ Remover operador"
+        )
 
-        operadores = buscar_operadores()
+        operadores_semana = sorted(
+            df_banco[
+                df_banco["SemanaID"] == id_semana
+            ]["Nome"].unique()
+        )
 
-        if operadores:
 
-            opcoes_remocao = {
-                f"{x[1]} — {x[2]}": x[0]
-                for x in operadores
-            }
+        if operadores_semana:
 
-            selecionado = st.selectbox(
+            operador_remover = st.selectbox(
                 "Operador",
-                list(opcoes_remocao.keys())
+                operadores_semana
             )
 
+            tipo_remocao = st.radio(
+                "Remover de:",
+                [
+                    "Semana atual",
+                    "Todo o sistema"
+                ]
+            )
+
+
             if st.button(
-                "Remover",
+                "Confirmar remoção",
+                type="primary",
                 use_container_width=True
             ):
 
-                remover_operador(
-                    opcoes_remocao[selecionado]
+                if tipo_remocao == "Semana atual":
+
+                    df_banco = df_banco[
+                        ~(
+                            (
+                                df_banco["SemanaID"]
+                                == id_semana
+                            )
+                            &
+                            (
+                                df_banco["Nome"]
+                                == operador_remover
+                            )
+                        )
+                    ]
+
+                else:
+
+                    df_banco = df_banco[
+                        df_banco["Nome"]
+                        != operador_remover
+                    ]
+
+                df_banco.to_csv(
+                    ARQUIVO_BANCO,
+                    index=False,
+                    encoding="utf-8-sig"
                 )
 
                 st.success(
-                    "Operador removido."
+                    f"{operador_remover} removido."
                 )
 
                 st.rerun()
 
+
         st.divider()
+
 
         # ====================================================
         # LOGOUT
@@ -677,164 +1028,53 @@ with st.sidebar:
 
             st.session_state.autenticado = False
 
+            st.query_params.clear()
+
             st.rerun()
 
 
 # ============================================================
-# TÍTULO
+# ESCALA ATUAL
 # ============================================================
 
-st.markdown(
-    "<div class='titulo'>📦 Escala Amazon</div>",
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    "<div class='subtitulo'>"
-    "Monitoramento Operacional • Escala de Equipe"
-    "</div>",
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# SELEÇÃO DA SEMANA
-# ============================================================
-
-semana_labels = [
-    x["nome"]
-    for x in semanas
+df_tela = df_banco[
+    df_banco["SemanaID"] == id_semana
 ]
 
-semana_escolhida = st.selectbox(
-    "📅 Período da escala",
-    semana_labels,
-    index=2
-)
 
-semana = semanas[
-    semana_labels.index(semana_escolhida)
-]
+MAPA_TURNOS = {
+    "T1": "Turno 1",
+    "T2": "Turno 2",
+    "T3": "Turno 3"
+}
 
-semana_id = semana["id"]
-
-
-# ============================================================
-# OPERADORES
-# ============================================================
-
-operadores = buscar_operadores()
-
-
-# ============================================================
-# MÉTRICAS
-# ============================================================
-
-total = len(operadores)
-
-t1 = len([
-    x for x in operadores
-    if x[3] == "T1"
-])
-
-t2 = len([
-    x for x in operadores
-    if x[3] == "T2"
-])
-
-t3 = len([
-    x for x in operadores
-    if x[3] == "T3"
-])
-
-
-m1, m2, m3, m4 = st.columns(4)
-
-
-with m1:
-
-    st.markdown(
-        f"""
-        <div class='metric-card'>
-            <div class='metric-numero'>{total}</div>
-            <div class='metric-label'>OPERADORES</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-with m2:
-
-    st.markdown(
-        f"""
-        <div class='metric-card'>
-            <div class='metric-numero'>{t1}</div>
-            <div class='metric-label'>T1 • 07h às 15h</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-with m3:
-
-    st.markdown(
-        f"""
-        <div class='metric-card'>
-            <div class='metric-numero'>{t2}</div>
-            <div class='metric-label'>T2 • 15h às 23h</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-with m4:
-
-    st.markdown(
-        f"""
-        <div class='metric-card'>
-            <div class='metric-numero'>{t3}</div>
-            <div class='metric-label'>T3 • 23h às 07h</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# ============================================================
-# ESPAÇO
-# ============================================================
-
-st.write("")
-
-
-# ============================================================
-# DIAS
-# ============================================================
 
 DIAS = [
-    ("Sexta", "sexta"),
-    ("Sábado", "sabado"),
-    ("Domingo", "domingo"),
-    ("Segunda", "segunda")
+    "Sexta",
+    "Sábado",
+    "Domingo",
+    "Segunda"
 ]
 
 
 # ============================================================
-# ESCALA
+# EXIBIÇÃO DOS TURNOS
 # ============================================================
 
-for turno in ["T1", "T2", "T3"]:
+for turno_id, nome_turno in MAPA_TURNOS.items():
 
-    operadores_turno = [
-        x for x in operadores
-        if x[3] == turno
+    df_turno = df_tela[
+        df_tela["Turno"] == turno_id
     ]
 
-    if not operadores_turno:
+
+    if df_turno.empty:
         continue
+
+
+    horario_turno = HORARIOS_TURNOS[
+        turno_id
+    ]
 
 
     # ========================================================
@@ -843,24 +1083,23 @@ for turno in ["T1", "T2", "T3"]:
 
     st.markdown(
         f"""
-        <div class='turno-header'>
-            <div class='turno-titulo'>
-                🕒 {NOMES_TURNOS[turno]}
-            </div>
-            <div class='turno-horario'>
-                {HORARIOS[turno]}
-            </div>
+        <div class="titulo-turno">
+            🕒 {nome_turno}
+            <span style="
+                color:#64748B;
+                font-size:13px;
+                font-weight:500;
+                margin-left:8px;
+            ">
+                {horario_turno}
+            </span>
         </div>
         """,
         unsafe_allow_html=True
     )
 
 
-    # ========================================================
-    # CABEÇALHO DA TABELA
-    # ========================================================
-
-    headers = st.columns(
+    colunas = st.columns(
         [
             2.5,
             2,
@@ -872,28 +1111,45 @@ for turno in ["T1", "T2", "T3"]:
     )
 
 
-    headers[0].markdown(
-        "<div class='header-col header-esquerda'>"
+    # ========================================================
+    # CABEÇALHO
+    # ========================================================
+
+    colunas[0].markdown(
+        "<div class='header-col' "
+        "style='text-align:left;'>"
         "OPERADOR"
         "</div>",
         unsafe_allow_html=True
     )
 
 
-    headers[1].markdown(
-        "<div class='header-col header-esquerda'>"
+    colunas[1].markdown(
+        "<div class='header-col' "
+        "style='text-align:left;'>"
         "FUNÇÃO"
         "</div>",
         unsafe_allow_html=True
     )
 
 
-    for i, (dia, _) in enumerate(DIAS, 2):
+    for indice, dia in enumerate(
+        DIAS,
+        2
+    ):
 
-        headers[i].markdown(
+        colunas[indice].markdown(
             f"""
-            <div class='header-col'>
-                {dia.upper()} ({semana[dia]})
+            <div class="header-col">
+                {dia.upper()}
+                <br>
+                <span style="
+                    font-size:10px;
+                    color:#64748B;
+                    font-weight:500;
+                ">
+                    {dados_semana[dia]}
+                </span>
             </div>
             """,
             unsafe_allow_html=True
@@ -901,7 +1157,7 @@ for turno in ["T1", "T2", "T3"]:
 
 
     st.markdown(
-        "<div class='separador'></div>",
+        "<hr class='linha-divisoria'>",
         unsafe_allow_html=True
     )
 
@@ -910,42 +1166,9 @@ for turno in ["T1", "T2", "T3"]:
     # OPERADORES
     # ========================================================
 
-    for operador in operadores_turno:
+    for _, row in df_turno.iterrows():
 
-        operador_id = operador[0]
-        nome = operador[1]
-        funcao = operador[2]
-
-
-        status = buscar_status(
-            operador_id,
-            semana_id
-        )
-
-
-        # ====================================================
-        # PRIMEIRO ACESSO DA SEMANA
-        # ====================================================
-
-        if status is None:
-
-            horario = HORARIOS[turno]
-
-            status = (
-                horario,
-                horario,
-                horario,
-                horario
-            )
-
-            salvar_status(
-                operador_id,
-                semana_id,
-                *status
-            )
-
-
-        linha = st.columns(
+        colunas = st.columns(
             [
                 2.5,
                 2,
@@ -961,10 +1184,10 @@ for turno in ["T1", "T2", "T3"]:
         # NOME
         # ====================================================
 
-        linha[0].markdown(
+        colunas[0].markdown(
             f"""
-            <div class='nome-operador'>
-                <b>{nome}</b>
+            <div class="nome-operador">
+                <b>{row["Nome"]}</b>
             </div>
             """,
             unsafe_allow_html=True
@@ -975,10 +1198,10 @@ for turno in ["T1", "T2", "T3"]:
         # FUNÇÃO
         # ====================================================
 
-        linha[1].markdown(
+        colunas[1].markdown(
             f"""
-            <div class='funcao-operador'>
-                {funcao}
+            <div class="funcao-operador">
+                {row["Função"]}
             </div>
             """,
             unsafe_allow_html=True
@@ -989,25 +1212,28 @@ for turno in ["T1", "T2", "T3"]:
         # DIAS
         # ====================================================
 
-        status_lista = list(status)
+        for indice, dia in enumerate(
+            DIAS,
+            2
+        ):
 
-        for i, (dia, _) in enumerate(DIAS, 2):
+            status = str(
+                row[dia]
+            )
 
-            valor = status_lista[i - 2]
 
-
-            # -----------------------------------------------
+            # ================================================
             # TRABALHO
-            # -----------------------------------------------
+            # ================================================
 
-            if valor != "FOLGA":
+            if status != "FOLGA":
 
-                linha[i].markdown(
+                colunas[indice].markdown(
                     f"""
-                    <div class='card-trabalho'>
+                    <div class="card-trabalho">
                         TRABALHO
-                        <div class='sub-info'>
-                            {HORARIOS[turno]}
+                        <div class="sub-info">
+                            {status}
                         </div>
                     </div>
                     """,
@@ -1015,17 +1241,17 @@ for turno in ["T1", "T2", "T3"]:
                 )
 
 
-            # -----------------------------------------------
+            # ================================================
             # FOLGA
-            # -----------------------------------------------
+            # ================================================
 
             else:
 
-                linha[i].markdown(
+                colunas[indice].markdown(
                     """
-                    <div class='card-folga'>
+                    <div class="card-folga">
                         FOLGA
-                        <div class='sub-info-folga'>
+                        <div class="sub-info-folga">
                             Descanso
                         </div>
                     </div>
@@ -1034,40 +1260,59 @@ for turno in ["T1", "T2", "T3"]:
                 )
 
 
-            # -----------------------------------------------
-            # BOTÃO GESTÃO
-            # -----------------------------------------------
+            # ================================================
+            # BOTÃO DE ALTERAÇÃO
+            # ================================================
 
             if st.session_state.autenticado:
 
-                if valor == "FOLGA":
-
-                    novo_valor = HORARIOS[turno]
-
-                else:
-
-                    novo_valor = "FOLGA"
+                novo_status = (
+                    "FOLGA"
+                    if status != "FOLGA"
+                    else HORARIOS_TURNOS[turno_id]
+                )
 
 
-                if linha[i].button(
-                    "↔ Alternar",
+                if colunas[indice].button(
+                    "🔄 Alternar",
                     key=(
-                        f"{operador_id}_"
-                        f"{semana_id}_"
+                        f"{id_semana}_"
+                        f"{turno_id}_"
+                        f"{row['Nome']}_"
                         f"{dia}"
                     ),
                     use_container_width=True
                 ):
 
-                    status_lista[i - 2] = novo_valor
-
-                    salvar_status(
-                        operador_id,
-                        semana_id,
-                        *status_lista
+                    filtro = (
+                        (df_banco["SemanaID"] == id_semana)
+                        &
+                        (df_banco["Nome"] == row["Nome"])
                     )
 
-                    st.rerun()
+
+                    indices = df_banco[
+                        filtro
+                    ].index
+
+
+                    if len(indices) > 0:
+
+                        indice_banco = indices[0]
+
+                        df_banco.at[
+                            indice_banco,
+                            dia
+                        ] = novo_status
+
+
+                        df_banco.to_csv(
+                            ARQUIVO_BANCO,
+                            index=False,
+                            encoding="utf-8-sig"
+                        )
+
+                        st.rerun()
 
 
     st.write("")
@@ -1077,8 +1322,18 @@ for turno in ["T1", "T2", "T3"]:
 # RODAPÉ
 # ============================================================
 
-st.divider()
-
-st.caption(
-    "Escala Amazon • Sistema independente de gestão de escala"
+st.markdown(
+    """
+    <div style="
+        text-align:center;
+        color:#94A3B8;
+        font-size:11px;
+        margin-top:35px;
+        padding-top:15px;
+        border-top:1px solid #E5E7EB;
+    ">
+        Monitoramento Amazon • Escala do Turno
+    </div>
+    """,
+    unsafe_allow_html=True
 )

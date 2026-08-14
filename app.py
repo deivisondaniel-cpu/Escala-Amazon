@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 st.set_page_config(
     page_title="Escala Amazon",
-    page_icon="📦",
+    page_icon="amazon.png",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -111,7 +111,9 @@ footer {
     font-family: 'Segoe UI', sans-serif;
     font-size: 30px;
     font-weight: 800;
-    margin-top: 20px;
+
+    /* Espaço superior para não cortar o título */
+    margin-top: 35px;
     margin-bottom: 5px;
 }
 
@@ -535,23 +537,35 @@ with st.sidebar:
 
     st.divider()
 
+
+    # ========================================================
+    # LOGIN
+    # ========================================================
+
     if not st.session_state.autenticado:
 
         st.markdown("### Acesso")
 
-        usuario = st.text_input(
-            "Usuário"
-        )
+        # O formulário permite enviar usando ENTER
+        with st.form("login_form"):
 
-        senha = st.text_input(
-            "Senha",
-            type="password"
-        )
+            usuario = st.text_input(
+                "Usuário"
+            )
 
-        if st.button(
-            "Entrar",
-            use_container_width=True
-        ):
+            senha = st.text_input(
+                "Senha",
+                type="password"
+            )
+
+            entrar = st.form_submit_button(
+                "Entrar",
+                use_container_width=True
+            )
+
+
+        # Processa o login depois do submit
+        if entrar:
 
             if (
                 usuario.lower().strip() == "admin"
@@ -568,6 +582,11 @@ with st.sidebar:
                     "Usuário ou senha incorretos."
                 )
 
+
+    # ========================================================
+    # MODO GESTÃO
+    # ========================================================
+
     else:
 
         st.markdown(
@@ -578,6 +597,7 @@ with st.sidebar:
         )
 
         st.divider()
+
 
         # ====================================================
         # CADASTRAR
@@ -602,12 +622,16 @@ with st.sidebar:
                 f"{NOMES_TURNOS[x]} — {HORARIOS[x]}"
         )
 
+
         if st.button(
             "Cadastrar operador",
             use_container_width=True
         ):
 
-            if novo_nome.strip() and nova_funcao.strip():
+            if (
+                novo_nome.strip()
+                and nova_funcao.strip()
+            ):
 
                 cadastrar_operador(
                     novo_nome.strip().upper(),
@@ -616,7 +640,7 @@ with st.sidebar:
                 )
 
                 st.success(
-                    f"{novo_nome.upper()} cadastrado!"
+                    f"{novo_nome.strip().upper()} cadastrado!"
                 )
 
                 st.rerun()
@@ -627,7 +651,9 @@ with st.sidebar:
                     "Preencha nome e função."
                 )
 
+
         st.divider()
+
 
         # ====================================================
         # REMOVER
@@ -636,6 +662,7 @@ with st.sidebar:
         st.markdown("### ❌ Remover operador")
 
         operadores = buscar_operadores()
+
 
         if operadores:
 
@@ -648,6 +675,7 @@ with st.sidebar:
                 "Operador",
                 list(opcoes_remocao.keys())
             )
+
 
             if st.button(
                 "Remover",
@@ -664,7 +692,15 @@ with st.sidebar:
 
                 st.rerun()
 
+        else:
+
+            st.info(
+                "Nenhum operador cadastrado."
+            )
+
+
         st.divider()
+
 
         # ====================================================
         # LOGOUT
@@ -685,13 +721,13 @@ with st.sidebar:
 # ============================================================
 
 st.markdown(
-    "<div class='titulo'>Monitoramento Amazon</div>",
+    "<div class='titulo'>Escala Amazon</div>",
     unsafe_allow_html=True
 )
 
 st.markdown(
     "<div class='subtitulo'>"
-    "Escala do turno"
+    "Monitoramento Amazon"
     "</div>",
     unsafe_allow_html=True
 )
@@ -888,7 +924,10 @@ for turno in ["T1", "T2", "T3"]:
     )
 
 
-    for i, (dia, _) in enumerate(DIAS, 2):
+    for i, (dia, _) in enumerate(
+        DIAS,
+        2
+    ):
 
         headers[i].markdown(
             f"""
@@ -991,7 +1030,11 @@ for turno in ["T1", "T2", "T3"]:
 
         status_lista = list(status)
 
-        for i, (dia, _) in enumerate(DIAS, 2):
+
+        for i, (dia, _) in enumerate(
+            DIAS,
+            2
+        ):
 
             valor = status_lista[i - 2]
 

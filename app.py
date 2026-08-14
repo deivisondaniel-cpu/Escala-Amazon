@@ -18,8 +18,6 @@ st.set_page_config(
 # ============================================================
 # BANCO INTERNO
 # ============================================================
-# Não utiliza CSV, Excel ou Google Sheets.
-# O próprio aplicativo possui seu banco SQLite.
 
 BANCO = "escala_amazon.db"
 
@@ -89,12 +87,10 @@ st.markdown("""
 <style>
 
 /* ============================================================
-   CORES DA IDENTIDADE
-   AMAZON:
-   Azul escuro / Squid Ink: #232F3E
-   Azul apoio: #146EB4
-   Laranja: #FF9900
-   Branco: #FFFFFF
+   IDENTIDADE AMAZON
+   Azul principal: #232F3E
+   Azul apoio:     #146EB4
+   Laranja:        #FF9900
    ============================================================ */
 
 
@@ -134,38 +130,106 @@ footer {
 
 .titulo {
     text-align: center;
+
     color: #232F3E;
+
     font-family: 'Segoe UI', sans-serif;
+
     font-size: 30px;
+
     font-weight: 800;
 
-    margin-top: 35px;
-    margin-bottom: 4px;
+    margin-top: 30px;
+    margin-bottom: 3px;
 }
 
 .subtitulo {
     text-align: center;
+
     color: #146EB4;
+
     font-size: 13px;
+
     font-weight: 700;
+
     letter-spacing: 0.2px;
-    margin-bottom: 25px;
+
+    margin-bottom: 24px;
 }
 
 
 /* ============================================================
-   SELEÇÃO DE SEMANA
+   SELECT DE SEMANA
    ============================================================ */
 
 div[data-baseweb="select"] > div {
+
     border: 1px solid #CBD5E1 !important;
+
     border-radius: 8px !important;
+
     background-color: #FFFFFF !important;
 }
 
 div[data-baseweb="select"] > div:focus-within {
+
     border-color: #146EB4 !important;
+
     box-shadow: 0 0 0 1px #146EB4 !important;
+}
+
+
+/* ============================================================
+   ÁREA DE SELEÇÃO DE TURNO
+   ============================================================ */
+
+.seletor-titulo {
+
+    color: #232F3E;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.5px;
+
+    margin-top: 15px;
+
+    margin-bottom: 5px;
+}
+
+
+/* ============================================================
+   RADIO / SELETOR DE TURNO
+   ============================================================ */
+
+div[role="radiogroup"] {
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #D7DEE7;
+
+    border-radius: 10px;
+
+    padding: 5px;
+
+    box-shadow: 0 2px 7px rgba(35,47,62,0.05);
+
+    gap: 5px;
+}
+
+div[role="radiogroup"] label {
+
+    border-radius: 7px;
+
+    padding: 8px 14px !important;
+
+    transition: all 0.15s ease;
+}
+
+div[role="radiogroup"] label:hover {
+
+    background-color: #EAF3FB;
 }
 
 
@@ -174,11 +238,15 @@ div[data-baseweb="select"] > div:focus-within {
    ============================================================ */
 
 .turno-header {
+
     display: flex;
+
     align-items: center;
+
     gap: 12px;
 
-    margin-top: 30px;
+    margin-top: 25px;
+
     margin-bottom: 8px;
 
     padding: 10px 14px;
@@ -186,6 +254,7 @@ div[data-baseweb="select"] > div:focus-within {
     background-color: #FFFFFF;
 
     border-left: 5px solid #FF9900;
+
     border-bottom: 1px solid #D7DEE7;
 
     border-radius: 8px;
@@ -194,13 +263,18 @@ div[data-baseweb="select"] > div:focus-within {
 }
 
 .turno-titulo {
+
     font-size: 21px;
+
     font-weight: 800;
+
     color: #232F3E;
 }
 
 .turno-horario {
+
     background-color: #EAF3FB;
+
     color: #146EB4;
 
     border: 1px solid #B9D7EE;
@@ -210,6 +284,7 @@ div[data-baseweb="select"] > div:focus-within {
     border-radius: 20px;
 
     font-size: 12px;
+
     font-weight: 800;
 }
 
@@ -219,9 +294,11 @@ div[data-baseweb="select"] > div:focus-within {
    ============================================================ */
 
 .header-col {
+
     text-align: center;
 
     font-weight: 800;
+
     font-size: 12px;
 
     color: #232F3E;
@@ -239,6 +316,7 @@ div[data-baseweb="select"] > div:focus-within {
    ============================================================ */
 
 .nome-operador {
+
     padding-top: 9px;
 
     font-size: 13px;
@@ -247,11 +325,13 @@ div[data-baseweb="select"] > div:focus-within {
 }
 
 .funcao-operador {
+
     padding-top: 9px;
 
     font-size: 11px;
 
     color: #617184;
+
     font-weight: 600;
 }
 
@@ -261,6 +341,7 @@ div[data-baseweb="select"] > div:focus-within {
    ============================================================ */
 
 .card-trabalho {
+
     background-color: #232F3E;
 
     color: #FFFFFF;
@@ -282,13 +363,16 @@ div[data-baseweb="select"] > div:focus-within {
     min-height: 43px;
 
     display: flex;
+
     flex-direction: column;
+
     justify-content: center;
 
     box-shadow: 0 2px 5px rgba(35,47,62,0.10);
 }
 
 .sub-info {
+
     color: #FFB84D;
 
     font-size: 10px;
@@ -304,6 +388,7 @@ div[data-baseweb="select"] > div:focus-within {
    ============================================================ */
 
 .card-folga {
+
     background-color: #EAF3FB;
 
     color: #232F3E;
@@ -325,13 +410,16 @@ div[data-baseweb="select"] > div:focus-within {
     min-height: 43px;
 
     display: flex;
+
     flex-direction: column;
+
     justify-content: center;
 
     box-shadow: 0 2px 5px rgba(20,110,180,0.07);
 }
 
 .sub-info-folga {
+
     color: #6B8196;
 
     font-size: 10px;
@@ -347,11 +435,13 @@ div[data-baseweb="select"] > div:focus-within {
    ============================================================ */
 
 .separador {
+
     border: 0;
 
     border-top: 1px solid #D7DEE7;
 
     margin-top: 2px;
+
     margin-bottom: 15px;
 }
 
@@ -361,30 +451,71 @@ div[data-baseweb="select"] > div:focus-within {
    ============================================================ */
 
 section[data-testid="stSidebar"] {
+
     background-color: #232F3E;
 
     border-right: 1px solid #314154;
 }
 
 section[data-testid="stSidebar"] > div {
+
     background-color: #232F3E;
 }
 
 section[data-testid="stSidebar"] * {
+
     color: #FFFFFF;
 }
 
+
+/* ============================================================
+   TÍTULO SIDEBAR
+   ============================================================ */
+
 .sidebar-titulo {
+
     color: #FF9900;
 
-    font-size: 20px;
+    font-size: 18px;
 
     font-weight: 800;
 
     letter-spacing: 0.2px;
+
+    margin-bottom: 4px;
 }
 
+
+/* ============================================================
+   BOTÃO / MENU DE LOGIN
+   ============================================================ */
+
+.login-menu {
+
+    background-color: #1F2A38;
+
+    border: 1px solid #3C4B5E;
+
+    border-radius: 8px;
+
+    padding: 9px 10px;
+
+    margin-bottom: 8px;
+
+    color: #FFFFFF;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   STATUS GESTÃO
+   ============================================================ */
+
 .sidebar-status {
+
     background-color: #EAF3FB;
 
     color: #146EB4 !important;
@@ -398,6 +529,8 @@ section[data-testid="stSidebar"] * {
     font-weight: 800;
 
     border-left: 4px solid #FF9900;
+
+    margin-bottom: 8px;
 }
 
 
@@ -406,6 +539,7 @@ section[data-testid="stSidebar"] * {
    ============================================================ */
 
 section[data-testid="stSidebar"] input {
+
     background-color: #FFFFFF !important;
 
     color: #232F3E !important;
@@ -414,12 +548,14 @@ section[data-testid="stSidebar"] input {
 }
 
 section[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+
     background-color: #FFFFFF !important;
 
     color: #232F3E !important;
 }
 
 section[data-testid="stSidebar"] div[data-baseweb="select"] span {
+
     color: #232F3E !important;
 }
 
@@ -429,6 +565,7 @@ section[data-testid="stSidebar"] div[data-baseweb="select"] span {
    ============================================================ */
 
 section[data-testid="stSidebar"] .stButton > button {
+
     background-color: #FF9900;
 
     color: #232F3E;
@@ -441,6 +578,7 @@ section[data-testid="stSidebar"] .stButton > button {
 }
 
 section[data-testid="stSidebar"] .stButton > button:hover {
+
     background-color: #FEBD69;
 
     border-color: #FEBD69;
@@ -454,6 +592,7 @@ section[data-testid="stSidebar"] .stButton > button:hover {
    ============================================================ */
 
 .metric-card {
+
     background-color: #FFFFFF;
 
     border: 1px solid #D7DEE7;
@@ -470,6 +609,7 @@ section[data-testid="stSidebar"] .stButton > button:hover {
 }
 
 .metric-numero {
+
     font-size: 22px;
 
     font-weight: 800;
@@ -478,6 +618,7 @@ section[data-testid="stSidebar"] .stButton > button:hover {
 }
 
 .metric-label {
+
     font-size: 11px;
 
     color: #617184;
@@ -487,34 +628,37 @@ section[data-testid="stSidebar"] .stButton > button:hover {
 
 
 /* ============================================================
-   MÉTRICA PRINCIPAL DE OPERADORES
+   PRIMEIRA MÉTRICA
    ============================================================ */
 
 .metric-card:first-child {
+
     border-top-color: #FF9900;
 }
 
 
 /* ============================================================
-   FORMULÁRIO DE LOGIN
+   FORMULÁRIO LOGIN
    ============================================================ */
 
 [data-testid="stForm"] {
+
     background-color: #1F2A38;
 
     border: 1px solid #3C4B5E;
 
     border-radius: 10px;
 
-    padding: 15px;
+    padding: 12px;
 }
 
 
 /* ============================================================
-   BOTÕES PRINCIPAIS
+   BOTÕES
    ============================================================ */
 
 .stButton > button {
+
     border-radius: 7px;
 
     font-weight: 700;
@@ -528,15 +672,17 @@ section[data-testid="stSidebar"] .stButton > button:hover {
    ============================================================ */
 
 div[data-testid="column"] .stButton > button {
+
     color: #232F3E;
 }
 
 
 /* ============================================================
-   INPUT PRINCIPAL
+   INPUTS
    ============================================================ */
 
 div[data-baseweb="input"] {
+
     border-radius: 7px;
 }
 
@@ -546,7 +692,9 @@ div[data-baseweb="input"] {
    ============================================================ */
 
 .stMainBlockContainer {
+
     padding-top: 18px !important;
+
     padding-bottom: 30px !important;
 }
 
@@ -556,6 +704,7 @@ div[data-baseweb="input"] {
    ============================================================ */
 
 .stCaption {
+
     color: #617184 !important;
 }
 
@@ -567,20 +716,24 @@ div[data-baseweb="input"] {
 @media (max-width: 800px) {
 
     .titulo {
+
         font-size: 24px;
 
         margin-top: 25px;
     }
 
     .turno-titulo {
+
         font-size: 18px;
     }
 
     .turno-horario {
+
         font-size: 10px;
     }
 
     .metric-numero {
+
         font-size: 18px;
     }
 
@@ -595,6 +748,7 @@ div[data-baseweb="input"] {
 # ============================================================
 
 if "autenticado" not in st.session_state:
+
     st.session_state.autenticado = False
 
 
@@ -782,7 +936,9 @@ semanas = [
 with st.sidebar:
 
     st.markdown(
-        "<div class='sidebar-titulo'>🔐 Gestão da Escala</div>",
+        "<div class='sidebar-titulo'>"
+        "🟠 Gestão da Escala"
+        "</div>",
         unsafe_allow_html=True
     )
 
@@ -790,48 +946,46 @@ with st.sidebar:
 
 
     # ========================================================
-    # LOGIN
+    # LOGIN COMPACTO
     # ========================================================
 
     if not st.session_state.autenticado:
 
-        st.markdown("### Acesso")
+        with st.expander("🔐 Login"):
 
-        # O formulário permite enviar usando ENTER
-        with st.form("login_form"):
+            with st.form("login_form"):
 
-            usuario = st.text_input(
-                "Usuário"
-            )
-
-            senha = st.text_input(
-                "Senha",
-                type="password"
-            )
-
-            entrar = st.form_submit_button(
-                "Entrar",
-                use_container_width=True
-            )
-
-
-        # Processa o login depois do submit
-        if entrar:
-
-            if (
-                usuario.lower().strip() == "admin"
-                and senha == "Amazon123"
-            ):
-
-                st.session_state.autenticado = True
-
-                st.rerun()
-
-            else:
-
-                st.error(
-                    "Usuário ou senha incorretos."
+                usuario = st.text_input(
+                    "Usuário"
                 )
+
+                senha = st.text_input(
+                    "Senha",
+                    type="password"
+                )
+
+                entrar = st.form_submit_button(
+                    "Entrar",
+                    use_container_width=True
+                )
+
+
+            if entrar:
+
+                if (
+                    usuario.lower().strip() == "admin"
+                    and senha == "Amazon123"
+                ):
+
+                    st.session_state.autenticado = True
+
+                    st.rerun()
+
+                else:
+
+                    st.error(
+                        "Usuário ou senha incorretos."
+                    )
 
 
     # ========================================================
@@ -842,7 +996,7 @@ with st.sidebar:
 
         st.markdown(
             "<div class='sidebar-status'>"
-            "🟢 Modo Gestão ativo"
+            "🟢 Gestão ativa"
             "</div>",
             unsafe_allow_html=True
         )
@@ -851,103 +1005,100 @@ with st.sidebar:
 
 
         # ====================================================
-        # CADASTRAR
+        # NOVO OPERADOR
         # ====================================================
 
-        st.markdown("### ➕ Novo operador")
+        with st.expander("➕ Novo operador"):
 
-        novo_nome = st.text_input(
-            "Nome",
-            key="novo_nome"
-        )
+            novo_nome = st.text_input(
+                "Nome",
+                key="novo_nome"
+            )
 
-        nova_funcao = st.text_input(
-            "Função",
-            key="nova_funcao"
-        )
+            nova_funcao = st.text_input(
+                "Função",
+                key="nova_funcao"
+            )
 
-        novo_turno = st.selectbox(
-            "Turno",
-            ["T1", "T2", "T3"],
-            format_func=lambda x:
-                f"{NOMES_TURNOS[x]} — {HORARIOS[x]}"
-        )
-
-
-        if st.button(
-            "Cadastrar operador",
-            use_container_width=True
-        ):
-
-            if (
-                novo_nome.strip()
-                and nova_funcao.strip()
-            ):
-
-                cadastrar_operador(
-                    novo_nome.strip().upper(),
-                    nova_funcao.strip().upper(),
-                    novo_turno
-                )
-
-                st.success(
-                    f"{novo_nome.strip().upper()} cadastrado!"
-                )
-
-                st.rerun()
-
-            else:
-
-                st.warning(
-                    "Preencha nome e função."
-                )
-
-
-        st.divider()
-
-
-        # ====================================================
-        # REMOVER
-        # ====================================================
-
-        st.markdown("### ❌ Remover operador")
-
-        operadores = buscar_operadores()
-
-
-        if operadores:
-
-            opcoes_remocao = {
-                f"{x[1]} — {x[2]}": x[0]
-                for x in operadores
-            }
-
-            selecionado = st.selectbox(
-                "Operador",
-                list(opcoes_remocao.keys())
+            novo_turno = st.selectbox(
+                "Turno",
+                ["T1", "T2", "T3"],
+                format_func=lambda x:
+                    f"{NOMES_TURNOS[x]} — {HORARIOS[x]}"
             )
 
 
             if st.button(
-                "Remover",
+                "Cadastrar operador",
                 use_container_width=True
             ):
 
-                remover_operador(
-                    opcoes_remocao[selecionado]
+                if (
+                    novo_nome.strip()
+                    and nova_funcao.strip()
+                ):
+
+                    cadastrar_operador(
+                        novo_nome.strip().upper(),
+                        nova_funcao.strip().upper(),
+                        novo_turno
+                    )
+
+                    st.success(
+                        f"{novo_nome.strip().upper()} cadastrado!"
+                    )
+
+                    st.rerun()
+
+                else:
+
+                    st.warning(
+                        "Preencha nome e função."
+                    )
+
+
+        # ====================================================
+        # REMOVER OPERADOR
+        # ====================================================
+
+        with st.expander("❌ Remover operador"):
+
+            operadores_sidebar = buscar_operadores()
+
+
+            if operadores_sidebar:
+
+                opcoes_remocao = {
+                    f"{x[1]} — {x[2]}": x[0]
+                    for x in operadores_sidebar
+                }
+
+                selecionado = st.selectbox(
+                    "Operador",
+                    list(opcoes_remocao.keys())
                 )
 
-                st.success(
-                    "Operador removido."
+
+                if st.button(
+                    "Remover",
+                    use_container_width=True
+                ):
+
+                    remover_operador(
+                        opcoes_remocao[selecionado]
+                    )
+
+                    st.success(
+                        "Operador removido."
+                    )
+
+                    st.rerun()
+
+            else:
+
+                st.info(
+                    "Nenhum operador cadastrado."
                 )
-
-                st.rerun()
-
-        else:
-
-            st.info(
-                "Nenhum operador cadastrado."
-            )
 
 
         st.divider()
@@ -958,7 +1109,7 @@ with st.sidebar:
         # ====================================================
 
         if st.button(
-            "🚪 Sair",
+            "🚪 Sair da gestão",
             use_container_width=True
         ):
 
@@ -1098,6 +1249,28 @@ st.write("")
 
 
 # ============================================================
+# SELETOR DE TURNO
+# ============================================================
+
+st.markdown(
+    "<div class='seletor-titulo'>"
+    "VISUALIZAÇÃO DO TURNO"
+    "</div>",
+    unsafe_allow_html=True
+)
+
+
+turno_selecionado = st.radio(
+    "Escolha o turno",
+    ["T1", "T2", "T3"],
+    format_func=lambda x:
+        f"🕒 {NOMES_TURNOS[x]} • {HORARIOS[x]}",
+    horizontal=True,
+    label_visibility="collapsed"
+)
+
+
+# ============================================================
 # DIAS
 # ============================================================
 
@@ -1113,16 +1286,23 @@ DIAS = [
 # ESCALA
 # ============================================================
 
-for turno in ["T1", "T2", "T3"]:
+turno = turno_selecionado
 
-    operadores_turno = [
-        x for x in operadores
-        if x[3] == turno
-    ]
 
-    if not operadores_turno:
-        continue
+operadores_turno = [
+    x for x in operadores
+    if x[3] == turno
+]
 
+
+if not operadores_turno:
+
+    st.info(
+        f"Nenhum operador cadastrado no {NOMES_TURNOS[turno]}."
+    )
+
+
+else:
 
     # ========================================================
     # CABEÇALHO DO TURNO
@@ -1134,6 +1314,7 @@ for turno in ["T1", "T2", "T3"]:
             <div class='turno-titulo'>
                 🕒 {NOMES_TURNOS[turno]}
             </div>
+
             <div class='turno-horario'>
                 {HORARIOS[turno]}
             </div>
@@ -1203,7 +1384,9 @@ for turno in ["T1", "T2", "T3"]:
     for operador in operadores_turno:
 
         operador_id = operador[0]
+
         nome = operador[1]
+
         funcao = operador[2]
 
 
@@ -1300,6 +1483,7 @@ for turno in ["T1", "T2", "T3"]:
                     f"""
                     <div class='card-trabalho'>
                         TRABALHO
+
                         <div class='sub-info'>
                             {HORARIOS[turno]}
                         </div>
@@ -1319,6 +1503,7 @@ for turno in ["T1", "T2", "T3"]:
                     """
                     <div class='card-folga'>
                         FOLGA
+
                         <div class='sub-info-folga'>
                             Descanso
                         </div>

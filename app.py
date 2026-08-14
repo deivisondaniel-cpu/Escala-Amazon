@@ -130,15 +130,17 @@ with st.sidebar:
     st.markdown("<h3 style='color:#FF9900; margin-top:0;'>🔐 Área do Coordenador</h3>", unsafe_allow_html=True)
     
 if not st.session_state.autenticado:
-        usuario = st.text_input("Usuário:", key="user_input")
-        senha = st.text_input("Senha:", type="password", key="pass_input")
-        if st.button("Entrar", use_container_width=True):
-            if usuario.lower() == "admin" and senha == "Amazon123":
-                st.session_state.autenticado = True
-                st.query_params["logged_in"] = "true"
-                st.rerun()
-            else:
-                st.error("Dados incorretos.")
+        with st.form(key="formulario_login"):
+            usuario = st.text_input("Usuário:", key="user_input")
+            senha = st.text_input("Senha:", type="password", key="pass_input")
+            botao_entrar = st.form_submit_button("Entrar", use_container_width=True)
+            if botao_entrar:
+                if usuario.lower() == "admin" and senha == "Amazon123":
+                    st.session_state.autenticado = True
+                    st.query_params["logged_in"] = "true"
+                    st.rerun()
+                else:
+                    st.error("Dados incorretos.")
     else:
         st.write("🟢 Modo Coordenador Ativo")
         st.info("💡 DICA: Agora você pode clicar nos botões diretamente na tabela para alterar folgas rapidamente!")

@@ -539,18 +539,39 @@ with st.sidebar:
 
         st.markdown("### Acesso")
 
-        usuario = st.text_input(
-            "Usuário"
-        )
+with st.form("login_form"):
 
-        senha = st.text_input(
-            "Senha",
-            type="password"
-        )
+    usuario = st.text_input(
+        "Usuário"
+    )
 
-        if st.button(
-            "Entrar",
-            use_container_width=True
+    senha = st.text_input(
+        "Senha",
+        type="password"
+    )
+
+    entrar = st.form_submit_button(
+        "Entrar",
+        use_container_width=True
+    )
+
+
+if entrar:
+
+    if (
+        usuario.lower().strip() == "admin"
+        and senha == "Amazon123"
+    ):
+
+        st.session_state.autenticado = True
+
+        st.rerun()
+
+    else:
+
+        st.error(
+            "Usuário ou senha incorretos."
+        )
         ):
 
             if (

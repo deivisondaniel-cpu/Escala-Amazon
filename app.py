@@ -113,6 +113,29 @@ HORARIOS = {
 NOMES_TURNOS = {"T1": "Turno 1", "T2": "Turno 2", "T3": "Turno 3"}
 DIAS = [("Sexta", "sexta"), ("Sábado", "sabado"), ("Domingo", "domingo"), ("Segunda", "segunda")]
 
+# Ordem de exibição por função (mais específico primeiro, para evitar
+# que "SEGURANÇA/ELOG" seja classificado como "SEGURANÇA")
+ORDEM_FUNCOES = [
+    ("LÍDER", 0),
+    ("ANALISTA", 1),
+    ("PICKUP", 2),
+    ("DEPART", 3),
+    ("DROPOFF", 4),
+    ("SEGURANÇA/ELOG", 6),
+    ("SEGURANÇA", 5),
+]
+
+def prioridade_funcao(funcao):
+    funcao_upper = funcao.upper()
+    for palavra_chave, prioridade in ORDEM_FUNCOES:
+        if palavra_chave in funcao_upper:
+            return prioridade
+    return 99  # funções não mapeadas ficam no final
+
+def ordenar_por_funcao(lista_operadores):
+    # x = (id, nome, funcao, turno) — ordena por prioridade da função, depois por nome
+    return sorted(lista_operadores, key=lambda x: (prioridade_funcao(x[2]), x[1]))
+
 # ============================================================
 # TEMA ESCURO (CSS)
 # ============================================================
@@ -132,8 +155,8 @@ footer,
 }
 
 [data-testid="stSidebar"] { display: none; }
-[data-testid="stAppViewContainer"] { background-color: #0B0E14; }
-.stApp { background-color: #0B0E14; color: #E7ECF3; }
+[data-testid="stAppViewContainer"] { background-color: #101A2C; }
+.stApp { background-color: #101A2C; color: #E7ECF3; }
 
 .titulo {
     color: #FFFFFF;
@@ -155,23 +178,23 @@ footer,
 }
 
 div[data-baseweb="select"] > div {
-    border: 1px solid #2A3242 !important;
+    border: 1px solid #33415F !important;
     border-radius: 8px !important;
-    background-color: #151A23 !important;
+    background-color: #182238 !important;
     color: #E7ECF3 !important;
 }
 div[data-baseweb="input"] input {
     color: #E7ECF3 !important;
-    background-color: #151A23 !important;
+    background-color: #182238 !important;
 }
 [data-testid="stTextInput"] input {
-    background-color: #151A23 !important;
+    background-color: #182238 !important;
     color: #E7ECF3 !important;
-    border: 1px solid #2A3242 !important;
+    border: 1px solid #33415F !important;
 }
 label, .stMarkdown, p { color: #C7D0DD; }
 
-.stTabs [data-baseweb="tab-list"] { gap: 4px; border-bottom: 1px solid #232B39; }
+.stTabs [data-baseweb="tab-list"] { gap: 4px; border-bottom: 1px solid #2A3855; }
 .stTabs [data-baseweb="tab"] { color: #8794A6; font-weight: 700; }
 .stTabs [aria-selected="true"] { color: #FF9900 !important; border-bottom-color: #FF9900 !important; }
 
@@ -182,17 +205,17 @@ label, .stMarkdown, p { color: #C7D0DD; }
     margin-top: 15px;
     margin-bottom: 20px;
     padding: 10px 14px;
-    background-color: #151A23;
+    background-color: #182238;
     border-left: 5px solid #FF9900;
-    border-bottom: 1px solid #232B39;
+    border-bottom: 1px solid #2A3855;
     border-radius: 8px;
 }
 
 .turno-titulo { font-size: 21px; font-weight: 800; color: #FFFFFF; }
 .turno-horario {
-    background-color: #1E2733;
+    background-color: #243553;
     color: #FF9900;
-    border: 1px solid #35404F;
+    border: 1px solid #3E4F73;
     padding: 4px 11px;
     border-radius: 20px;
     font-size: 12px;
@@ -238,11 +261,11 @@ label, .stMarkdown, p { color: #C7D0DD; }
 }
 .sub-info-folga { color: #E0C97A; font-size: 10px; margin-top: 3px; font-weight: 600; }
 
-.separador { border: 0; border-top: 1px solid #232B39; margin-top: 2px; margin-bottom: 15px; }
+.separador { border: 0; border-top: 1px solid #2A3855; margin-top: 2px; margin-bottom: 15px; }
 
 .metric-card {
-    background-color: #151A23;
-    border: 1px solid #232B39;
+    background-color: #182238;
+    border: 1px solid #2A3855;
     border-top: 4px solid #4EA8E0;
     border-radius: 10px;
     padding: 12px;
@@ -252,19 +275,19 @@ label, .stMarkdown, p { color: #C7D0DD; }
 .metric-label { font-size: 11px; color: #8794A6; font-weight: 700; }
 .metric-card:first-child { border-top-color: #FF9900; }
 
-[data-testid="stForm"] { background-color: #151A23; border: 1px solid #232B39; padding: 16px; border-radius: 10px; }
+[data-testid="stForm"] { background-color: #182238; border: 1px solid #2A3855; padding: 16px; border-radius: 10px; }
 .stButton > button {
     border-radius: 7px;
     font-weight: 700;
-    border: 1px solid #2A3242;
-    background-color: #1B222C;
+    border: 1px solid #33415F;
+    background-color: #1E2A42;
     color: #E7ECF3;
 }
 .stButton > button:hover { border-color: #FF9900; color: #FF9900; }
 
 div[data-testid="stDownloadButton"] > button {
     background-color: transparent !important;
-    border: 1px solid #232B39 !important;
+    border: 1px solid #2A3855 !important;
     color: #5B6779 !important;
     font-size: 12px !important;
     padding: 6px 0 !important;
@@ -292,10 +315,72 @@ div[data-testid="stPopover"] > button:hover {
 }
 div[data-testid="stPopover"] > button:hover p { color: #0B3C5D !important; }
 
+/* Conteúdo do popover (renderizado fora do container principal) */
+div[data-testid="stPopoverBody"],
+div[data-baseweb="popover"] div[role="tooltip"] {
+    background-color: #182238 !important;
+    border: 1px solid #2A3855 !important;
+    border-radius: 12px !important;
+}
+div[data-testid="stPopoverBody"] * ,
+div[data-baseweb="popover"] div[role="tooltip"] * {
+    color: #E7ECF3;
+}
+div[data-testid="stPopoverBody"] label,
+div[data-baseweb="popover"] div[role="tooltip"] label {
+    color: #C7D0DD !important;
+}
+div[data-testid="stPopoverBody"] input,
+div[data-baseweb="popover"] div[role="tooltip"] input {
+    background-color: #101A2C !important;
+    color: #E7ECF3 !important;
+    border: 1px solid #33415F !important;
+}
+div[data-testid="stPopoverBody"] div[data-baseweb="input"],
+div[data-baseweb="popover"] div[role="tooltip"] div[data-baseweb="input"] {
+    background-color: #101A2C !important;
+    border-radius: 7px !important;
+}
+div[data-testid="stPopoverBody"] div[data-baseweb="base-input"],
+div[data-baseweb="popover"] div[role="tooltip"] div[data-baseweb="base-input"] {
+    background-color: #101A2C !important;
+}
+div[data-testid="stPopoverBody"] button[kind="secondaryFormSubmit"],
+div[data-testid="stPopoverBody"] div[data-testid="stFormSubmitButton"] > button,
+div[data-baseweb="popover"] div[role="tooltip"] div[data-testid="stFormSubmitButton"] > button {
+    background-color: #FF9900 !important;
+    color: #101A2C !important;
+    border: 1px solid #FF9900 !important;
+    font-weight: 800 !important;
+}
+div[data-testid="stPopoverBody"] div[data-testid="stFormSubmitButton"] > button p,
+div[data-baseweb="popover"] div[role="tooltip"] div[data-testid="stFormSubmitButton"] > button p {
+    color: #101A2C !important;
+}
+div[data-testid="stPopoverBody"] svg,
+div[data-baseweb="popover"] div[role="tooltip"] svg {
+    fill: #8794A6 !important;
+}
+
 [data-testid="stExpander"] {
-    background-color: #151A23;
-    border: 1px solid #232B39;
+    background-color: #182238;
+    border: 1px solid #2A3855;
     border-radius: 8px;
+}
+
+/* Campo de busca de operador — fundo branco */
+input[placeholder="Nome do operador..."] {
+    background-color: #FFFFFF !important;
+    color: #101A2C !important;
+    border: 1px solid #FF9900 !important;
+    font-weight: 600 !important;
+}
+input[placeholder="Nome do operador..."]::placeholder {
+    color: #8794A6 !important;
+}
+input[placeholder="Nome do operador..."] + div,
+div:has(> input[placeholder="Nome do operador..."]) {
+    background-color: #FFFFFF !important;
 }
 
 @media (max-width: 800px) {
@@ -545,7 +630,7 @@ with col_prev:
         st.rerun()
 with col_periodo:
     st.markdown(
-        f"<div style='background-color:#151A23;border:1px solid #232B39;border-radius:8px;"
+        f"<div style='background-color:#182238;border:1px solid #2A3855;border-radius:8px;"
         f"padding:9px 14px;color:#E7ECF3;font-weight:700;text-align:center;'>📅 {semana['nome']}</div>",
         unsafe_allow_html=True
     )
@@ -595,7 +680,7 @@ abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
 
 for turno in ["T1", "T2", "T3"]:
     with abas_mapeamento[turno]:
-        operadores_turno = [x for x in operadores if x[3] == turno]
+        operadores_turno = ordenar_por_funcao([x for x in operadores if x[3] == turno])
 
         if not operadores_turno:
             st.info(f"Nenhum operador encontrado no {NOMES_TURNOS[turno]} para este filtro/período.")

@@ -711,7 +711,7 @@ st.write("")
 # GRID DE TURNOS
 # ============================================================
 aba_t1, aba_t2, aba_t3 = st.tabs(["T1", "T2", "T3"])
-abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
+abas_mapeamento = {"T11": aba_t1, "T2": aba_t2, "T3": aba_t3}
 
 for turno in ["T1", "T2", "T3"]:
     with abas_mapeamento[turno]:

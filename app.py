@@ -69,19 +69,8 @@ NOMES_TURNOS = {
 # ============================================================
 st.markdown("""
 <style>
-/* Remove o botão de Fork/GitHub e a barra superior */
+/* Remove o botão de Fork/GitHub e a barra superior nativa da nuvem */
 header[data-testid="stHeader"] {
-    display: none !important;
-}
-
-/* Esconde o selo vermelho "Hosted with Streamlit" (Viewer Badge) */
-div[data-testid="stViewerBadge"] {
-    display: none !important;
-}
-
-/* Garante que o container flutuante do rodapé suma junto */
-footer {
-    visibility: hidden !important;
     display: none !important;
 }
 

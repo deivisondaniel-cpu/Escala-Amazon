@@ -65,20 +65,21 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS DESIGN PREMIUM (FOCO EM UI/UX)
+# CSS IDENTIDADE AMAZON (CORREÇÃO DE ESPAÇOS E ALINHAMENTO)
 # ============================================================
 st.markdown("""
 <style>
-/* Remove elementos nativos desnecessários */
+/* Reset de layout nativo do Streamlit */
 header[data-testid="stHeader"] { display: none !important; }
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }
 [data-testid="stSidebar"] { display: none; }
-[data-testid="stAppViewContainer"] { background-color: #F8FAFC; }
-.stApp { background-color: #F8FAFC; }
+[data-testid="stAppViewContainer"] { background-color: #F3F6F9; }
+.stApp { background-color: #F3F6F9; }
+.stMainBlockContainer { padding-top: 20px !important; padding-bottom: 30px !important; }
 
-/* Cabeçalho */
+/* Identidade Visual - Cabeçalho */
 .titulo { 
     color: #232F3E; 
     font-family: 'Segoe UI', sans-serif; 
@@ -88,147 +89,133 @@ footer { visibility: hidden; }
 }
 .subtitulo { 
     color: #146EB4; 
-    font-size: 14px; 
+    font-size: 13px; 
     font-weight: 700; 
     text-transform: uppercase;
-    letter-spacing: 1px; 
-    margin-bottom: 25px; 
+    letter-spacing: 0.8px; 
+    margin-bottom: 20px; 
 }
 
-/* Filtro Dropdown */
-div[data-baseweb="select"] > div {
-    border: 1px solid #CBD5E1 !important;
-    border-radius: 8px !important;
-    background-color: #FFFFFF !important;
-}
-
-/* Cards de Métricas Avançados */
-.metric-card {
-    background-color: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);
-    transition: transform 0.2s;
-}
-.metric-card:hover { transform: translateY(-2px); }
-.metric-numero { font-size: 26px; font-weight: 800; color: #232F3E; }
-.metric-label { font-size: 11px; color: #64748B; font-weight: 700; margin-top: 4px; }
-
-/* Cores específicas para as bordas superiores das métricas */
-div[data-testid="column"]:nth-child(1) .metric-card { border-top: 4px solid #FF9900; }
-div[data-testid="column"]:nth-child(2) .metric-card { border-top: 4px solid #146EB4; }
-div[data-testid="column"]:nth-child(3) .metric-card { border-top: 4px solid #146EB4; }
-div[data-testid="column"]:nth-child(4) .metric-card { border-top: 4px solid #146EB4; }
-
-/* Banner do Turno */
-.turno-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-top: 20px;
-    margin-bottom: 25px;
-    padding: 14px 20px;
-    background-color: #FFFFFF;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(35,47,62,0.04);
-    border: 1px solid #E2E8F0;
-}
-.turno-titulo { font-size: 20px; font-weight: 800; color: #232F3E; }
-.turno-horario {
-    background-color: #F0FDF4;
-    color: #16A34A;
-    border: 1px solid #BBF7D0;
-    padding: 4px 12px;
-    border-radius: 99px;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-/* Tabela e Linhas */
-.header-col { text-align: center; font-weight: 700; font-size: 11px; color: #64748B; letter-spacing: 0.5px; margin-bottom: 12px; }
-.header-esquerda { text-align: left; }
-.nome-operador { padding-top: 12px; font-size: 13px; color: #232F3E; font-weight: 700; }
-.funcao-operador { padding-top: 14px; font-size: 11px; color: #64748B; font-weight: 600; letter-spacing: 0.5px; }
-.separador { border: 0; border-top: 1px solid #E2E8F0; margin-top: 2px; margin-bottom: 16px; }
-
-/* CARD TRABALHO */
-.card-trabalho {
-    background-color: #232F3E;
-    color: #FFFFFF;
-    padding: 10px 8px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    border-left: 4px solid #FF9900;
-    min-height: 48px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(35,47,62,0.08);
-}
-.sub-info { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 700; }
-
-/* CARD FOLGA (Suave, Clean, reduzindo fadiga visual) */
-.card-folga {
-    background-color: #F1F5F9;
-    color: #64748B;
-    padding: 10px 8px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    border-left: 4px solid #94A3B8;
-    min-height: 48px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.sub-info-folga { color: #94A3B8; font-size: 10px; margin-top: 3px; font-weight: 500; }
-
-/* Customização Discreta dos Botões de Alternar */
-div[data-testid="column"] .stButton > button {
-    border-radius: 6px !important;
-    font-size: 11px !important;
-    padding: 2px 8px !important;
-    background-color: #FFFFFF !important;
-    color: #64748B !important;
-    border: 1px solid #E2E8F0 !important;
-    margin-top: 4px !important;
-}
-div[data-testid="column"] .stButton > button:hover {
-    color: #146EB4 !important;
-    border-color: #146EB4 !important;
-    background-color: #F8FAFC !important;
-}
-
-/* Estilização Popover do Painel Superior */
+/* Forçar os botões Popover a ficarem no padrão Escuro Amazon */
 div[data-testid="stPopover"] > button {
     background-color: #232F3E !important;
     color: #FFFFFF !important;
+    border: 1px solid #232F3E !important;
+    font-weight: 700 !important;
     border-radius: 8px !important;
-    border: none !important;
-    font-weight: 600 !important;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
 }
 div[data-testid="stPopover"] > button:hover {
     background-color: #FF9900 !important;
+    border-color: #FF9900 !important;
     color: #232F3E !important;
 }
 
-div[data-baseweb="input"] { border-radius: 7px; }
-.stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
-.stCaption { color: #64748B !important; }
+/* Alinhamento e Visual dos Cards de Escala (Ocupando 100% da coluna) */
+.card-trabalho, .card-folga {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px 6px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    min-height: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-trabalho {
+    background-color: #232F3E;
+    color: #FFFFFF;
+    border-left: 4px solid #FF9900;
+    box-shadow: 0 2px 4px rgba(35,47,62,0.1);
+}
+.sub-info { color: #FF9900; font-size: 10px; margin-top: 2px; font-weight: 700; }
+
+.card-folga {
+    background-color: #EAF3FB;
+    color: #146EB4;
+    border-left: 4px solid #146EB4;
+}
+.sub-info-folga { color: #6B8196; font-size: 10px; margin-top: 2px; font-weight: 600; }
+
+/* Correção das colunas nativas do Streamlit para remover margens fantasmas */
+div[data-testid="column"] {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0px !important;
+}
+
+/* Estilização dos Mini Botões "Alternar" */
+div[data-testid="column"] .stButton > button {
+    border-radius: 5px !important;
+    font-size: 10px !important;
+    padding: 1px 4px !important;
+    background-color: #FFFFFF !important;
+    color: #232F3E !important;
+    border: 1px solid #CBD5E1 !important;
+    margin-top: 3px !important;
+    height: auto !important;
+}
+div[data-testid="column"] .stButton > button:hover {
+    border-color: #FF9900 !important;
+    color: #FF9900 !important;
+}
+
+/* Banner de identificação de Turno */
+.turno-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 10px 16px;
+    background-color: #FFFFFF;
+    border-left: 5px solid #FF9900;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.turno-titulo { font-size: 18px; font-weight: 800; color: #232F3E; }
+.turno-horario {
+    background-color: #EAF3FB;
+    color: #146EB4;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+/* Linhas e separadores */
+.header-col { text-align: center; font-weight: 800; font-size: 11px; color: #232F3E; margin-bottom: 6px; }
+.header-esquerda { text-align: left; }
+.nome-operador { padding-top: 12px; font-size: 13px; color: #232F3E; }
+.funcao-operador { padding-top: 14px; font-size: 11px; color: #617184; font-weight: 600; }
+.separador { border: 0; border-top: 1px solid #CBD5E1; margin-top: 2px; margin-bottom: 12px; }
+
+/* Grid de métricas customizado em HTML puro para evitar bugs do Streamlit */
+.metrics-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.metric-box {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.metric-box.total { border-top: 4px solid #FF9900; }
+.metric-box.turno { border-top: 4px solid #146EB4; }
+.metric-num { font-size: 24px; font-weight: 800; color: #232F3E; }
+.metric-lab { font-size: 11px; color: #617184; font-weight: 700; margin-top: 2px; }
 
 @media (max-width: 800px) {
-    .titulo { font-size: 24px; }
-    .turno-titulo { font-size: 18px; }
-    .turno-horario { font-size: 10px; }
-    .metric-numero { font-size: 18px; }
+    .metrics-container { grid-template-columns: 1fr 1fr; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -287,7 +274,6 @@ def salvar_status(operador_id, semana_id, sexta, sabado, domingo, segunda):
     conn.commit()
     conn.close()
 
-# Callback para reatividade instantânea (1 único clique para alternar)
 def alternar_status_callback(operador_id, semana_id, lista_atual, index_dia, novo_valor):
     lista_atual[index_dia] = novo_valor
     salvar_status(operador_id, semana_id, *lista_atual)
@@ -315,7 +301,7 @@ def obter_semana(deslocamento=0):
 semanas = [obter_semana(i) for i in range(-2, 5)]
 
 # ============================================================
-# CABEÇALHO DA APLICAÇÃO (TÍTULO + POPOVER GESTOR)
+# CABEÇALHO DA APLICAÇÃO (TÍTULO + LOGIN GESTOR)
 # ============================================================
 col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
@@ -387,20 +373,33 @@ semana_id = semana["id"]
 operadores = buscar_operadores()
 
 # ============================================================
-# MÉTRICAS DO PAINEL
+# MÉTRICAS COM GRID CORRIGIDO EM HTML/CSS (FIM DO BUG DE ESPAÇO)
 # ============================================================
 total = len(operadores)
 t1 = len([x for x in operadores if x[3] == "T1"])
 t2 = len([x for x in operadores if x[3] == "T2"])
 t3 = len([x for x in operadores if x[3] == "T3"])
 
-m1, m2, m3, m4 = st.columns(4)
-with m1: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{total}</div><div class='metric-label'>OPERADORES TOTAL</div></div>", unsafe_allow_html=True)
-with m2: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t1}</div><div class='metric-label'>T1 • 07h às 15h</div></div>", unsafe_allow_html=True)
-with m3: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t2}</div><div class='metric-label'>T2 • 15h às 23h</div></div>", unsafe_allow_html=True)
-with m4: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t3}</div><div class='metric-label'>T3 • 23h às 07h</div></div>", unsafe_allow_html=True)
-
-st.write("")
+st.markdown(f"""
+<div class='metrics-container'>
+    <div class='metric-box total'>
+        <div class='metric-num'>{total}</div>
+        <div class='metric-lab'>OPERADORES TOTAL</div>
+    </div>
+    <div class='metric-box turno'>
+        <div class='metric-num'>{t1}</div>
+        <div class='metric-lab'>T1 • 07h às 15h</div>
+    </div>
+    <div class='metric-box turno'>
+        <div class='metric-num'>{t2}</div>
+        <div class='metric-lab'>T2 • 15h às 23h</div>
+    </div>
+    <div class='metric-box turno'>
+        <div class='metric-num'>{t3}</div>
+        <div class='metric-lab'>T3 • 23h às 07h</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # ============================================================
 # ABAS DE NAVEGAÇÃO DOS TURNOS
@@ -469,7 +468,6 @@ for turno in ["T1", "T2", "T3"]:
 
                 if st.session_state.autenticado:
                     novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                    # Uso correto do on_click + args garantindo estabilidade ao alternar turnos
                     linha[i].button(
                         "↔ Alternar", 
                         key=f"{operador_id}_{semana_id}_{dia}_{turno}", 

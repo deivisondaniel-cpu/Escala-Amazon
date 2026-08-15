@@ -366,6 +366,35 @@ div[data-testid="stPopoverBody"] svg,
 div[data-baseweb="popover"] div[role="tooltip"] svg {
     fill: #8794A6 !important;
 }
+div[data-testid="stPopoverBody"] div[data-baseweb="select"] > div,
+div[data-baseweb="popover"] div[role="tooltip"] div[data-baseweb="select"] > div {
+    background-color: #101A2C !important;
+    border: 1px solid #33415F !important;
+    border-radius: 7px !important;
+}
+div[data-testid="stPopoverBody"] div[data-baseweb="select"] *,
+div[data-baseweb="popover"] div[role="tooltip"] div[data-baseweb="select"] * {
+    color: #E7ECF3 !important;
+    background-color: transparent !important;
+}
+
+/* Lista de opções do dropdown (menu flutuante, fora do container principal) */
+ul[data-baseweb="menu"] {
+    background-color: #182238 !important;
+    border: 1px solid #2A3855 !important;
+}
+ul[data-baseweb="menu"] li {
+    background-color: #182238 !important;
+    color: #E7ECF3 !important;
+}
+ul[data-baseweb="menu"] li:hover {
+    background-color: #243553 !important;
+    color: #FF9900 !important;
+}
+div[data-testid="stPopoverBody"] hr,
+div[data-baseweb="popover"] div[role="tooltip"] hr {
+    border-color: #2A3855 !important;
+}
 
 [data-testid="stExpander"] {
     background-color: #182238;

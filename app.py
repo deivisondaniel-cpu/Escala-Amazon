@@ -230,13 +230,16 @@ label, .stMarkdown, p { color: #C7D0DD; }
 .card-trabalho {
     background-color: #8CD790;
     color: #111111;
-    padding: 9px 5px;
+    padding: 8px 5px;
     border-radius: 7px;
     text-align: center;
     font-weight: 800;
     font-size: 12px;
     border-left: 4px solid #4CAF50;
     margin-bottom: 4px;
+    min-height: 48px;
+    width: 100%;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -252,7 +255,9 @@ label, .stMarkdown, p { color: #C7D0DD; }
     font-size: 11px;
     border-left: 4px solid #FF9900;
     margin-bottom: 4px;
-    min-height: 43px;
+    min-height: 48px;
+    width: 100%;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: center;

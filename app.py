@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 # CONFIGURAÇÃO DA PÁGINA
 # ============================================================
 st.set_page_config(
-    page_title="Escala Amazon",
+    page_title="Monitoramento Amazon",
     page_icon="amazon.png",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -346,7 +346,7 @@ col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
 with col_tit:
     st.markdown("<div class='titulo'>Escala Amazon</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitulo'>Escala do turno</div>", unsafe_allow_html=True)
 
 with col_log:
     if not st.session_state.autenticado:
@@ -364,7 +364,7 @@ with col_log:
                         st.error("Dados incorretos.")
     else:
         with st.popover("⚙️ Painel de Gestão", use_container_width=True):
-            st.markdown("🟢 **Modo Administrador**")
+            st.markdown("🟢 **Modo Gestor ativo**")
             st.divider()
             
             menu_admin = st.selectbox("O que deseja fazer?", ["Adicionar Operador", "Remover Operador"])

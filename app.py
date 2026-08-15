@@ -74,15 +74,25 @@ header[data-testid="stHeader"] {
     display: none !important;
 }
 
-/* Remove absolutamente qualquer botão flutuante do canto inferior direito (incluindo a coroa) */
-div.stDeployButton, 
-iframe#stManageAppButton, 
-button[title*="Manage app"], 
-[data-testid="stStatusWidget"] {
+/* Força bruta contra qualquer botão flutuante nos cantos inferiores (incluindo a coroa) */
+div[class*="deploy"], 
+div[class*="Deploy"],
+button[class*="deploy"],
+button[class*="Deploy"],
+[data-testid="stStatusWidget"],
+iframe[id*="manage"],
+.stDeployButton {
     display: none !important;
     visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
     opacity: 0 !important;
-    pointer-events: none !important;
+}
+
+/* Se ela estiver dentro de uma barra flutuante geral do rodapé, isso elimina */
+div[data-testid="stBottom"] button, 
+div[data-testid="stBottom"] div {
+    display: none !important;
 }
 
 #MainMenu { visibility: hidden; }

@@ -307,7 +307,7 @@ div[data-testid="column"] .stButton > button { color: #C7D0DD; }
 
 div[data-testid="stPopover"] button {
     background-color: #FF9900 !important;
-    color: #146EB4 !important;
+    color: #1A1A1A !important;
     border: 1px solid #FF9900 !important;
     font-weight: 800 !important;
     border-radius: 8px !important;

@@ -74,6 +74,11 @@ header[data-testid="stHeader"] {
     display: none !important;
 }
 
+/* Remove o botão flutuante vermelho (Manage App) no canto inferior direito */
+#stManageAppButton {
+    display: none !important;
+}
+
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }

@@ -245,21 +245,21 @@ label, .stMarkdown, p { color: #C7D0DD; }
 .sub-info { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 700; }
 
 .card-folga {
-    background-color: #3A2C05;
-    color: #FFC93C;
+    background-color: #123655;
+    color: #6FC3FF;
     padding: 8px 5px;
     border-radius: 7px;
     text-align: center;
     font-weight: 800;
     font-size: 11px;
-    border-left: 4px solid #FFC93C;
+    border-left: 4px solid #4EA8E0;
     margin-bottom: 4px;
     min-height: 43px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
-.sub-info-folga { color: #E0C97A; font-size: 10px; margin-top: 3px; font-weight: 600; }
+.sub-info-folga { color: #9BD3F5; font-size: 10px; margin-top: 3px; font-weight: 600; }
 
 .separador { border: 0; border-top: 1px solid #2A3855; margin-top: 2px; margin-bottom: 15px; }
 

@@ -3,17 +3,17 @@ import sqlite3
 from datetime import datetime, timedelta
 
 # ============================================================
-# CONFIGURAÇÃO
+# CONFIGURAÇÃO DE TELA (NATIVA DO STREAMLIT)
 # ============================================================
 st.set_page_config(
     page_title="Escala Amazon",
-    page_icon="amazon.png",
+    page_icon="📦",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # ============================================================
-# BANCO INTERNO
+# BANCO DE DADOS
 # ============================================================
 BANCO = "escala_amazon.db"
 
@@ -49,9 +49,6 @@ def criar_banco():
 
 criar_banco()
 
-# ============================================================
-# HORÁRIOS OFICIAIS
-# ============================================================
 HORARIOS = {
     "T1": "07:00 às 15:00",
     "T2": "15:00 às 23:00",
@@ -65,169 +62,211 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS IDENTIDADE AMAZON (CORREÇÃO DE ESPAÇOS E ALINHAMENTO)
+# INTERFACE CSS PREMIUM DARK MODE (ESTILO AMAZON CORE)
 # ============================================================
 st.markdown("""
 <style>
-/* Reset de layout nativo do Streamlit */
+/* Reset Total do Fundo para o Azul Escuro da foto */
 header[data-testid="stHeader"] { display: none !important; }
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }
 [data-testid="stSidebar"] { display: none; }
-[data-testid="stAppViewContainer"] { background-color: #F3F6F9; }
-.stApp { background-color: #F3F6F9; }
-.stMainBlockContainer { padding-top: 20px !important; padding-bottom: 30px !important; }
 
-/* Identidade Visual - Cabeçalho */
+/* Fundo unificado Dark Corporativo */
+[data-testid="stAppViewContainer"], .stApp { 
+    background-color: #0F172A !important; 
+}
+.stMainBlockContainer { 
+    padding-top: 25px !important; 
+    padding-bottom: 40px !important; 
+    max-width: 95% !important;
+}
+
+/* Tipografia e Títulos */
 .titulo { 
-    color: #232F3E; 
+    color: #FFFFFF; 
     font-family: 'Segoe UI', sans-serif; 
-    font-size: 34px; 
+    font-size: 32px; 
     font-weight: 800; 
     letter-spacing: -0.5px;
 }
 .subtitulo { 
-    color: #146EB4; 
-    font-size: 13px; 
+    color: #FF9900; 
+    font-size: 12px; 
     font-weight: 700; 
     text-transform: uppercase;
-    letter-spacing: 0.8px; 
+    letter-spacing: 1.5px; 
     margin-bottom: 20px; 
 }
 
-/* Forçar os botões Popover a ficarem no padrão Escuro Amazon */
-div[data-testid="stPopover"] > button {
-    background-color: #232F3E !important;
+/* Customização dos Inputs Padrão */
+label[data-testid="stWidgetLabel"] p {
+    color: #94A3B8 !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+}
+div[data-baseweb="select"] > div {
+    background-color: #1E293B !important;
+    border: 1px solid #334155 !important;
     color: #FFFFFF !important;
-    border: 1px solid #232F3E !important;
-    font-weight: 700 !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
+}
+div[data-baseweb="select"] * {
+    color: #FFFFFF !important;
+}
+
+/* Estilização Cirúrgica do Botão/Popover Gestor */
+div[data-testid="stPopover"] > button {
+    background-color: #1E293B !important;
+    color: #FFFFFF !important;
+    border: 1px solid #334155 !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
 }
 div[data-testid="stPopover"] > button:hover {
     background-color: #FF9900 !important;
     border-color: #FF9900 !important;
-    color: #232F3E !important;
+    color: #0F172A !important;
+}
+div[data-testid="stPopoverBody"] {
+    background-color: #1E293B !important;
+    border: 1px solid #334155 !important;
+    color: #FFFFFF !important;
 }
 
-/* Alinhamento e Visual dos Cards de Escala (Ocupando 100% da coluna) */
-.card-trabalho, .card-folga {
-    width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 10px 6px;
-    border-radius: 6px;
+/* Grid de Métricas Avançado */
+.metrics-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.metric-box {
+    background-color: #1E293B;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
     text-align: center;
-    font-weight: 700;
-    font-size: 11px;
-    min-height: 48px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
+.metric-box.total { border-left: 4px solid #FF9900; }
+.metric-box.turno { border-left: 4px solid #38BDF8; }
+.metric-num { font-size: 28px; font-weight: 800; color: #FFFFFF; }
+.metric-lab { font-size: 11px; color: #94A3B8; font-weight: 700; margin-top: 4px; letter-spacing: 0.5px; }
 
-.card-trabalho {
-    background-color: #232F3E;
-    color: #FFFFFF;
-    border-left: 4px solid #FF9900;
-    box-shadow: 0 2px 4px rgba(35,47,62,0.1);
+/* Tabs Modificadas para o Modo Escuro */
+button[data-baseweb="tab"] {
+    color: #94A3B8 !important;
+    font-weight: 600 !important;
 }
-.sub-info { color: #FF9900; font-size: 10px; margin-top: 2px; font-weight: 700; }
-
-.card-folga {
-    background-color: #EAF3FB;
-    color: #146EB4;
-    border-left: 4px solid #146EB4;
-}
-.sub-info-folga { color: #6B8196; font-size: 10px; margin-top: 2px; font-weight: 600; }
-
-/* Correção das colunas nativas do Streamlit para remover margens fantasmas */
-div[data-testid="column"] {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding: 0px !important;
-}
-
-/* Estilização dos Mini Botões "Alternar" */
-div[data-testid="column"] .stButton > button {
-    border-radius: 5px !important;
-    font-size: 10px !important;
-    padding: 1px 4px !important;
-    background-color: #FFFFFF !important;
-    color: #232F3E !important;
-    border: 1px solid #CBD5E1 !important;
-    margin-top: 3px !important;
-    height: auto !important;
-}
-div[data-testid="column"] .stButton > button:hover {
-    border-color: #FF9900 !important;
+button[data-baseweb="tab"][aria-selected="true"] {
     color: #FF9900 !important;
+    border-bottom-color: #FF9900 !important;
 }
 
-/* Banner de identificação de Turno */
+/* Banner do Turno Selecionado */
 .turno-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    padding: 10px 16px;
-    background-color: #FFFFFF;
-    border-left: 5px solid #FF9900;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-}
-.turno-titulo { font-size: 18px; font-weight: 800; color: #232F3E; }
-.turno-horario {
-    background-color: #EAF3FB;
-    color: #146EB4;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 800;
-}
-
-/* Linhas e separadores */
-.header-col { text-align: center; font-weight: 800; font-size: 11px; color: #232F3E; margin-bottom: 6px; }
-.header-esquerda { text-align: left; }
-.nome-operador { padding-top: 12px; font-size: 13px; color: #232F3E; }
-.funcao-operador { padding-top: 14px; font-size: 11px; color: #617184; font-weight: 600; }
-.separador { border: 0; border-top: 1px solid #CBD5E1; margin-top: 2px; margin-bottom: 12px; }
-
-/* Grid de métricas customizado em HTML puro para evitar bugs do Streamlit */
-.metrics-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
+    margin-top: 10px;
     margin-bottom: 20px;
-}
-.metric-box {
-    background-color: #FFFFFF;
-    border: 1px solid #E2E8F0;
+    padding: 12px 18px;
+    background-color: #1E293B;
     border-radius: 8px;
-    padding: 14px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    border: 1px solid #334155;
 }
-.metric-box.total { border-top: 4px solid #FF9900; }
-.metric-box.turno { border-top: 4px solid #146EB4; }
-.metric-num { font-size: 24px; font-weight: 800; color: #232F3E; }
-.metric-lab { font-size: 11px; color: #617184; font-weight: 700; margin-top: 2px; }
+.turno-titulo { font-size: 18px; font-weight: 700; color: #FFFFFF; }
+.turno-horario {
+    background-color: rgba(56, 189, 248, 0.1);
+    color: #38BDF8;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+}
 
-@media (max-width: 800px) {
-    .metrics-container { grid-template-columns: 1fr 1fr; }
+/* Cabeçalhos de Colunas da Tabela */
+.header-col { 
+    text-align: center; 
+    font-weight: 700; 
+    font-size: 11px; 
+    color: #94A3B8; 
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+.header-esquerda { text-align: left; }
+.nome-operador { padding-top: 10px; font-size: 13px; color: #FFFFFF; font-weight: 600; }
+.funcao-operador { padding-top: 12px; font-size: 11px; color: #64748B; font-weight: 600; }
+.separador { border: 0; border-top: 1px solid #334155; margin-top: 4px; margin-bottom: 12px; }
+
+/* CARD STATUS - TRABALHO (Estilo Laranja Amazon) */
+.card-trabalho {
+    background-color: #FF9900;
+    color: #0F172A;
+    padding: 8px 4px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    min-height: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(255, 153, 0, 0.15);
+}
+.sub-info { color: #0F172A; opacity: 0.85; font-size: 9px; margin-top: 1px; font-weight: 700; }
+
+/* CARD STATUS - FOLGA (Discreto no Fundo Escuro) */
+.card-folga {
+    background-color: #1E293B;
+    color: #64748B;
+    padding: 8px 4px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    min-height: 44px;
+    border: 1px dashed #334155;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.sub-info-folga { color: #475569; font-size: 9px; margin-top: 1px; font-weight: 500; }
+
+/* Alinhamento de Linhas e Botão Alternar Clean */
+div[data-testid="column"] {
+    padding: 0px 4px !important;
+}
+div[data-testid="column"] .stButton > button {
+    border-radius: 4px !important;
+    font-size: 10px !important;
+    padding: 2px 0px !important;
+    background-color: transparent !important;
+    color: #94A3B8 !important;
+    border: 1px solid #334155 !important;
+    margin-top: 4px !important;
+}
+div[data-testid="column"] .stButton > button:hover {
+    color: #FF9900 !important;
+    border-color: #FF9900 !important;
+    background-color: rgba(255,153,0,0.05) !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ============================================================
-# LOGIN STATE
+# GERENCIAMENTO DE ESTADO DE AUTENTICAÇÃO
 # ============================================================
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
 # ============================================================
-# FUNÇÕES DE BANCO E CALLBACK REATIVO
+# FUNÇÕES DE PERSISTÊNCIA (SQLITE)
 # ============================================================
 def buscar_operadores():
     conn = conectar()
@@ -279,7 +318,7 @@ def alternar_status_callback(operador_id, semana_id, lista_atual, index_dia, nov
     salvar_status(operador_id, semana_id, *lista_atual)
 
 # ============================================================
-# GERAÇÃO DE DATAS
+# INTEGRAÇÃO DE DATAS DINÂMICAS
 # ============================================================
 def obter_semana(deslocamento=0):
     hoje = datetime.now()
@@ -301,13 +340,13 @@ def obter_semana(deslocamento=0):
 semanas = [obter_semana(i) for i in range(-2, 5)]
 
 # ============================================================
-# CABEÇALHO DA APLICAÇÃO (TÍTULO + LOGIN GESTOR)
+# TOPBAR (HEADER + LOGIN ADM)
 # ============================================================
 col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
 with col_tit:
     st.markdown("<div class='titulo'>Escala Amazon</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitulo'>Monitoramento de Turnos e Operações</div>", unsafe_allow_html=True)
 
 with col_log:
     if not st.session_state.autenticado:
@@ -315,65 +354,58 @@ with col_log:
             with st.form("login_form", clear_on_submit=True):
                 usuario = st.text_input("Usuário")
                 senha = st.text_input("Senha", type="password")
-                entrar = st.form_submit_button("Entrar", use_container_width=True)
+                entrar = st.form_submit_button("Acessar", use_container_width=True)
 
                 if entrar:
                     if usuario.lower().strip() == "admin" and senha == "Amazon123":
                         st.session_state.autenticado = True
                         st.rerun()
                     else:
-                        st.error("Dados incorretos.")
+                        st.error("Credenciais inválidas.")
     else:
-        with st.popover("⚙️ Painel de Gestão", use_container_width=True):
-            st.markdown("🟢 **Modo Administrador**")
+        with st.popover("⚙️ Painel do Administrador", use_container_width=True):
+            st.markdown("<span style='color:#4ADE80'>● Gestor Autenticado</span>", unsafe_allow_html=True)
             st.divider()
             
-            menu_admin = st.selectbox("O que deseja fazer?", ["Adicionar Operador", "Remover Operador"])
+            menu_admin = st.selectbox("Ação rápida:", ["Adicionar Operador", "Remover Operador"])
             
             if menu_admin == "Adicionar Operador":
                 novo_nome = st.text_input("Nome").strip().upper()
                 nova_funcao = st.text_input("Função").strip().upper()
-                novo_turno = st.selectbox(
-                    "Turno", ["T1", "T2", "T3"],
-                    format_func=lambda x: f"{NOMES_TURNOS[x]} — {HORARIOS[x]}"
-                )
-                if st.button("Confirmar Cadastro", use_container_width=True):
+                novo_turno = st.selectbox("Turno", ["T1", "T2", "T3"], format_func=lambda x: f"{NOMES_TURNOS[x]} ({HORARIOS[x]})")
+                if st.button("Salvar Registro", use_container_width=True):
                     if novo_nome and nova_funcao:
-                        cadastrar_operador(novo_nome, nova_funcao, novo_turno)
-                        st.success("Operador cadastrado!")
+                        cadastrar_operador(novo_nome, nova_funcao,Platform_turno=novo_turno)
+                        st.success("Operador salvo!")
                         st.rerun()
-                    else:
-                        st.warning("Preencha todos os campos.")
                         
             elif menu_admin == "Remover Operador":
                 operadores_lista = buscar_operadores()
                 if operadores_lista:
-                    opcoes_remocao = {f"{x[1]} — {x[2]}": x[0] for x in operadores_lista}
-                    selecionado = st.selectbox("Selecione o operador", list(opcoes_remocao.keys()))
-                    if st.button("Confirmar Remoção", use_container_width=True):
+                    opcoes_remocao = {f"{x[1]} [{x[2]}]": x[0] for x in operadores_lista}
+                    selecionado = st.selectbox("Escolha quem remover:", list(opcoes_remocao.keys()))
+                    if st.button("Remover Permanentemente", use_container_width=True):
                         remover_operador(opcoes_remocao[selecionado])
-                        st.success("Operador removido!")
+                        st.success("Operador removido.")
                         st.rerun()
-                else:
-                    st.info("Nenhum operador cadastrado.")
-                    
+            
             st.divider()
-            if st.button("🚪 Sair", use_container_width=True):
+            if st.button("Sair do Modo Admin", use_container_width=True):
                 st.session_state.autenticado = False
                 st.rerun()
 
 # ============================================================
-# FILTRO DE SEMANA
+# FILTROS PRINCIPAIS
 # ============================================================
 semana_labels = [x["nome"] for x in semanas]
-semana_escolhida = st.selectbox("📅 Período da escala", semana_labels, index=2)
+semana_escolhida = st.selectbox("📅 Selecione a Janela da Escala", semana_labels, index=2)
 semana = semanas[semana_labels.index(semana_escolhida)]
 semana_id = semana["id"]
 
 operadores = buscar_operadores()
 
 # ============================================================
-# MÉTRICAS COM GRID CORRIGIDO EM HTML/CSS (FIM DO BUG DE ESPAÇO)
+# CONTAINER DE METRICAS (HTML INJETADO CONTRA QUEBRA DE SPACE)
 # ============================================================
 total = len(operadores)
 t1 = len([x for x in operadores if x[3] == "T1"])
@@ -384,29 +416,29 @@ st.markdown(f"""
 <div class='metrics-container'>
     <div class='metric-box total'>
         <div class='metric-num'>{total}</div>
-        <div class='metric-lab'>OPERADORES TOTAL</div>
+        <div class='metric-lab'>TOTAL DE OPERADORES</div>
     </div>
     <div class='metric-box turno'>
         <div class='metric-num'>{t1}</div>
-        <div class='metric-lab'>T1 • 07h às 15h</div>
+        <div class='metric-lab'>TURNO 1 (07H-15H)</div>
     </div>
     <div class='metric-box turno'>
         <div class='metric-num'>{t2}</div>
-        <div class='metric-lab'>T2 • 15h às 23h</div>
+        <div class='metric-lab'>TURNO 2 (15H-23H)</div>
     </div>
     <div class='metric-box turno'>
         <div class='metric-num'>{t3}</div>
-        <div class='metric-lab'>T3 • 23h às 07h</div>
+        <div class='metric-lab'>TURNO 3 (23H-07H)</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # ============================================================
-# ABAS DE NAVEGAÇÃO DOS TURNOS
+# CONSTRUÇÃO DA TABELA POR ABA DOS TURNOS
 # ============================================================
 DIAS = [("Sexta", "sexta"), ("Sábado", "sabado"), ("Domingo", "domingo"), ("Segunda", "segunda")]
 
-aba_t1, aba_t2, aba_t3 = st.tabs(["🌅 Turno 1 (07h às 15h)", "🌆 Turno 2 (15h às 23h)", "🌌 Turno 3 (23h às 07h)"])
+aba_t1, aba_t2, aba_t3 = st.tabs(["🌅 Turno T1", "🌆 Turno T2", "🌌 Turno T3"])
 abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
 
 for turno in ["T1", "T2", "T3"]:
@@ -414,25 +446,27 @@ for turno in ["T1", "T2", "T3"]:
         operadores_turno = [x for x in operadores if x[3] == turno]
 
         if not operadores_turno:
-            st.info(f"Nenhum operador alocado no {NOMES_TURNOS[turno]} para este período.")
+            st.markdown("<p style='color:#64748B;font-size:13px;'>Nenhum operador vinculado a este turno.</p>", unsafe_allow_html=True)
             continue
 
         st.markdown(f"""
             <div class='turno-header'>
                 <div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div>
-                <div class='turno-horario'>{HORARIOS[turno]}</div>
+                <div class='turno-horario'>Horário de Janela: {HORARIOS[turno]}</div>
             </div>
         """, unsafe_allow_html=True)
 
+        # Alinhamento Proporcional Perfeito
         headers = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
-        headers[0].markdown("<div class='header-col header-esquerda'>OPERADOR</div>", unsafe_allow_html=True)
-        headers[1].markdown("<div class='header-col header-esquerda'>FUNÇÃO</div>", unsafe_allow_html=True)
-
-        for i, (dia, _) in enumerate(DIAS, 2):
-            headers[i].markdown(f"<div class='header-col'>{dia.upper()} ({semana[dia]})</div>", unsafe_allow_html=True)
+        headers[0].markdown("<div class='header-col header-esquerda'>Operador</div>", unsafe_allow_html=True)
+        headers[1].markdown("<div class='header-col header-esquerda'>Função</div>", unsafe_allow_html=True)
+        
+        for idx, (dia, _) in enumerate(DIAS, 2):
+            headers[idx].markdown(f"<div class='header-col'>{dia} ({semana[dia]})</div>", unsafe_allow_html=True)
 
         st.markdown("<div class='separador'></div>", unsafe_allow_html=True)
 
+        # Renderização das Linhas da Grade
         for operador in operadores_turno:
             operador_id, nome, funcao = operador[0], operador[1], operador[2]
             status = buscar_status(operador_id, semana_id)
@@ -443,38 +477,38 @@ for turno in ["T1", "T2", "T3"]:
                 salvar_status(operador_id, semana_id, *status)
 
             linha = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
-            linha[0].markdown(f"<div class='nome-operador'><b>{nome}</b></div>", unsafe_allow_html=True)
+            linha[0].markdown(f"<div class='nome-operador'>{nome}</div>", unsafe_allow_html=True)
             linha[1].markdown(f"<div class='funcao-operador'>{funcao}</div>", unsafe_allow_html=True)
 
             status_lista = list(status)
 
-            for i, (dia, _) in enumerate(DIAS, 2):
-                valor = status_lista[i - 2]
+            for idx, (dia, _) in enumerate(DIAS, 2):
+                valor = status_lista[idx - 2]
 
                 if valor != "FOLGA":
-                    linha[i].markdown(f"""
+                    linha[idx].markdown(f"""
                         <div class='card-trabalho'>
                             TRABALHO
                             <div class='sub-info'>{HORARIOS[turno]}</div>
                         </div>
                     """, unsafe_allow_html=True)
                 else:
-                    linha[i].markdown("""
+                    linha[idx].markdown("""
                         <div class='card-folga'>
                             FOLGA
-                            <div class='sub-info-folga'>Descanso</div>
+                            <div class='sub-info-folga'>Escala de Descanso</div>
                         </div>
                     """, unsafe_allow_html=True)
 
                 if st.session_state.autenticado:
                     novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                    linha[i].button(
-                        "↔ Alternar", 
-                        key=f"{operador_id}_{semana_id}_{dia}_{turno}", 
+                    linha[idx].button(
+                        "🔄 Alternar", 
+                        key=f"{operador_id}_{semana_id}_{dia}_{turno}_d", 
                         use_container_width=True,
                         on_click=alternar_status_callback,
-                        args=(operador_id, semana_id, status_lista.copy(), i - 2, novo_valor)
+                        args=(operador_id, semana_id, status_lista.copy(), idx - 2, novo_valor)
                     )
 
 st.divider()
-st.caption("Escala Amazon • Sistema independente de gestão de escala")
+st.caption("Amazon Control Center • Plataforma de Gestão Organizada")

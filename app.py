@@ -8,7 +8,7 @@ import pandas as pd
 # CONFIGURAÇÃO DA PÁGINA
 # ============================================================
 st.set_page_config(
-    page_title="Monitoramento Amazon",
+    page_title="Monitoramento Amazon1",
     page_icon="📦",
     layout="wide",
     initial_sidebar_state="collapsed"

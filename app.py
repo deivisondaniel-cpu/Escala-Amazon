@@ -65,132 +65,164 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS ATUALIZADO
+# CSS DESIGN PREMIUM (FOCO EM UI/UX)
 # ============================================================
 st.markdown("""
 <style>
+/* Remove elementos nativos desnecessários */
 header[data-testid="stHeader"] { display: none !important; }
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }
 [data-testid="stSidebar"] { display: none; }
-[data-testid="stAppViewContainer"] { background-color: #F3F6F9; }
-.stApp { background-color: #F3F6F9; }
+[data-testid="stAppViewContainer"] { background-color: #F8FAFC; }
+.stApp { background-color: #F8FAFC; }
 
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    margin-bottom: 5px;
+/* Cabeçalho */
+.titulo { 
+    color: #232F3E; 
+    font-family: 'Segoe UI', sans-serif; 
+    font-size: 34px; 
+    font-weight: 800; 
+    letter-spacing: -0.5px;
 }
-.titulo { color: #232F3E; font-family: 'Segoe UI', sans-serif; font-size: 32px; font-weight: 800; }
-.subtitulo { color: #146EB4; font-size: 14px; font-weight: 700; letter-spacing: 0.2px; margin-bottom: 25px; }
+.subtitulo { 
+    color: #146EB4; 
+    font-size: 14px; 
+    font-weight: 700; 
+    text-transform: uppercase;
+    letter-spacing: 1px; 
+    margin-bottom: 25px; 
+}
 
+/* Filtro Dropdown */
 div[data-baseweb="select"] > div {
     border: 1px solid #CBD5E1 !important;
     border-radius: 8px !important;
     background-color: #FFFFFF !important;
 }
 
+/* Cards de Métricas Avançados */
+.metric-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);
+    transition: transform 0.2s;
+}
+.metric-card:hover { transform: translateY(-2px); }
+.metric-numero { font-size: 26px; font-weight: 800; color: #232F3E; }
+.metric-label { font-size: 11px; color: #64748B; font-weight: 700; margin-top: 4px; }
+
+/* Cores específicas para as bordas superiores das métricas */
+div[data-testid="column"]:nth-child(1) .metric-card { border-top: 4px solid #FF9900; }
+div[data-testid="column"]:nth-child(2) .metric-card { border-top: 4px solid #146EB4; }
+div[data-testid="column"]:nth-child(3) .metric-card { border-top: 4px solid #146EB4; }
+div[data-testid="column"]:nth-child(4) .metric-card { border-top: 4px solid #146EB4; }
+
+/* Banner do Turno */
 .turno-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-top: 15px;
-    margin-bottom: 20px;
-    padding: 10px 14px;
+    gap: 14px;
+    margin-top: 20px;
+    margin-bottom: 25px;
+    padding: 14px 20px;
     background-color: #FFFFFF;
-    border-left: 5px solid #FF9900;
-    border-bottom: 1px solid #D7DEE7;
-    border-radius: 8px;
-    box-shadow: 0 2px 7px rgba(35,47,62,0.06);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(35,47,62,0.04);
+    border: 1px solid #E2E8F0;
 }
-.turno-titulo { font-size: 21px; font-weight: 800; color: #232F3E; }
+.turno-titulo { font-size: 20px; font-weight: 800; color: #232F3E; }
 .turno-horario {
-    background-color: #EAF3FB;
-    color: #146EB4;
-    border: 1px solid #B9D7EE;
-    padding: 4px 11px;
-    border-radius: 20px;
+    background-color: #F0FDF4;
+    color: #16A34A;
+    border: 1px solid #BBF7D0;
+    padding: 4px 12px;
+    border-radius: 99px;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
-.header-col { text-align: center; font-weight: 800; font-size: 12px; color: #232F3E; margin-bottom: 8px; }
+/* Tabela e Linhas */
+.header-col { text-align: center; font-weight: 700; font-size: 11px; color: #64748B; letter-spacing: 0.5px; margin-bottom: 12px; }
 .header-esquerda { text-align: left; }
-.nome-operador { padding-top: 9px; font-size: 13px; color: #232F3E; }
-.funcao-operador { padding-top: 9px; font-size: 11px; color: #617184; font-weight: 600; }
+.nome-operador { padding-top: 12px; font-size: 13px; color: #232F3E; font-weight: 700; }
+.funcao-operador { padding-top: 14px; font-size: 11px; color: #64748B; font-weight: 600; letter-spacing: 0.5px; }
+.separador { border: 0; border-top: 1px solid #E2E8F0; margin-top: 2px; margin-bottom: 16px; }
 
+/* CARD TRABALHO */
 .card-trabalho {
     background-color: #232F3E;
     color: #FFFFFF;
-    padding: 8px 5px;
-    border-radius: 7px;
+    padding: 10px 8px;
+    border-radius: 8px;
     text-align: center;
     font-weight: 700;
     font-size: 11px;
+    letter-spacing: 0.5px;
     border-left: 4px solid #FF9900;
-    margin-bottom: 4px;
-    min-height: 43px;
+    min-height: 48px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(35,47,62,0.10);
+    box-shadow: 0 2px 4px rgba(35,47,62,0.08);
 }
 .sub-info { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 700; }
 
+/* CARD FOLGA (Suave, Clean, reduzindo fadiga visual) */
 .card-folga {
-    background-color: #EAF3FB;
-    color: #232F3E;
-    padding: 8px 5px;
-    border-radius: 7px;
+    background-color: #F1F5F9;
+    color: #64748B;
+    padding: 10px 8px;
+    border-radius: 8px;
     text-align: center;
-    font-weight: 800;
+    font-weight: 700;
     font-size: 11px;
-    border-left: 4px solid #146EB4;
-    margin-bottom: 4px;
-    min-height: 43px;
+    letter-spacing: 0.5px;
+    border-left: 4px solid #94A3B8;
+    min-height: 48px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(20,110,180,0.07);
 }
-.sub-info-folga { color: #6B8196; font-size: 10px; margin-top: 3px; font-weight: 600; }
-.separador { border: 0; border-top: 1px solid #D7DEE7; margin-top: 2px; margin-bottom: 15px; }
+.sub-info-folga { color: #94A3B8; font-size: 10px; margin-top: 3px; font-weight: 500; }
 
-.metric-card {
-    background-color: #FFFFFF;
-    border: 1px solid #D7DEE7;
-    border-top: 4px solid #146EB4;
-    border-radius: 10px;
-    padding: 12px;
-    text-align: center;
-    box-shadow: 0 2px 7px rgba(35,47,62,0.06);
+/* Customização Discreta dos Botões de Alternar */
+div[data-testid="column"] .stButton > button {
+    border-radius: 6px !important;
+    font-size: 11px !important;
+    padding: 2px 8px !important;
+    background-color: #FFFFFF !important;
+    color: #64748B !important;
+    border: 1px solid #E2E8F0 !important;
+    margin-top: 4px !important;
 }
-.metric-numero { font-size: 22px; font-weight: 800; color: #232F3E; }
-.metric-label { font-size: 11px; color: #617184; font-weight: 700; }
-.metric-card:first-child { border-top-color: #FF9900; }
+div[data-testid="column"] .stButton > button:hover {
+    color: #146EB4 !important;
+    border-color: #146EB4 !important;
+    background-color: #F8FAFC !important;
+}
 
-[data-testid="stForm"] { background-color: #FFFFFF; border: none; padding: 0px; }
-.stButton > button { border-radius: 7px; font-weight: 700; border: 1px solid #D7DEE7; }
-div[data-testid="column"] .stButton > button { color: #232F3E; }
-div[data-baseweb="input"] { border-radius: 7px; }
-.stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
-.stCaption { color: #617184 !important; }
-
+/* Estilização Popover do Painel Superior */
 div[data-testid="stPopover"] > button {
     background-color: #232F3E !important;
     color: #FFFFFF !important;
-    border: 1px solid #232F3E !important;
-    font-weight: 700 !important;
     border-radius: 8px !important;
+    border: none !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
 }
 div[data-testid="stPopover"] > button:hover {
     background-color: #FF9900 !important;
-    border-color: #FF9900 !important;
     color: #232F3E !important;
 }
+
+div[data-baseweb="input"] { border-radius: 7px; }
+.stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
+.stCaption { color: #64748B !important; }
 
 @media (max-width: 800px) {
     .titulo { font-size: 24px; }
@@ -208,7 +240,7 @@ if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
 # ============================================================
-# FUNÇÕES DE BANCO E CALLBACKS
+# FUNÇÕES DE BANCO E CALLBACK REATIVO
 # ============================================================
 def buscar_operadores():
     conn = conectar()
@@ -255,13 +287,13 @@ def salvar_status(operador_id, semana_id, sexta, sabado, domingo, segunda):
     conn.commit()
     conn.close()
 
-# Novo Callback para alternar a escala sem quebrar a reatividade visual
+# Callback para reatividade instantânea (1 único clique para alternar)
 def alternar_status_callback(operador_id, semana_id, lista_atual, index_dia, novo_valor):
     lista_atual[index_dia] = novo_valor
     salvar_status(operador_id, semana_id, *lista_atual)
 
 # ============================================================
-# DATAS
+# GERAÇÃO DE DATAS
 # ============================================================
 def obter_semana(deslocamento=0):
     hoje = datetime.now()
@@ -273,7 +305,7 @@ def obter_semana(deslocamento=0):
 
     return {
         "id": sexta.strftime("%Y-%m-%d"),
-        "name": f"{sexta.strftime('%d/%m')} até {segunda.strftime('%d/%m')}",
+        "nome": f"{sexta.strftime('%d/%m')} até {segunda.strftime('%d/%m')}",
         "Sexta": sexta.strftime("%d/%m"),
         "Sábado": sabado.strftime("%d/%m"),
         "Domingo": domingo.strftime("%d/%m"),
@@ -283,7 +315,7 @@ def obter_semana(deslocamento=0):
 semanas = [obter_semana(i) for i in range(-2, 5)]
 
 # ============================================================
-# CABEÇALHO DA APLICAÇÃO (TÍTULO + LOGIN ALINHADOS)
+# CABEÇALHO DA APLICAÇÃO (TÍTULO + POPOVER GESTOR)
 # ============================================================
 col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
@@ -347,7 +379,7 @@ with col_log:
 # ============================================================
 # FILTRO DE SEMANA
 # ============================================================
-semana_labels = [x["name"] for x in semanas]
+semana_labels = [x["nome"] for x in semanas]
 semana_escolhida = st.selectbox("📅 Período da escala", semana_labels, index=2)
 semana = semanas[semana_labels.index(semana_escolhida)]
 semana_id = semana["id"]
@@ -437,7 +469,7 @@ for turno in ["T1", "T2", "T3"]:
 
                 if st.session_state.autenticado:
                     novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                    # Correção: O botão agora chama a função de callback diretamente passando os argumentos necessários
+                    # Uso correto do on_click + args garantindo estabilidade ao alternar turnos
                     linha[i].button(
                         "↔ Alternar", 
                         key=f"{operador_id}_{semana_id}_{dia}_{turno}", 

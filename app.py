@@ -228,23 +228,6 @@ label, .stMarkdown, p { color: #C7D0DD; }
 .funcao-operador { padding-top: 9px; font-size: 11px; color: #4EA8E0; font-weight: 700; }
 
 .card-trabalho {
-    background-color: #2B2F36;
-    color: #FF9900;
-    padding: 8px 5px;
-    border-radius: 7px;
-    text-align: center;
-    font-weight: 800;
-    font-size: 11px;
-    border-left: 4px solid #FF9900;
-    margin-bottom: 4px;
-    min-height: 43px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.sub-info { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 700; }
-
-.card-folga {
     background-color: #123655;
     color: #6FC3FF;
     padding: 8px 5px;
@@ -259,7 +242,24 @@ label, .stMarkdown, p { color: #C7D0DD; }
     flex-direction: column;
     justify-content: center;
 }
-.sub-info-folga { color: #9BD3F5; font-size: 10px; margin-top: 3px; font-weight: 600; }
+.sub-info { color: #9BD3F5; font-size: 10px; margin-top: 3px; font-weight: 700; }
+
+.card-folga {
+    background-color: #2B2F36;
+    color: #FF9900;
+    padding: 8px 5px;
+    border-radius: 7px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 11px;
+    border-left: 4px solid #FF9900;
+    margin-bottom: 4px;
+    min-height: 43px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.sub-info-folga { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 600; }
 
 .separador { border: 0; border-top: 1px solid #2A3855; margin-top: 2px; margin-bottom: 15px; }
 

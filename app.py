@@ -69,29 +69,19 @@ NOMES_TURNOS = {
 # ============================================================
 st.markdown("""
 <style>
-/* Remove o botão de Fork/GitHub e a barra superior nativa */
+/* Remove o botão de Fork/GitHub e a barra superior */
 header[data-testid="stHeader"] {
     display: none !important;
 }
 
-/* Força bruta contra qualquer botão flutuante nos cantos inferiores (incluindo a coroa) */
-div[class*="deploy"], 
-div[class*="Deploy"],
-button[class*="deploy"],
-button[class*="Deploy"],
-[data-testid="stStatusWidget"],
-iframe[id*="manage"],
-.stDeployButton {
+/* Esconde o selo vermelho "Hosted with Streamlit" (Viewer Badge) */
+div[data-testid="stViewerBadge"] {
     display: none !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    opacity: 0 !important;
 }
 
-/* Se ela estiver dentro de uma barra flutuante geral do rodapé, isso elimina */
-div[data-testid="stBottom"] button, 
-div[data-testid="stBottom"] div {
+/* Garante que o container flutuante do rodapé suma junto */
+footer {
+    visibility: hidden !important;
     display: none !important;
 }
 

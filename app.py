@@ -3,11 +3,11 @@ import sqlite3
 from datetime import datetime, timedelta
 
 # ============================================================
-# CONFIGURAÇÃO DA PÁGINA (ESTILO SISTEMA PREMIUM DARK)
+# CONFIGURAÇÃO DA PÁGINA (ESTILO LOSUNGWEB AMAZON)
 # ============================================================
 st.set_page_config(
-    page_title="Escala Monitoramento - Amazon",
-    page_icon="⚡",
+    page_title="LosungWeb - Amazon Escala",
+    page_icon="🧡",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -49,34 +49,20 @@ def criar_banco_do_zero():
     dados_existentes = cursor.execute("SELECT COUNT(*) FROM operadores WHERE ativo = 1").fetchone()[0]
     if dados_existentes == 0:
         funcionarios_oficiais = [
-            ("ALAN ARAÚJO", "ANALISTA", "T1"),
-            ("MARGARIDA", "PICKUP", "T1"),
-            ("JOSÉ BRUNO PALHANO", "PICKUP", "T1"),
-            ("CRISTOVÃO MIKELLYS", "DEPART", "T1"),
-            ("PEDRO LUCAS", "DROPOFF", "T1"),
-            ("FELIPE ALLAN", "DROPOFF", "T1"),
-            ("BRUNA BLENDA", "DROPOFF", "T1"),
-            ("CONCEIÇÃO DAIANE", "SEGURANÇA (ONISYS)", "T1"),
-            ("MATHEUS LUSTOSA", "SEGURANÇA/ELOG", "T1"),
-            ("MANUELA PINHEIRO", "LÍDER", "T2"),
-            ("ISABEL", "LÍDER/SEGURANÇA", "T2"),
-            ("ANDREZA OLIVEIRA", "PICKUP", "T2"),
-            ("ROZIANE DA SILVA", "PICKUP", "T2"),
-            ("DAIANE", "SEGURANÇA", "T2"),
-            ("EMANUEL ROBERTO", "DEPART", "T2"),
-            ("TAMMYRIS DA SILVA", "DROPOFF", "T2"),
-            ("RAPHAEL DO NASCIMENTO", "DROPOFF", "T2"),
-            ("LUDMILLA RODRIGUES", "DROPOFF", "T2"),
-            ("MARIA NATHALIA", "SEGURANÇA", "T2"),
-            ("CINAMOR", "ELOG", "T2"),
-            ("WESLEY", "LÍDER", "T3"),
-            ("JOÃO", "LÍDER/SEGURANÇA", "T3"),
-            ("RILDOMAR", "PICKUP", "T3"),
-            ("LUCIANA", "PICKUP", "T3"),
-            ("GLAYLDSON", "SEGURANÇA", "T3"),
-            ("TAYANARA", "DEPART", "T3"),
-            ("RUAN", "DROPOFF", "T3"),
-            ("BÁRBARA", "DROPOFF", "T3")
+            ("ALAN ARAÚJO", "ANALISTA", "T1"), ("MARGARIDA", "PICKUP", "T1"),
+            ("JOSÉ BRUNO PALHANO", "PICKUP", "T1"), ("CRISTOVÃO MIKELLYS", "DEPART", "T1"),
+            ("PEDRO LUCAS", "DROPOFF", "T1"), ("FELIPE ALLAN", "DROPOFF", "T1"),
+            ("BRUNA BLENDA", "DROPOFF", "T1"), ("CONCEIÇÃO DAIANE", "SEGURANÇA (ONISYS)", "T1"),
+            ("MATHEUS LUSTOSA", "SEGURANÇA/ELOG", "T1"), ("MANUELA PINHEIRO", "LÍDER", "T2"),
+            ("ISABEL", "LÍDER/SEGURANÇA", "T2"), ("ANDREZA OLIVEIRA", "PICKUP", "T2"),
+            ("ROZIANE DA SILVA", "PICKUP", "T2"), ("DAIANE", "SEGURANÇA", "T2"),
+            ("EMANUEL ROBERTO", "DEPART", "T2"), ("TAMMYRIS DA SILVA", "DROPOFF", "T2"),
+            ("RAPHAEL DO NASCIMENTO", "DROPOFF", "T2"), ("LUDMILLA RODRIGUES", "DROPOFF", "T2"),
+            ("MARIA NATHALIA", "SEGURANÇA", "T2"), ("CINAMOR", "ELOG", "T2"),
+            ("WESLEY", "LÍDER", "T3"), ("JOÃO", "LÍDER/SEGURANÇA", "T3"),
+            ("RILDOMAR", "PICKUP", "T3"), ("LUCIANA", "PICKUP", "T3"),
+            ("GLAYLDSON", "SEGURANÇA", "T3"), ("TAYANARA", "DEPART", "T3"),
+            ("RUAN", "DROPOFF", "T3"), ("BÁRBARA", "DROPOFF", "T3")
         ]
         cursor.executemany("INSERT INTO operadores (nome, funcao, turno) VALUES (?, ?, ?)", funcionarios_oficiais)
         conn.commit()
@@ -88,7 +74,7 @@ HORARIOS = {"T1": "07:00 às 15:00", "T2": "15:00 às 23:00", "T3": "23:00 às 0
 NOMES_TURNOS = {"T1": "Turno 1", "T2": "Turno 2", "T3": "Turno 3"}
 
 # ============================================================
-# CSS INJETADO CORES IGUAIS AO SITE ENVIADO + ARREMATES DE ESPAÇO
+# CSS CUSTOMIZADO - IDENTIDADE VISUAL EXATA DO SEU PRINT
 # ============================================================
 st.markdown("""
 <style>
@@ -97,82 +83,92 @@ header[data-testid="stHeader"], .stAppDeployButton, div[data-testid="stViewerBad
 }
 [data-testid="stSidebar"] { display: none; }
 
-/* Fundo Dark do Sistema Enviado */
-.stApp { background-color: #1A1F2C; color: #E2E8F0; }
+/* Fundo Dark Corfio / Azul-Marinho Profundo do Site LosungWeb */
+.stApp { background-color: #0B1320; color: #F1F5F9; }
 .stMainBlockContainer { padding: 15px 20px !important; max-width: 100% !important; }
 
-/* Ajustes de bloco de colunas e espaçamentos */
-[data-testid="stVerticalBlock"] { gap: 6px !important; }
+/* Correção de Margens e Alinhamentos das Linhas */
+[data-testid="stVerticalBlock"] { gap: 4px !important; }
 [data-testid="stHorizontalBlock"] { padding: 0px !important; margin-bottom: 0px !important; align-items: center !important; }
 
-/* Título Premium */
+/* Cabeçalho da Página */
 .titulo-container { margin-bottom: 12px; }
-.titulo { color: #FFFFFF; font-family: 'Segoe UI', sans-serif; font-size: 24px; font-weight: 800; display: inline-block; }
-.subtitulo { color: #FF9900; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.titulo { color: #FFFFFF; font-family: 'Segoe UI', sans-serif; font-size: 26px; font-weight: 800; }
+.subtitulo { color: #FF5500; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
-/* Métricas Estilo Filtros do Site */
-.metric-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-.metric-card { flex: 1; min-width: 120px; background: #252D3D; border: 1px solid #343F56; border-radius: 6px; padding: 6px 10px; text-align: left; }
-.metric-card.total { border-left: 4px solid #FF9900; }
-.metric-numero { font-size: 18px; font-weight: 800; color: #FFFFFF; line-height: 1.1; }
+/* Painel de Métricas Superior */
+.metric-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+.metric-card { flex: 1; min-width: 120px; background: #141E30; border: 1px solid #1E293B; border-radius: 6px; padding: 8px 12px; text-align: left; }
+.metric-card.total { border-left: 4px solid #FF5500; }
+.metric-numero { font-size: 20px; font-weight: 800; color: #FFFFFF; line-height: 1.1; }
 .metric-label { font-size: 10px; color: #94A3B8; font-weight: 600; margin-top: 1px; }
 
-/* Barra do Turno - Igual à imagem */
-.turno-header { display: flex; align-items: center; gap: 8px; margin: 10px 0; padding: 8px 12px; background-color: #232F3E; color: white; border-radius: 4px; border: 1px solid #2D3748; }
+/* Header de Turnos - Idêntico ao seu Layout */
+.turno-header { display: flex; align-items: center; gap: 8px; margin: 12px 0 8px 0; padding: 8px 12px; background-color: #141E30; color: white; border-radius: 4px; border: 1px solid #1E293B; }
 .turno-titulo { font-size: 13px; font-weight: 700; color: #FFFFFF; }
-.turno-horario { background-color: rgba(255,153,0,0.2); color: #FF9900; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,153,0,0.4); }
+.turno-horario { background-color: rgba(255,85,0,0.15); color: #FF5500; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,85,0,0.3); }
 
-/* Grid headers */
-.header-col { font-weight: 700; font-size: 11px; color: #94A3B8; text-transform: uppercase; padding-bottom: 4px; border-bottom: 1px solid #334155; margin-bottom: 6px; }
+/* Grid Headers */
+.header-col { font-weight: 700; font-size: 11px; color: #64748B; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid #1E293B; margin-bottom: 4px; }
 
-/* Alinhamento perfeito dos textos */
+/* Textos da Tabela perfeitamente alinhados verticalmente ao centro */
 .nome-operador { font-size: 13px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; min-height: 48px; }
 .funcao-operador { font-size: 12px; color: #94A3B8; font-weight: 500; display: flex; align-items: center; min-height: 48px; }
 
-/* CARDS DE STATUS LIMPOS E COMPACTOS */
+/* CARDS DE STATUS ULTRA LIMPOS - ESTILO PREMUM PROGRAMAÇÃO */
 .card-status { 
-    padding: 4px 6px; 
-    border-radius: 4px; 
+    border-radius: 6px; 
     text-align: center; 
     font-size: 11px; 
     font-weight: 700; 
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
-    min-height: 48px; 
+    min-height: 46px; 
     box-sizing: border-box; 
     width: 100%;
+    transition: all 0.2s ease;
 }
-/* Trabalho: Tom clean suave original */
-.status-trabalho { background-color: #FFF8F2; color: #C45500; border: 1px solid #FBD8B4; }
-/* Folga Amarela Clara Limpa - Pedido do Usuário */
-.status-folga { background-color: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; }
 
-.sub-status { font-size: 9px; font-weight: 500; opacity: 0.85; margin-top: 1px; }
+/* Trabalho: Laranja Neon Degradê do Menu Ativo do seu print */
+.status-trabalho { 
+    background: linear-gradient(135deg, #FF5500 0%, #FF7700 100%); 
+    color: #FFFFFF; 
+    border: none;
+    box-shadow: 0 2px 4px rgba(255, 85, 0, 0.2);
+}
+.status-trabalho .sub-status { color: rgba(255, 255, 255, 0.85); }
 
-/* Ajuste dos Botões Invisíveis que cobrem os Cards (Ação Direta Limpa) */
+/* Folga: Amarelo Sólido Limpo e Destacado */
+.status-folga { 
+    background-color: #FFCC00; 
+    color: #000000; 
+    border: none;
+    box-shadow: 0 2px 4px rgba(255, 204, 0, 0.15);
+}
+.status-folga .sub-status { color: rgba(0, 0, 0, 0.65); }
+
+.sub-status { font-size: 9px; font-weight: 600; margin-top: 2px; text-transform: uppercase; }
+
+/* Tornar o botão invisível por cima do card de forma limpa */
 .stButton > button {
     background-color: transparent !important;
     color: transparent !important;
     border: none !important;
     position: absolute !important;
-    top: 0; left: 0; width: 100% !important; height: 48px !important;
+    top: 0; left: 0; width: 100% !important; height: 46px !important;
     z-index: 10;
     cursor: pointer;
 }
-.stButton { position: relative !important; margin: 0 !important; padding: 0 !important; height: 48px; }
-.stButton > button:hover { background-color: rgba(255, 255, 255, 0.05) !important; }
+.stButton { position: relative !important; margin: 0 !important; padding: 0 !important; height: 46px; }
 
-/* Container para empilhar o Card Visual e o Botão invisível por cima */
-.cell-container { position: relative; width: 100%; height: 48px; }
-
-/* Mobile Card Layout */
-.mobile-operator-card { background: #252D3D; border: 1px solid #343F56; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+/* Mobile Cards */
+.mobile-operator-card { background: #141E30; border: 1px solid #1E293B; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
 </style>
 """, unsafe_allow_html=True)
 
 # ============================================================
-# FUNÇÕES DE BANCO
+# FUNÇÕES DE BANCO DE DADOS
 # ============================================================
 def buscar_operadores():
     conn = conectar()
@@ -222,7 +218,7 @@ def obter_semana(deslocamento=0):
 semanas = [obter_semana(i) for i in range(-2, 5)]
 
 # ============================================================
-# RENDERIZAÇÃO DO TOP BAR
+# INTERFACE DE USUÁRIO - TOP BAR GESTOR
 # ============================================================
 col_tit, col_log = st.columns([3, 1], vertical_alignment="center")
 with col_tit:
@@ -266,7 +262,7 @@ with col_log:
                 st.rerun()
 
 # ============================================================
-# FILTROS, DESIGN E MÉTRICAS
+# FILTROS E PAINEL DE INFORMAÇÕES
 # ============================================================
 semana_labels = [x["nome"] for x in semanas]
 col_filtro, col_check = st.columns([1.5, 2.5], vertical_alignment="center")
@@ -294,7 +290,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ============================================================
-# ABAS DE TURNOS
+# LISTAGEM DAS ABAS POR TURNO
 # ============================================================
 DIAS = [("Sexta", "sexta"), ("Sábado", "sabado"), ("Domingo", "domingo"), ("Segunda", "segunda")]
 
@@ -312,7 +308,7 @@ for turno in ["T1", "T2", "T3"]:
         st.markdown(f"<div class='turno-header'><div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div><div class='turno-horario'>{HORARIOS[turno]}</div></div>", unsafe_allow_html=True)
         
         if not is_mobile:
-            # --- DESKTOP VIZUALIZAÇÃO LIMPA ---
+            # --- MODELO DESKTOP CLEAN ---
             headers = st.columns([1.8, 1.4, 1, 1, 1, 1])
             headers[0].markdown("<div class='header-col'>Operador</div>", unsafe_allow_html=True)
             headers[1].markdown("<div class='header-col'>Função</div>", unsafe_allow_html=True)
@@ -333,15 +329,14 @@ for turno in ["T1", "T2", "T3"]:
                 for idx, (dia, _) in enumerate(DIAS, 2):
                     valor = status_lista[idx - 2]
                     
-                    # Abre um bloco container customizado
                     with linha[idx]:
-                        # Renderiza o Card Visual por baixo
+                        # Aplica o estilo baseado no status atual
                         if valor != "FOLGA":
                             st.markdown(f"<div class='card-status status-trabalho'>TRABALHO<span class='sub-status'>{HORARIOS[turno]}</span></div>", unsafe_allow_html=True)
                         else:
                             st.markdown("<div class='card-status status-folga'>FOLGA<span class='sub-status'>Descanso</span></div>", unsafe_allow_html=True)
                         
-                        # Se logado, renderiza o botão invisível por cima ocupando o mesmo espaço exato
+                        # Se o gestor estiver logado, o clique sobre o card muda o status instantaneamente
                         if st.session_state.autenticado:
                             novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
                             if st.button("", key=f"d_{op_id}_{semana_id}_{dia}_{turno}"):
@@ -349,7 +344,7 @@ for turno in ["T1", "T2", "T3"]:
                                 salvar_status(op_id, semana_id, *status_lista)
                                 st.rerun()
         else:
-            # --- MOBILE CARDS ---
+            # --- MODELO MOBILE ---
             for op in operadores_turno:
                 op_id, nome, funcao = op[0], op[1], op[2]
                 status = buscar_status(op_id, semana_id) or (HORARIOS[turno],)*4
@@ -357,7 +352,7 @@ for turno in ["T1", "T2", "T3"]:
                 
                 st.markdown(f"""
                 <div class='mobile-operator-card'>
-                    <div style='border-bottom: 1px solid #FF9900; padding-bottom:4px; margin-bottom:6px;'>
+                    <div style='border-bottom: 1px solid #FF5500; padding-bottom:4px; margin-bottom:6px;'>
                         <span style='font-size:13px; font-weight:800; color:#FFF;'>{nome}</span><br>
                         <span style='font-size:11px; color:#94A3B8;'>{funcao}</span>
                     </div>
@@ -367,7 +362,6 @@ for turno in ["T1", "T2", "T3"]:
                 for idx, (dia, _) in enumerate(DIAS):
                     valor = status_lista[idx]
                     col_dia, col_status = st.columns([1.5, 2.5])
-                    
                     col_dia.markdown(f"<span style='font-size:12px; color:#FFF; font-weight:700;'>{dia} ({semana[dia]})</span>", unsafe_allow_html=True)
                     
                     with col_status:
@@ -384,4 +378,4 @@ for turno in ["T1", "T2", "T3"]:
                                 st.rerun()
 
 st.divider()
-st.caption("Escala Amazon • Dashboard Premium Style")
+st.caption("LosungWeb Custom UI • Amazon Operations")

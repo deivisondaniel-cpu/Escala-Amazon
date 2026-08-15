@@ -579,14 +579,14 @@ with col_log:
                 entrar = st.form_submit_button("Entrar", use_container_width=True)
 
                 if entrar:
-                    if usuario.lower().strip() == "admin" and senha == "Amazon123":
+                    if usuario.lower().strip() == "admin" and senha == "losung@2026":
                         st.session_state.autenticado = True
                         st.rerun()
                     else:
                         st.error("Dados incorretos.")
     else:
         with st.popover("⚙️ Painel de Gestão", use_container_width=True):
-            st.markdown("🟢 **Modo Gestor ativo**")
+            st.markdown("**Gestão de Escala**")
             st.divider()
 
             menu_admin = st.selectbox(

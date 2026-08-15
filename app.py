@@ -3,17 +3,17 @@ import sqlite3
 from datetime import datetime, timedelta
 
 # ============================================================
-# CONFIGURAÇÃO DE TELA (NATIVA DO STREAMLIT)
+# CONFIGURAÇÃO
 # ============================================================
 st.set_page_config(
     page_title="Escala Amazon",
-    page_icon="📦",
+    page_icon="amazon.png",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed" # Remove a sidebar por padrão
 )
 
 # ============================================================
-# BANCO DE DADOS
+# BANCO INTERNO
 # ============================================================
 BANCO = "escala_amazon.db"
 
@@ -49,6 +49,9 @@ def criar_banco():
 
 criar_banco()
 
+# ============================================================
+# HORÁRIOS OFICIAIS
+# ============================================================
 HORARIOS = {
     "T1": "07:00 às 15:00",
     "T2": "15:00 às 23:00",
@@ -62,211 +65,173 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# INTERFACE CSS PREMIUM DARK MODE (ESTILO AMAZON CORE)
+# CSS ATUALIZADO (SEM SIDEBAR, FOCO NO TOPO)
 # ============================================================
 st.markdown("""
 <style>
-/* Reset Total do Fundo para o Azul Escuro da foto */
-header[data-testid="stHeader"] { display: none !important; }
+/* Remove o botão de Fork/GitHub e a barra superior nativa da nuvem */
+header[data-testid="stHeader"] {
+    display: none !important;
+}
+
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }
+
+/* Remove o espaço que a sidebar deixaria */
 [data-testid="stSidebar"] { display: none; }
 
-/* Fundo unificado Dark Corporativo */
-[data-testid="stAppViewContainer"], .stApp { 
-    background-color: #0F172A !important; 
-}
-.stMainBlockContainer { 
-    padding-top: 25px !important; 
-    padding-bottom: 40px !important; 
-    max-width: 95% !important;
+[data-testid="stAppViewContainer"] { background-color: #F3F6F9; }
+.stApp { background-color: #F3F6F9; }
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
-/* Tipografia e Títulos */
-.titulo { 
-    color: #FFFFFF; 
-    font-family: 'Segoe UI', sans-serif; 
-    font-size: 32px; 
-    font-weight: 800; 
-    letter-spacing: -0.5px;
-}
-.subtitulo { 
-    color: #FF9900; 
-    font-size: 12px; 
-    font-weight: 700; 
-    text-transform: uppercase;
-    letter-spacing: 1.5px; 
-    margin-bottom: 20px; 
+.titulo {
+    color: #232F3E;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
 }
 
-/* Customização dos Inputs Padrão */
-label[data-testid="stWidgetLabel"] p {
-    color: #94A3B8 !important;
-    font-weight: 600 !important;
-    font-size: 12px !important;
+.subtitulo {
+    color: #146EB4;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    margin-bottom: 25px;
 }
+
 div[data-baseweb="select"] > div {
-    background-color: #1E293B !important;
-    border: 1px solid #334155 !important;
-    color: #FFFFFF !important;
-    border-radius: 6px !important;
-}
-div[data-baseweb="select"] * {
-    color: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    background-color: #FFFFFF !important;
 }
 
-/* Estilização Cirúrgica do Botão/Popover Gestor */
-div[data-testid="stPopover"] > button {
-    background-color: #1E293B !important;
-    color: #FFFFFF !important;
-    border: 1px solid #334155 !important;
-    font-weight: 600 !important;
-    border-radius: 6px !important;
-    font-size: 13px !important;
-}
-div[data-testid="stPopover"] > button:hover {
-    background-color: #FF9900 !important;
-    border-color: #FF9900 !important;
-    color: #0F172A !important;
-}
-div[data-testid="stPopoverBody"] {
-    background-color: #1E293B !important;
-    border: 1px solid #334155 !important;
-    color: #FFFFFF !important;
-}
-
-/* Grid de Métricas Avançado */
-.metrics-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-}
-.metric-box {
-    background-color: #1E293B;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    padding: 16px;
-    text-align: center;
-}
-.metric-box.total { border-left: 4px solid #FF9900; }
-.metric-box.turno { border-left: 4px solid #38BDF8; }
-.metric-num { font-size: 28px; font-weight: 800; color: #FFFFFF; }
-.metric-lab { font-size: 11px; color: #94A3B8; font-weight: 700; margin-top: 4px; letter-spacing: 0.5px; }
-
-/* Tabs Modificadas para o Modo Escuro */
-button[data-baseweb="tab"] {
-    color: #94A3B8 !important;
-    font-weight: 600 !important;
-}
-button[data-baseweb="tab"][aria-selected="true"] {
-    color: #FF9900 !important;
-    border-bottom-color: #FF9900 !important;
-}
-
-/* Banner do Turno Selecionado */
 .turno-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 10px;
+    margin-top: 15px;
     margin-bottom: 20px;
-    padding: 12px 18px;
-    background-color: #1E293B;
+    padding: 10px 14px;
+    background-color: #FFFFFF;
+    border-left: 5px solid #FF9900;
+    border-bottom: 1px solid #D7DEE7;
     border-radius: 8px;
-    border: 1px solid #334155;
+    box-shadow: 0 2px 7px rgba(35,47,62,0.06);
 }
-.turno-titulo { font-size: 18px; font-weight: 700; color: #FFFFFF; }
+
+.turno-titulo { font-size: 21px; font-weight: 800; color: #232F3E; }
 .turno-horario {
-    background-color: rgba(56, 189, 248, 0.1);
-    color: #38BDF8;
-    padding: 4px 12px;
-    border-radius: 99px;
-    font-size: 11px;
-    font-weight: 700;
+    background-color: #EAF3FB;
+    color: #146EB4;
+    border: 1px solid #B9D7EE;
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
 }
 
-/* Cabeçalhos de Colunas da Tabela */
-.header-col { 
-    text-align: center; 
-    font-weight: 700; 
-    font-size: 11px; 
-    color: #94A3B8; 
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-}
+.header-col { text-align: center; font-weight: 800; font-size: 12px; color: #232F3E; margin-bottom: 8px; }
 .header-esquerda { text-align: left; }
-.nome-operador { padding-top: 10px; font-size: 13px; color: #FFFFFF; font-weight: 600; }
-.funcao-operador { padding-top: 12px; font-size: 11px; color: #64748B; font-weight: 600; }
-.separador { border: 0; border-top: 1px solid #334155; margin-top: 4px; margin-bottom: 12px; }
+.nome-operador { padding-top: 9px; font-size: 13px; color: #232F3E; }
+.funcao-operador { padding-top: 9px; font-size: 11px; color: #617184; font-weight: 600; }
 
-/* CARD STATUS - TRABALHO (Estilo Laranja Amazon) */
 .card-trabalho {
-    background-color: #FF9900;
-    color: #0F172A;
-    padding: 8px 4px;
-    border-radius: 6px;
+    background-color: #232F3E;
+    color: #FFFFFF;
+    padding: 8px 5px;
+    border-radius: 7px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    border-left: 4px solid #FF9900;
+    margin-bottom: 4px;
+    min-height: 43px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(35,47,62,0.10);
+}
+.sub-info { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 700; }
+
+.card-folga {
+    background-color: #EAF3FB;
+    color: #232F3E;
+    padding: 8px 5px;
+    border-radius: 7px;
     text-align: center;
     font-weight: 800;
     font-size: 11px;
-    letter-spacing: 0.5px;
-    min-height: 44px;
+    border-left: 4px solid #146EB4;
+    margin-bottom: 4px;
+    min-height: 43px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 4px 10px rgba(255, 153, 0, 0.15);
+    box-shadow: 0 2px 5px rgba(20,110,180,0.07);
 }
-.sub-info { color: #0F172A; opacity: 0.85; font-size: 9px; margin-top: 1px; font-weight: 700; }
+.sub-info-folga { color: #6B8196; font-size: 10px; margin-top: 3px; font-weight: 600; }
 
-/* CARD STATUS - FOLGA (Discreto no Fundo Escuro) */
-.card-folga {
-    background-color: #1E293B;
-    color: #64748B;
-    padding: 8px 4px;
-    border-radius: 6px;
+.separador { border: 0; border-top: 1px solid #D7DEE7; margin-top: 2px; margin-bottom: 15px; }
+
+.metric-card {
+    background-color: #FFFFFF;
+    border: 1px solid #D7DEE7;
+    border-top: 4px solid #146EB4;
+    border-radius: 10px;
+    padding: 12px;
     text-align: center;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    min-height: 44px;
-    border: 1px dashed #334155;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    box-shadow: 0 2px 7px rgba(35,47,62,0.06);
 }
-.sub-info-folga { color: #475569; font-size: 9px; margin-top: 1px; font-weight: 500; }
+.metric-numero { font-size: 22px; font-weight: 800; color: #232F3E; }
+.metric-label { font-size: 11px; color: #617184; font-weight: 700; }
+.metric-card:first-child { border-top-color: #FF9900; }
 
-/* Alinhamento de Linhas e Botão Alternar Clean */
-div[data-testid="column"] {
-    padding: 0px 4px !important;
+[data-testid="stForm"] { background-color: #FFFFFF; border: none; padding: 0px; }
+.stButton > button { border-radius: 7px; font-weight: 700; border: 1px solid #D7DEE7; }
+div[data-testid="column"] .stButton > button { color: #232F3E; }
+div[data-baseweb="input"] { border-radius: 7px; }
+.stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
+.stCaption { color: #617184 !important; }
+
+/* Estilização dos botões popover no topo */
+div[data-testid="stPopover"] > button {
+    background-color: #232F3E !important;
+    color: #FFFFFF !important;
+    border: 1px solid #232F3E !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
 }
-div[data-testid="column"] .stButton > button {
-    border-radius: 4px !important;
-    font-size: 10px !important;
-    padding: 2px 0px !important;
-    background-color: transparent !important;
-    color: #94A3B8 !important;
-    border: 1px solid #334155 !important;
-    margin-top: 4px !important;
-}
-div[data-testid="column"] .stButton > button:hover {
-    color: #FF9900 !important;
+div[data-testid="stPopover"] > button:hover {
+    background-color: #FF9900 !important;
     border-color: #FF9900 !important;
-    background-color: rgba(255,153,0,0.05) !important;
+    color: #232F3E !important;
+}
+
+@media (max-width: 800px) {
+    .titulo { font-size: 24px; }
+    .turno-titulo { font-size: 18px; }
+    .turno-horario { font-size: 10px; }
+    .metric-numero { font-size: 18px; }
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ============================================================
-# GERENCIAMENTO DE ESTADO DE AUTENTICAÇÃO
+# LOGIN STATE
 # ============================================================
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
 # ============================================================
-# FUNÇÕES DE PERSISTÊNCIA (SQLITE)
+# FUNÇÕES DE BANCO
 # ============================================================
 def buscar_operadores():
     conn = conectar()
@@ -313,12 +278,8 @@ def salvar_status(operador_id, semana_id, sexta, sabado, domingo, segunda):
     conn.commit()
     conn.close()
 
-def alternar_status_callback(operador_id, semana_id, lista_atual, index_dia, novo_valor):
-    lista_atual[index_dia] = novo_valor
-    salvar_status(operador_id, semana_id, *lista_atual)
-
 # ============================================================
-# INTEGRAÇÃO DE DATAS DINÂMICAS
+# DATAS
 # ============================================================
 def obter_semana(deslocamento=0):
     hoje = datetime.now()
@@ -340,105 +301,102 @@ def obter_semana(deslocamento=0):
 semanas = [obter_semana(i) for i in range(-2, 5)]
 
 # ============================================================
-# TOPBAR (HEADER + LOGIN ADM)
+# CABEÇALHO DA APLICAÇÃO (TÍTULO + LOGIN ALINHADOS)
 # ============================================================
 col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
 with col_tit:
     st.markdown("<div class='titulo'>Escala Amazon</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitulo'>Monitoramento de Turnos e Operações</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
 
 with col_log:
+    # Caso NÃO esteja logado, exibe apenas o botão discreto de Login no canto superior direito
     if not st.session_state.autenticado:
         with st.popover("👤 Área do Gestor", use_container_width=True):
             with st.form("login_form", clear_on_submit=True):
                 usuario = st.text_input("Usuário")
                 senha = st.text_input("Senha", type="password")
-                entrar = st.form_submit_button("Acessar", use_container_width=True)
+                entrar = st.form_submit_button("Entrar", use_container_width=True)
 
                 if entrar:
                     if usuario.lower().strip() == "admin" and senha == "Amazon123":
                         st.session_state.autenticado = True
                         st.rerun()
                     else:
-                        st.error("Credenciais inválidas.")
+                        st.error("Dados incorretos.")
     else:
-        with st.popover("⚙️ Painel do Administrador", use_container_width=True):
-            st.markdown("<span style='color:#4ADE80'>● Gestor Autenticado</span>", unsafe_allow_html=True)
+        # Se logado, cria um menu flutuante com as ferramentas administrativas
+        with st.popover("⚙️ Painel de Gestão", use_container_width=True):
+            st.markdown("🟢 **Modo Administrador**")
             st.divider()
             
-            menu_admin = st.selectbox("Ação rápida:", ["Adicionar Operador", "Remover Operador"])
+            # Sub-opções dentro do botão superior
+            menu_admin = st.selectbox("O que deseja fazer?", ["Adicionar Operador", "Remover Operador"])
             
             if menu_admin == "Adicionar Operador":
                 novo_nome = st.text_input("Nome").strip().upper()
                 nova_funcao = st.text_input("Função").strip().upper()
-                novo_turno = st.selectbox("Turno", ["T1", "T2", "T3"], format_func=lambda x: f"{NOMES_TURNOS[x]} ({HORARIOS[x]})")
-                if st.button("Salvar Registro", use_container_width=True):
+                novo_turno = st.selectbox(
+                    "Turno", ["T1", "T2", "T3"],
+                    format_func=lambda x: f"{NOMES_TURNOS[x]} — {HORARIOS[x]}"
+                )
+                if st.button("Confirmar Cadastro", use_container_width=True):
                     if novo_nome and nova_funcao:
-                        cadastrar_operador(novo_nome, nova_funcao,Platform_turno=novo_turno)
-                        st.success("Operador salvo!")
+                        cadastrar_operador(novo_nome, nova_funcao, novo_turno)
+                        st.success("Operador cadastrado!")
                         st.rerun()
+                    else:
+                        st.warning("Preencha todos os campos.")
                         
             elif menu_admin == "Remover Operador":
                 operadores_lista = buscar_operadores()
                 if operadores_lista:
-                    opcoes_remocao = {f"{x[1]} [{x[2]}]": x[0] for x in operadores_lista}
-                    selecionado = st.selectbox("Escolha quem remover:", list(opcoes_remocao.keys()))
-                    if st.button("Remover Permanentemente", use_container_width=True):
+                    opcoes_remocao = {f"{x[1]} — {x[2]}": x[0] for x in operadores_lista}
+                    selecionado = st.selectbox("Selecione o operador", list(opcoes_remocao.keys()))
+                    if st.button("Confirmar Remoção", use_container_width=True):
                         remover_operador(opcoes_remocao[selecionado])
-                        st.success("Operador removido.")
+                        st.success("Operador removido!")
                         st.rerun()
-            
+                else:
+                    st.info("Nenhum operador cadastrado.")
+                    
             st.divider()
-            if st.button("Sair do Modo Admin", use_container_width=True):
+            if st.button("🚪 Sair", use_container_width=True):
                 st.session_state.autenticado = False
                 st.rerun()
 
 # ============================================================
-# FILTROS PRINCIPAIS
+# FILTRO DE SEMANA
 # ============================================================
 semana_labels = [x["nome"] for x in semanas]
-semana_escolhida = st.selectbox("📅 Selecione a Janela da Escala", semana_labels, index=2)
+semana_escolhida = st.selectbox("📅 Período da escala", semana_labels, index=2)
 semana = semanas[semana_labels.index(semana_escolhida)]
 semana_id = semana["id"]
 
 operadores = buscar_operadores()
 
 # ============================================================
-# CONTAINER DE METRICAS (HTML INJETADO CONTRA QUEBRA DE SPACE)
+# MÉTRICAS DO PAINEL
 # ============================================================
 total = len(operadores)
 t1 = len([x for x in operadores if x[3] == "T1"])
 t2 = len([x for x in operadores if x[3] == "T2"])
 t3 = len([x for x in operadores if x[3] == "T3"])
 
-st.markdown(f"""
-<div class='metrics-container'>
-    <div class='metric-box total'>
-        <div class='metric-num'>{total}</div>
-        <div class='metric-lab'>TOTAL DE OPERADORES</div>
-    </div>
-    <div class='metric-box turno'>
-        <div class='metric-num'>{t1}</div>
-        <div class='metric-lab'>TURNO 1 (07H-15H)</div>
-    </div>
-    <div class='metric-box turno'>
-        <div class='metric-num'>{t2}</div>
-        <div class='metric-lab'>TURNO 2 (15H-23H)</div>
-    </div>
-    <div class='metric-box turno'>
-        <div class='metric-num'>{t3}</div>
-        <div class='metric-lab'>TURNO 3 (23H-07H)</div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+m1, m2, m3, m4 = st.columns(4)
+with m1: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{total}</div><div class='metric-label'>OPERADORES TOTAL</div></div>", unsafe_allow_html=True)
+with m2: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t1}</div><div class='metric-label'>T1 • 07h às 15h</div></div>", unsafe_allow_html=True)
+with m3: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t2}</div><div class='metric-label'>T2 • 15h às 23h</div></div>", unsafe_allow_html=True)
+with m4: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t3}</div><div class='metric-label'>T3 • 23h às 07h</div></div>", unsafe_allow_html=True)
+
+st.write("")
 
 # ============================================================
-# CONSTRUÇÃO DA TABELA POR ABA DOS TURNOS
+# ABAS DE NAVEGAÇÃO DOS TURNOS
 # ============================================================
 DIAS = [("Sexta", "sexta"), ("Sábado", "sabado"), ("Domingo", "domingo"), ("Segunda", "segunda")]
 
-aba_t1, aba_t2, aba_t3 = st.tabs(["🌅 Turno T1", "🌆 Turno T2", "🌌 Turno T3"])
+aba_t1, aba_t2, aba_t3 = st.tabs(["🌅 Turno 1 (07h às 15h)", "🌆 Turno 2 (15h às 23h)", "🌌 Turno 3 (23h às 07h)"])
 abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
 
 for turno in ["T1", "T2", "T3"]:
@@ -446,27 +404,25 @@ for turno in ["T1", "T2", "T3"]:
         operadores_turno = [x for x in operadores if x[3] == turno]
 
         if not operadores_turno:
-            st.markdown("<p style='color:#64748B;font-size:13px;'>Nenhum operador vinculado a este turno.</p>", unsafe_allow_html=True)
+            st.info(f"Nenhum operador alocado no {NOMES_TURNOS[turno]} para este período.")
             continue
 
         st.markdown(f"""
             <div class='turno-header'>
                 <div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div>
-                <div class='turno-horario'>Horário de Janela: {HORARIOS[turno]}</div>
+                <div class='turno-horario'>{HORARIOS[turno]}</div>
             </div>
         """, unsafe_allow_html=True)
 
-        # Alinhamento Proporcional Perfeito
         headers = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
-        headers[0].markdown("<div class='header-col header-esquerda'>Operador</div>", unsafe_allow_html=True)
-        headers[1].markdown("<div class='header-col header-esquerda'>Função</div>", unsafe_allow_html=True)
-        
-        for idx, (dia, _) in enumerate(DIAS, 2):
-            headers[idx].markdown(f"<div class='header-col'>{dia} ({semana[dia]})</div>", unsafe_allow_html=True)
+        headers[0].markdown("<div class='header-col header-esquerda'>OPERADOR</div>", unsafe_allow_html=True)
+        headers[1].markdown("<div class='header-col header-esquerda'>FUNÇÃO</div>", unsafe_allow_html=True)
+
+        for i, (dia, _) in enumerate(DIAS, 2):
+            headers[i].markdown(f"<div class='header-col'>{dia.upper()} ({semana[dia]})</div>", unsafe_allow_html=True)
 
         st.markdown("<div class='separador'></div>", unsafe_allow_html=True)
 
-        # Renderização das Linhas da Grade
         for operador in operadores_turno:
             operador_id, nome, funcao = operador[0], operador[1], operador[2]
             status = buscar_status(operador_id, semana_id)
@@ -477,38 +433,35 @@ for turno in ["T1", "T2", "T3"]:
                 salvar_status(operador_id, semana_id, *status)
 
             linha = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
-            linha[0].markdown(f"<div class='nome-operador'>{nome}</div>", unsafe_allow_html=True)
+            linha[0].markdown(f"<div class='nome-operador'><b>{nome}</b></div>", unsafe_allow_html=True)
             linha[1].markdown(f"<div class='funcao-operador'>{funcao}</div>", unsafe_allow_html=True)
 
             status_lista = list(status)
 
-            for idx, (dia, _) in enumerate(DIAS, 2):
-                valor = status_lista[idx - 2]
+            for i, (dia, _) in enumerate(DIAS, 2):
+                valor = status_lista[i - 2]
 
                 if valor != "FOLGA":
-                    linha[idx].markdown(f"""
+                    linha[i].markdown(f"""
                         <div class='card-trabalho'>
                             TRABALHO
                             <div class='sub-info'>{HORARIOS[turno]}</div>
                         </div>
                     """, unsafe_allow_html=True)
                 else:
-                    linha[idx].markdown("""
+                    linha[i].markdown("""
                         <div class='card-folga'>
                             FOLGA
-                            <div class='sub-info-folga'>Escala de Descanso</div>
+                            <div class='sub-info-folga'>Descanso</div>
                         </div>
                     """, unsafe_allow_html=True)
 
                 if st.session_state.autenticado:
                     novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                    linha[idx].button(
-                        "🔄 Alternar", 
-                        key=f"{operador_id}_{semana_id}_{dia}_{turno}_d", 
-                        use_container_width=True,
-                        on_click=alternar_status_callback,
-                        args=(operador_id, semana_id, status_lista.copy(), idx - 2, novo_valor)
-                    )
+                    if linha[i].button("↔ Alternar", key=f"{operador_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
+                        status_lista[i - 2] = novo_valor
+                        salvar_status(operador_id, semana_id, *status_lista)
+                        st.rerun()
 
 st.divider()
-st.caption("Amazon Control Center • Plataforma de Gestão Organizada")
+st.caption("Escala Amazon • Sistema independente de gestão de escala")

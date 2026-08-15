@@ -710,7 +710,7 @@ st.write("")
 # ============================================================
 # GRID DE TURNOS
 # ============================================================
-aba_t1, aba_t2, aba_t3 = st.tabs(["Turno 1 (07h às 15h)", "T2", "T3"])
+aba_t1, aba_t2, aba_t3 = st.tabs(["Turno 1", "Turno 2", "Turno 3"])
 abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
 
 for turno in ["T1", "T2", "T3"]:

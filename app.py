@@ -254,18 +254,17 @@ label, .stMarkdown, p { color: #C7D0DD; }
     border-radius: 9px;
     text-align: center;
     font-weight: 800;
-    font-size: 11px;
+    font-size: 12px;
     border-left: 4px solid #A67818;
     margin-bottom: 4px;
     min-height: 48px;
     width: 100%;
     box-sizing: border-box;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.22);
 }
-.sub-info-folga { color: #3A2F14; font-size: 10px; margin-top: 3px; font-weight: 700; }
 
 .separador { border: 0; border-top: 1px solid #2A3855; margin-top: 2px; margin-bottom: 15px; }
 
@@ -735,8 +734,7 @@ for turno in ["T1", "T2", "T3"]:
                 else:
                     linha[i].markdown("""
                         <div class='card-folga'>
-                            FOLGA
-                            <div class='sub-info-folga'>Descanso</div>
+                            Folga descanso
                         </div>
                     """, unsafe_allow_html=True)
 

@@ -770,7 +770,7 @@ for turno in ["T1", "T2", "T3"]:
 
                 if st.session_state.autenticado:
                     novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                    if linha[i].button("↔ Alternar", key=f"{operador_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
+                    if linha[i].button("↔ Alterar", key=f"{operador_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
                         registrar_historico(nome, semana_id, dia, valor, novo_valor)
                         status_lista[i - 2] = novo_valor
                         salvar_status(operador_id, semana_id, *status_lista)

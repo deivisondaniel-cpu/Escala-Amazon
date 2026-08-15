@@ -228,21 +228,21 @@ label, .stMarkdown, p { color: #C7D0DD; }
 .funcao-operador { padding-top: 9px; font-size: 11px; color: #4EA8E0; font-weight: 700; }
 
 .card-trabalho {
-    background-color: #123655;
-    color: #6FC3FF;
+    background-color: #2B2F36;
+    color: #FF9900;
     padding: 8px 5px;
     border-radius: 7px;
     text-align: center;
     font-weight: 800;
     font-size: 11px;
-    border-left: 4px solid #4EA8E0;
+    border-left: 4px solid #FF9900;
     margin-bottom: 4px;
     min-height: 43px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
-.sub-info { color: #9BD3F5; font-size: 10px; margin-top: 3px; font-weight: 700; }
+.sub-info { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 700; }
 
 .card-folga {
     background-color: #2B2F36;
@@ -722,8 +722,7 @@ for turno in ["T1", "T2", "T3"]:
                 if valor != "FOLGA":
                     linha[i].markdown(f"""
                         <div class='card-trabalho'>
-                            TRABALHO
-                            <div class='sub-info'>{HORARIOS[turno]}</div>
+                            {HORARIOS[turno]}
                         </div>
                     """, unsafe_allow_html=True)
                 else:

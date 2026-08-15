@@ -203,12 +203,13 @@ label, .stMarkdown, p { color: #C7D0DD; }
     align-items: center;
     gap: 12px;
     margin-top: 15px;
-    margin-bottom: 20px;
-    padding: 10px 14px;
+    margin-bottom: 22px;
+    padding: 12px 16px;
     background-color: #182238;
     border-left: 5px solid #FF9900;
     border-bottom: 1px solid #2A3855;
-    border-radius: 8px;
+    border-radius: 9px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
 .turno-titulo { font-size: 21px; font-weight: 800; color: #FFFFFF; }
@@ -231,7 +232,7 @@ label, .stMarkdown, p { color: #C7D0DD; }
     background-color: #8CD790;
     color: #111111;
     padding: 8px 5px;
-    border-radius: 7px;
+    border-radius: 9px;
     text-align: center;
     font-weight: 800;
     font-size: 12px;
@@ -243,17 +244,18 @@ label, .stMarkdown, p { color: #C7D0DD; }
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.22);
 }
 
 .card-folga {
-    background-color: #FFC107;
-    color: #C0C0C0;
+    background-color: #D9A227;
+    color: #1B2438;
     padding: 8px 5px;
-    border-radius: 7px;
+    border-radius: 9px;
     text-align: center;
     font-weight: 800;
     font-size: 11px;
-    border-left: 4px solid #E6AC00;
+    border-left: 4px solid #A67818;
     margin-bottom: 4px;
     min-height: 48px;
     width: 100%;
@@ -261,8 +263,9 @@ label, .stMarkdown, p { color: #C7D0DD; }
     display: flex;
     flex-direction: column;
     justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.22);
 }
-.sub-info-folga { color: #A9A9A9; font-size: 10px; margin-top: 3px; font-weight: 600; }
+.sub-info-folga { color: #3A2F14; font-size: 10px; margin-top: 3px; font-weight: 700; }
 
 .separador { border: 0; border-top: 1px solid #2A3855; margin-top: 2px; margin-bottom: 15px; }
 
@@ -273,6 +276,7 @@ label, .stMarkdown, p { color: #C7D0DD; }
     border-radius: 10px;
     padding: 12px;
     text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 .metric-numero { font-size: 22px; font-weight: 800; color: #FFFFFF; }
 .metric-label { font-size: 11px; color: #8794A6; font-weight: 700; }

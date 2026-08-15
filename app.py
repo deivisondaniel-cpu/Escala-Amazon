@@ -69,13 +69,16 @@ NOMES_TURNOS = {
 # ============================================================
 st.markdown("""
 <style>
-/* Remove o botão de Fork/GitHub e a barra superior nativa da nuvem */
+/* Remove o botão de Fork/GitHub e a barra superior nativa */
 header[data-testid="stHeader"] {
     display: none !important;
 }
 
-/* Remove o botão flutuante vermelho (Manage App) no canto inferior direito */
-#stManageAppButton {
+/* Remove a coroa vermelha / botão de deploy do canto inferior */
+.stDeployButton {
+    display: none !important;
+}
+div[data-testid="stStatusWidget"] {
     display: none !important;
 }
 

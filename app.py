@@ -3,7 +3,7 @@ import sqlite3
 from datetime import datetime, timedelta
 
 # ============================================================
-# CONFIGURAÇÃO DA PÁGINA (ESTILO LOSUNGWEB AMAZON)
+# CONFIGURAÇÃO DA PÁGINA (ESTILO PREMIUM CORPORATIVO)
 # ============================================================
 st.set_page_config(
     page_title="LosungWeb - Amazon Escala",
@@ -74,7 +74,7 @@ HORARIOS = {"T1": "07:00 às 15:00", "T2": "15:00 às 23:00", "T3": "23:00 às 0
 NOMES_TURNOS = {"T1": "Turno 1", "T2": "Turno 2", "T3": "Turno 3"}
 
 # ============================================================
-# CSS CLEAN REFINADO - EVITA O EFEITO PAREDE DE TIJOLOS
+# CSS APURADO: AZUL VIVO, CAIXAS COMPACTAS E INDEPENDENTES
 # ============================================================
 st.markdown("""
 <style>
@@ -83,84 +83,89 @@ header[data-testid="stHeader"], .stAppDeployButton, div[data-testid="stViewerBad
 }
 [data-testid="stSidebar"] { display: none; }
 
-/* Fundo Dark Corfio / Azul-Marinho Profundo do Site LosungWeb */
+/* Fundo Geral do Sistema */
 .stApp { background-color: #0B1320; color: #F1F5F9; }
-.stMainBlockContainer { padding: 15px 20px !important; max-width: 100% !important; }
+.stMainBlockContainer { padding: 12px 20px !important; max-width: 100% !important; }
 
-/* Espaçamento real entre as linhas da tabela */
+/* Ajuste milimétrico de espaços vazios */
 [data-testid="stVerticalBlock"] { gap: 0px !important; }
-[data-testid="stHorizontalBlock"] { padding: 0px !important; margin-bottom: 6px !important; align-items: center !important; }
+[data-testid="stHorizontalBlock"] { padding: 0px !important; margin-bottom: 5px !important; align-items: center !important; }
 
-/* Cabeçalho da Página */
-.titulo-container { margin-bottom: 12px; }
-.titulo { color: #FFFFFF; font-family: 'Segoe UI', sans-serif; font-size: 26px; font-weight: 800; }
+/* Abas Customizadas - Sem Ícones e Cores Ajustadas */
+button[data-baseweb="tab"] { font-size: 13px !important; font-weight: 700 !important; color: #64748B !important; }
+button[aria-selected="true"] { color: #FF5500 !important; border-bottom-color: #FF5500 !important; }
+
+/* Cabeçalho Superior */
+.titulo-container { margin-bottom: 8px; }
+.titulo { color: #FFFFFF; font-family: 'Segoe UI', sans-serif; font-size: 24px; font-weight: 800; }
 .subtitulo { color: #FF5500; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
-/* Painel de Métricas Superior */
-.metric-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
-.metric-card { flex: 1; min-width: 120px; background: #141E30; border: 1px solid #1E293B; border-radius: 6px; padding: 8px 12px; text-align: left; }
+/* Painel de Métricas Reduzido */
+.metric-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.metric-card { flex: 1; min-width: 110px; background: #141E30; border: 1px solid #1E293B; border-radius: 6px; padding: 6px 10px; text-align: left; }
 .metric-card.total { border-left: 4px solid #FF5500; }
-.metric-numero { font-size: 20px; font-weight: 800; color: #FFFFFF; line-height: 1.1; }
-.metric-label { font-size: 10px; color: #64748B; font-weight: 600; margin-top: 1px; }
+.metric-numero { font-size: 18px; font-weight: 800; color: #FFFFFF; line-height: 1.1; }
+.metric-label { font-size: 10px; color: #38BDF8; font-weight: 600; margin-top: 1px; }
 
-/* Header de Turnos */
-.turno-header { display: flex; align-items: center; gap: 8px; margin: 12px 0 12px 0; padding: 8px 12px; background-color: #141E30; color: white; border-radius: 4px; border: 1px solid #1E293B; }
+/* Header de Turno Limpo apenas com o Relógio */
+.turno-header { display: flex; align-items: center; gap: 8px; margin: 8px 0; padding: 6px 12px; background-color: #141E30; color: white; border-radius: 6px; border: 1px solid #1E293B; }
 .turno-titulo { font-size: 13px; font-weight: 700; color: #FFFFFF; }
-.turno-horario { background-color: rgba(255,85,0,0.15); color: #FF5500; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,85,0,0.3); }
+.turno-horario { background-color: rgba(255,85,0,0.15); color: #FF5500; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,85,0,0.3); }
 
-/* Grid Headers */
-.header-col { font-weight: 700; font-size: 11px; color: #64748B; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid #1E293B; margin-bottom: 8px; }
+/* Colunas de Títulos */
+.header-col { font-weight: 700; font-size: 11px; color: #38BDF8; text-transform: uppercase; padding-bottom: 4px; border-bottom: 1px solid #1E293B; margin-bottom: 6px; }
 
-/* Textos da Tabela perfeitamente alinhados verticalmente ao centro */
-.nome-operador { font-size: 12px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; min-height: 44px; }
-.funcao-operador { font-size: 11px; color: #64748B; font-weight: 600; display: flex; align-items: center; min-height: 44px; }
+/* Textos da Tabela com o Azul Mais Vivo */
+.nome-operador { font-size: 12px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; min-height: 42px; }
+.funcao-operador { font-size: 11px; color: #38BDF8; font-weight: 600; display: flex; align-items: center; min-height: 42px; }
 
-/* CARDS DE STATUS ULTRA CLEAN - DESIGN MINIMALISTA PROFISSIONAL */
+/* CARDS DE STATUS INDEPENDENTES ESTILO REQUADRO */
 .card-status { 
     background-color: #141E30;
     border: 1px solid #1E293B;
-    border-radius: 4px; 
+    border-radius: 6px; 
     text-align: center; 
     font-size: 11px; 
     font-weight: 700; 
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
-    min-height: 44px; 
+    min-height: 42px; 
     box-sizing: border-box; 
     width: 100%;
 }
 
-/* Trabalho: Borda laranja neon sutil e elegante */
+/* Trabalho: Borda Laranja da Amazon */
 .status-trabalho { 
     border-left: 4px solid #FF5500 !important;
     color: #FF5500;
 }
-.status-trabalho .sub-status { color: #94A3B8; }
+.status-trabalho .sub-status { color: #38BDF8; }
 
-/* Folga: Borda Amarela sutil */
+/* Folga: Preenchimento Amarelo Sólido Conforme Solicitado */
 .status-folga { 
-    border-left: 4px solid #FFCC00 !important;
-    color: #FFCC00;
+    background-color: #FFCC00 !important;
+    border: none !important;
+    color: #0B1320 !important;
 }
-.status-folga .sub-status { color: #64748B; }
+.status-folga .sub-status { color: rgba(11, 19, 32, 0.7) !important; }
 
-.sub-status { font-size: 9px; font-weight: 500; margin-top: 1px; }
+.sub-status { font-size: 9px; font-weight: 600; margin-top: 1px; }
 
-/* Botão invisível sobreposto */
+/* Botão invisível perfeitamente cobrindo a caixa independente */
 .stButton > button {
     background-color: transparent !important;
     color: transparent !important;
     border: none !important;
     position: absolute !important;
-    top: 0; left: 0; width: 100% !important; height: 44px !important;
+    top: 0; left: 0; width: 100% !important; height: 42px !important;
     z-index: 10;
     cursor: pointer;
 }
-.stButton { position: relative !important; margin: 0 !important; padding: 0 !important; height: 44px; }
+.stButton { position: relative !important; margin: 0 !important; padding: 0 !important; height: 42px; }
 
-/* Mobile Cards */
-.mobile-operator-card { background: #141E30; border: 1px solid #1E293B; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+/* Mobile Otimizado */
+.mobile-operator-card { background: #141E30; border: 1px solid #1E293B; border-radius: 6px; padding: 10px; margin-bottom: 6px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -215,7 +220,7 @@ def obter_semana(deslocamento=0):
 semanas = [obter_semana(i) for i in range(-2, 5)]
 
 # ============================================================
-# INTERFACE DE USUÁRIO - TOP BAR GESTOR
+# LAYOUT TOP BAR
 # ============================================================
 col_tit, col_log = st.columns([3, 1], vertical_alignment="center")
 with col_tit:
@@ -245,134 +250,4 @@ with col_log:
                 novo_turno = st.selectbox("Turno", ["T1", "T2", "T3"])
                 if st.button("Salvar", use_container_width=True):
                     if novo_nome and nova_funcao:
-                        cadastrar_operador(novo_nome, nova_funcao, novo_turno)
-                        st.rerun()
-            elif menu_admin == "Remover Operador":
-                operadores_lista = buscar_operadores()
-                opcoes = {f"{x[1]} [{x[3]}]": x[0] for x in operadores_lista}
-                sel = st.selectbox("Selecione", list(opcoes.keys()))
-                if st.button("Remover", use_container_width=True):
-                    remover_operador(opcoes[sel])
-                    st.rerun()
-            if st.button("🚪 Sair", use_container_width=True):
-                st.session_state.autenticado = False
-                st.rerun()
-
-# ============================================================
-# FILTROS E PAINEL DE INFORMAÇÕES
-# ============================================================
-semana_labels = [x["nome"] for x in semanas]
-col_filtro, col_check = st.columns([1.5, 2.5], vertical_alignment="center")
-with col_filtro:
-    semana_escolhida = st.selectbox("📅 Período", semana_labels, index=2, label_visibility="collapsed")
-semana = semanas[semana_labels.index(semana_escolhida)]
-semana_id = semana["id"]
-
-with col_check:
-    is_mobile = st.checkbox("📱 Otimizar para Celular", value=False)
-
-operadores = buscar_operadores()
-total = len(operadores)
-t1 = len([x for x in operadores if x[3] == "T1"])
-t2 = len([x for x in operadores if x[3] == "T2"])
-t3 = len([x for x in operadores if x[3] == "T3"])
-
-st.markdown(f"""
-<div class='metric-grid'>
-    <div class='metric-card total'><div class='metric-numero'>{total}</div><div class='metric-label'>OPERADORES</div></div>
-    <div class='metric-card'><div class='metric-numero'>{t1}</div><div class='metric-label'>T1 (07h-15h)</div></div>
-    <div class='metric-card'><div class='metric-numero'>{t2}</div><div class='metric-label'>T2 (15h-23h)</div></div>
-    <div class='metric-card'><div class='metric-numero'>{t3}</div><div class='metric-label'>T3 (23h-07h)</div></div>
-</div>
-""", unsafe_allow_html=True)
-
-# ============================================================
-# LISTAGEM DAS ABAS POR TURNO
-# ============================================================
-DIAS = [("Sexta", "sexta"), ("Sábado", "sabado"), ("Domingo", "domingo"), ("Segunda", "segunda")]
-
-aba_t1, aba_t2, aba_t3 = st.tabs(["🌅 Turno 1", "🌆 Turno 2", "🌌 Turno 3"])
-abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
-
-for turno in ["T1", "T2", "T3"]:
-    with abas_mapeamento[turno]:
-        operadores_turno = [x for x in operadores if x[3] == turno]
-        
-        if not operadores_turno:
-            st.info("Nenhum operador alocado.")
-            continue
-
-        st.markdown(f"<div class='turno-header'><div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div><div class='turno-horario'>{HORARIOS[turno]}</div></div>", unsafe_allow_html=True)
-        
-        if not is_mobile:
-            # --- MODELO DESKTOP REALMENTE CLEAN ---
-            headers = st.columns([1.8, 1.4, 1, 1, 1, 1])
-            headers[0].markdown("<div class='header-col'>Operador</div>", unsafe_allow_html=True)
-            headers[1].markdown("<div class='header-col'>Função</div>", unsafe_allow_html=True)
-            for idx, (dia, _) in enumerate(DIAS, 2):
-                headers[idx].markdown(f"<div class='header-col' style='text-align:center;'>{dia} ({semana[dia]})</div>", unsafe_allow_html=True)
-            
-            for op in operadores_turno:
-                op_id, nome, funcao = op[0], op[1], op[2]
-                status = buscar_status(op_id, semana_id) or (HORARIOS[turno],)*4
-                if not buscar_status(op_id, semana_id):
-                    salvar_status(op_id, semana_id, *status)
-                
-                linha = st.columns([1.8, 1.4, 1, 1, 1, 1], vertical_alignment="center")
-                linha[0].markdown(f"<div class='nome-operador'>{nome}</div>", unsafe_allow_html=True)
-                linha[1].markdown(f"<div class='funcao-operador'>{funcao}</div>", unsafe_allow_html=True)
-                
-                status_lista = list(status)
-                for idx, (dia, _) in enumerate(DIAS, 2):
-                    valor = status_lista[idx - 2]
-                    
-                    with linha[idx]:
-                        # Agora o card é escuro e elegante, mudando apenas a borda de destaque
-                        if valor != "FOLGA":
-                            st.markdown(f"<div class='card-status status-trabalho'>TRABALHO<span class='sub-status'>{HORARIOS[turno]}</span></div>", unsafe_allow_html=True)
-                        else:
-                            st.markdown("<div class='card-status status-folga'>FOLGA<span class='sub-status'>Descanso</span></div>", unsafe_allow_html=True)
-                        
-                        # Clique direto e sutil
-                        if st.session_state.autenticado:
-                            novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                            if st.button("", key=f"d_{op_id}_{semana_id}_{dia}_{turno}"):
-                                status_lista[idx - 2] = novo_valor
-                                salvar_status(op_id, semana_id, *status_lista)
-                                st.rerun()
-        else:
-            # --- MODELO MOBILE ---
-            for op in operadores_turno:
-                op_id, nome, funcao = op[0], op[1], op[2]
-                status = buscar_status(op_id, semana_id) or (HORARIOS[turno],)*4
-                status_lista = list(status)
-                
-                st.markdown(f"""
-                <div class='mobile-operator-card'>
-                    <div style='border-bottom: 1px solid #FF5500; padding-bottom:4px; margin-bottom:6px;'>
-                        <span style='font-size:13px; font-weight:800; color:#FFF;'>{nome}</span><br>
-                        <span style='font-size:11px; color:#64748B;'>{funcao}</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                for idx, (dia, _) in enumerate(DIAS):
-                    valor = status_lista[idx]
-                    col_dia, col_status = st.columns([1.5, 2.5])
-                    col_dia.markdown(f"<span style='font-size:12px; color:#FFF; font-weight:700;'>{dia} ({semana[dia]})</span>", unsafe_allow_html=True)
-                    
-                    with col_status:
-                        if valor != "FOLGA":
-                            st.markdown(f"<div class='card-status status-trabalho' style='min-height:35px;'>TRABALHO</div>", unsafe_allow_html=True)
-                        else:
-                            st.markdown("<div class='card-status status-folga' style='min-height:35px;'>FOLGA</div>", unsafe_allow_html=True)
-                        
-                        if st.session_state.autenticado:
-                            novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                            if st.button("", key=f"m_{op_id}_{semana_id}_{dia}_{turno}"):
-                                status_lista[idx] = novo_valor
-                                salvar_status(op_id, semana_id, *status_lista)
-                                st.rerun()
-
-st.divider()
-st.caption("LosungWeb Custom UI • Amazon Operations")
+                        cadastrar_operador(novo_nome, nova_funcao,

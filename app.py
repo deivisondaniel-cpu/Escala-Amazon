@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 # CONFIGURAÇÃO DA PÁGINA
 # ============================================================
 st.set_page_config(
-    page_title="Escala monitorimento - Amazon",
+    page_title="Escala monitorimento - amazon",
     page_icon="amazon.png",
     layout="wide",
     initial_sidebar_state="collapsed"

@@ -3,7 +3,7 @@ import sqlite3
 from datetime import datetime, timedelta
 
 # ============================================================
-# CONFIGURAÇÃO DA PÁGINA
+# CONFIGURAÇÃO DA PÁGINA (ESTILO SISTEMA PREMIUM DARK)
 # ============================================================
 st.set_page_config(
     page_title="Escala Monitoramento - Amazon",
@@ -88,7 +88,7 @@ HORARIOS = {"T1": "07:00 às 15:00", "T2": "15:00 às 23:00", "T3": "23:00 às 0
 NOMES_TURNOS = {"T1": "Turno 1", "T2": "Turno 2", "T3": "Turno 3"}
 
 # ============================================================
-# CSS INJETADO ATUALIZADO (ALINHAMENTO VERTICAL PERFEITO)
+# CSS INJETADO CORES IGUAIS AO SITE ENVIADO + ARREMATES DE ESPAÇO
 # ============================================================
 st.markdown("""
 <style>
@@ -96,61 +96,78 @@ header[data-testid="stHeader"], .stAppDeployButton, div[data-testid="stViewerBad
     display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; opacity: 0 !important;
 }
 [data-testid="stSidebar"] { display: none; }
-.stApp { background-color: #FAFAFA; }
+
+/* Fundo Dark do Sistema Enviado */
+.stApp { background-color: #1A1F2C; color: #E2E8F0; }
 .stMainBlockContainer { padding: 15px 20px !important; max-width: 100% !important; }
 
-/* Ajustes de bloco de colunas */
-[data-testid="stVerticalBlock"] { gap: 10px !important; }
-[data-testid="stHorizontalBlock"] { padding: 0px !important; margin-bottom: 0px !important; }
+/* Ajustes de bloco de colunas e espaçamentos */
+[data-testid="stVerticalBlock"] { gap: 6px !important; }
+[data-testid="stHorizontalBlock"] { padding: 0px !important; margin-bottom: 0px !important; align-items: center !important; }
 
 /* Título Premium */
-.titulo-container { margin-bottom: 10px; }
-.titulo { color: #232F3E; font-family: 'Segoe UI', sans-serif; font-size: 26px; font-weight: 800; display: inline-block; }
-.subtitulo { color: #FF9900; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.titulo-container { margin-bottom: 12px; }
+.titulo { color: #FFFFFF; font-family: 'Segoe UI', sans-serif; font-size: 24px; font-weight: 800; display: inline-block; }
+.subtitulo { color: #FF9900; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
-/* Métricas */
-.metric-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
-.metric-card { flex: 1; min-width: 130px; background: #FFFFFF; border: 1px solid #D5D9D9; border-radius: 4px; padding: 8px 12px; text-align: left; border-top: 3px solid #232F3E; }
-.metric-card.total { border-top-color: #FF9900; }
-.metric-numero { font-size: 20px; font-weight: 800; color: #111111; line-height: 1.1; }
-.metric-label { font-size: 11px; color: #565959; font-weight: 600; margin-top: 2px; }
+/* Métricas Estilo Filtros do Site */
+.metric-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.metric-card { flex: 1; min-width: 120px; background: #252D3D; border: 1px solid #343F56; border-radius: 6px; padding: 6px 10px; text-align: left; }
+.metric-card.total { border-left: 4px solid #FF9900; }
+.metric-numero { font-size: 18px; font-weight: 800; color: #FFFFFF; line-height: 1.1; }
+.metric-label { font-size: 10px; color: #94A3B8; font-weight: 600; margin-top: 1px; }
 
-/* Headers de Turnos */
-.turno-header { display: flex; align-items: center; gap: 8px; margin: 15px 0 10px 0; padding: 8px 12px; background-color: #232F3E; color: white; border-radius: 4px; }
-.turno-titulo { font-size: 14px; font-weight: 700; }
-.turno-horario { background-color: rgba(255,153,0,0.2); color: #FF9900; padding: 2px 8px; border-radius: 2px; font-size: 11px; font-weight: 700; }
+/* Barra do Turno - Igual à imagem */
+.turno-header { display: flex; align-items: center; gap: 8px; margin: 10px 0; padding: 8px 12px; background-color: #232F3E; color: white; border-radius: 4px; border: 1px solid #2D3748; }
+.turno-titulo { font-size: 13px; font-weight: 700; color: #FFFFFF; }
+.turno-horario { background-color: rgba(255,153,0,0.2); color: #FF9900; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,153,0,0.4); }
 
-/* Grid de Escala Limpo e Alinhado */
-.header-col { font-weight: 700; font-size: 12px; color: #565959; text-transform: uppercase; padding-bottom: 6px; border-bottom: 2px solid #E7E9E9; margin-bottom: 4px; }
+/* Grid headers */
+.header-col { font-weight: 700; font-size: 11px; color: #94A3B8; text-transform: uppercase; padding-bottom: 4px; border-bottom: 1px solid #334155; margin-bottom: 6px; }
 
-/* Centraliza os textos verticalmente em relação aos cards da linha */
-.nome-operador { 
-    font-size: 13px; 
-    font-weight: 800; 
-    color: #111111; 
-    display: flex;
-    align-items: center;
-    min-height: 44px; /* Casando com a altura dos cards do lado direito */
+/* Alinhamento perfeito dos textos */
+.nome-operador { font-size: 13px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; min-height: 48px; }
+.funcao-operador { font-size: 12px; color: #94A3B8; font-weight: 500; display: flex; align-items: center; min-height: 48px; }
+
+/* CARDS DE STATUS LIMPOS E COMPACTOS */
+.card-status { 
+    padding: 4px 6px; 
+    border-radius: 4px; 
+    text-align: center; 
+    font-size: 11px; 
+    font-weight: 700; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    min-height: 48px; 
+    box-sizing: border-box; 
+    width: 100%;
 }
-.funcao-operador { 
-    font-size: 12px; 
-    color: #565959; 
-    font-weight: 600; 
-    display: flex;
-    align-items: center;
-    min-height: 44px;
-}
-
-/* Cards de Status Ajustados */
-.card-status { padding: 6px 8px; border-radius: 4px; text-align: center; font-size: 11px; font-weight: 700; display: flex; flex-direction: column; justify-content: center; min-height: 44px; box-sizing: border-box; }
+/* Trabalho: Tom clean suave original */
 .status-trabalho { background-color: #FFF8F2; color: #C45500; border: 1px solid #FBD8B4; }
-.status-folga { background-color: #F0F2F2; color: #565959; border: 1px solid #D5D9D9; }
-.sub-status { font-size: 9px; font-weight: 500; opacity: 0.85; margin-top: 2px; }
+/* Folga Amarela Clara Limpa - Pedido do Usuário */
+.status-folga { background-color: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; }
+
+.sub-status { font-size: 9px; font-weight: 500; opacity: 0.85; margin-top: 1px; }
+
+/* Ajuste dos Botões Invisíveis que cobrem os Cards (Ação Direta Limpa) */
+.stButton > button {
+    background-color: transparent !important;
+    color: transparent !important;
+    border: none !important;
+    position: absolute !important;
+    top: 0; left: 0; width: 100% !important; height: 48px !important;
+    z-index: 10;
+    cursor: pointer;
+}
+.stButton { position: relative !important; margin: 0 !important; padding: 0 !important; height: 48px; }
+.stButton > button:hover { background-color: rgba(255, 255, 255, 0.05) !important; }
+
+/* Container para empilhar o Card Visual e o Botão invisível por cima */
+.cell-container { position: relative; width: 100%; height: 48px; }
 
 /* Mobile Card Layout */
-.mobile-operator-card { background: white; border: 1px solid #E7E9E9; border-radius: 6px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-
-.stButton > button { font-size: 11px !important; padding: 2px 8px !important; border-radius: 4px !important; }
+.mobile-operator-card { background: #252D3D; border: 1px solid #343F56; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -259,7 +276,7 @@ semana = semanas[semana_labels.index(semana_escolhida)]
 semana_id = semana["id"]
 
 with col_check:
-    is_mobile = st.checkbox("📱 Otimizar visualização para Celular", value=False)
+    is_mobile = st.checkbox("📱 Otimizar para Celular", value=False)
 
 operadores = buscar_operadores()
 total = len(operadores)
@@ -295,7 +312,7 @@ for turno in ["T1", "T2", "T3"]:
         st.markdown(f"<div class='turno-header'><div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div><div class='turno-horario'>{HORARIOS[turno]}</div></div>", unsafe_allow_html=True)
         
         if not is_mobile:
-            # --- DESKTOP CENTRALIZADO VERTICALMENTE ---
+            # --- DESKTOP VIZUALIZAÇÃO LIMPA ---
             headers = st.columns([1.8, 1.4, 1, 1, 1, 1])
             headers[0].markdown("<div class='header-col'>Operador</div>", unsafe_allow_html=True)
             headers[1].markdown("<div class='header-col'>Função</div>", unsafe_allow_html=True)
@@ -315,17 +332,22 @@ for turno in ["T1", "T2", "T3"]:
                 status_lista = list(status)
                 for idx, (dia, _) in enumerate(DIAS, 2):
                     valor = status_lista[idx - 2]
-                    if valor != "FOLGA":
-                        linha[idx].markdown(f"<div class='card-status status-trabalho'>TRABALHO<span class='sub-status'>{HORARIOS[turno]}</span></div>", unsafe_allow_html=True)
-                    else:
-                        linha[idx].markdown("<div class='card-status status-folga'>FOLGA<span class='sub-status'>Descanso</span></div>", unsafe_allow_html=True)
                     
-                    if st.session_state.autenticado:
-                        novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                        if linha[idx].button("Folga", key=f"d_{op_id}_{semana_id}_{dia}_{turno}"):
-                            status_lista[idx - 2] = novo_valor
-                            salvar_status(op_id, semana_id, *status_lista)
-                            st.rerun()
+                    # Abre um bloco container customizado
+                    with linha[idx]:
+                        # Renderiza o Card Visual por baixo
+                        if valor != "FOLGA":
+                            st.markdown(f"<div class='card-status status-trabalho'>TRABALHO<span class='sub-status'>{HORARIOS[turno]}</span></div>", unsafe_allow_html=True)
+                        else:
+                            st.markdown("<div class='card-status status-folga'>FOLGA<span class='sub-status'>Descanso</span></div>", unsafe_allow_html=True)
+                        
+                        # Se logado, renderiza o botão invisível por cima ocupando o mesmo espaço exato
+                        if st.session_state.autenticado:
+                            novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
+                            if st.button("", key=f"d_{op_id}_{semana_id}_{dia}_{turno}"):
+                                status_lista[idx - 2] = novo_valor
+                                salvar_status(op_id, semana_id, *status_lista)
+                                st.rerun()
         else:
             # --- MOBILE CARDS ---
             for op in operadores_turno:
@@ -335,28 +357,31 @@ for turno in ["T1", "T2", "T3"]:
                 
                 st.markdown(f"""
                 <div class='mobile-operator-card'>
-                    <div style='border-bottom: 2px solid #FF9900; padding-bottom:4px; margin-bottom:6px;'>
-                        <span class='nome-operador' style='min-height:unset;'>{nome}</span> • <span class='funcao-operador' style='min-height:unset;'>{funcao}</span>
+                    <div style='border-bottom: 1px solid #FF9900; padding-bottom:4px; margin-bottom:6px;'>
+                        <span style='font-size:13px; font-weight:800; color:#FFF;'>{nome}</span><br>
+                        <span style='font-size:11px; color:#94A3B8;'>{funcao}</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
                 
                 for idx, (dia, _) in enumerate(DIAS):
                     valor = status_lista[idx]
-                    col_dia, col_status, col_acao = st.columns([1.5, 2, 1.2])
+                    col_dia, col_status = st.columns([1.5, 2.5])
                     
-                    col_dia.markdown(f"<span style='font-size:12px; color:#232F3E; font-weight:700;'>{dia} ({semana[dia]})</span>", unsafe_allow_html=True)
-                    if valor != "FOLGA":
-                        col_status.markdown(f"<div class='card-status status-trabalho' style='min-height:30px;'>TRABALHO</div>", unsafe_allow_html=True)
-                    else:
-                        col_status.markdown("<div class='card-status status-folga' style='min-height:30px;'>FOLGA</div>", unsafe_allow_html=True)
+                    col_dia.markdown(f"<span style='font-size:12px; color:#FFF; font-weight:700;'>{dia} ({semana[dia]})</span>", unsafe_allow_html=True)
                     
-                    if st.session_state.autenticado:
-                        novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                        if col_acao.button("Mudar", key=f"m_{op_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
-                            status_lista[idx] = novo_valor
-                            salvar_status(op_id, semana_id, *status_lista)
-                            st.rerun()
+                    with col_status:
+                        if valor != "FOLGA":
+                            st.markdown(f"<div class='card-status status-trabalho' style='min-height:35px;'>TRABALHO</div>", unsafe_allow_html=True)
+                        else:
+                            st.markdown("<div class='card-status status-folga' style='min-height:35px;'>FOLGA</div>", unsafe_allow_html=True)
+                        
+                        if st.session_state.autenticado:
+                            novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
+                            if st.button("", key=f"m_{op_id}_{semana_id}_{dia}_{turno}"):
+                                status_lista[idx] = novo_valor
+                                salvar_status(op_id, semana_id, *status_lista)
+                                st.rerun()
 
 st.divider()
-st.caption("Escala Amazon • Dashboard Alinhado")
+st.caption("Escala Amazon • Dashboard Premium Style")

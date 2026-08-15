@@ -163,9 +163,6 @@ button[aria-selected="true"] { color: #FF5500 !important; border-bottom-color: #
     cursor: pointer;
 }
 .stButton { position: relative !important; margin: 0 !important; padding: 0 !important; height: 42px; }
-
-/* Mobile Otimizado */
-.mobile-operator-card { background: #141E30; border: 1px solid #1E293B; border-radius: 6px; padding: 10px; margin-bottom: 6px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -250,4 +247,128 @@ with col_log:
                 novo_turno = st.selectbox("Turno", ["T1", "T2", "T3"])
                 if st.button("Salvar", use_container_width=True):
                     if novo_nome and nova_funcao:
-                        cadastrar_operador(novo_nome, nova_funcao,
+                        cadastrar_operador(novo_nome, nova_funcao, novo_turno)
+                        st.success("Adicionado!")
+                        st.rerun()
+            elif menu_admin == "Remover Operador":
+                ops = buscar_operadores()
+                if ops:
+                    op_remover = st.selectbox("Selecionar Operador", options=ops, format_func=lambda x: f"{x[1]} ({x[3]})")
+                    if st.button("Remover Permanentemente", use_container_width=True):
+                        remover_operador(op_remover[0])
+                        st.warning("Removido.")
+                        st.rerun()
+                else:
+                    st.text("Nenhum operador.")
+            if st.button("Sair do Modo Gestor", use_container_width=True):
+                st.session_state.autenticado = False
+                st.rerun()
+
+# ============================================================
+# SELEÇÃO DE SEMANA E MÉTRICAS
+# ============================================================
+semana_selecionada = st.selectbox("Selecione o período da Escala", options=semanas, format_func=lambda x: x["nome"], index=2)
+
+todos_operadores = buscar_operadores()
+total_trabalho = 0
+total_folga = 0
+
+for op in todos_operadores:
+    status_atual = buscar_status(op[0], semana_selecionada["id"])
+    if status_atual:
+        for s in status_atual:
+            if s == "TRABALHO": total_trabalho += 1
+            else: total_folga += 1
+    else:
+        total_trabalho += 4
+
+st.markdown(f"""
+<div class='metric-grid'>
+    <div class='metric-card total'>
+        <div class='metric-numero'>{len(todos_operadores)}</div>
+        <div class='metric-label'>OPERADORES ATIVOS</div>
+    </div>
+    <div class='metric-card'>
+        <div class='metric-numero'>{total_trabalho}</div>
+        <div class='metric-label'>DIAS PRESENÇA</div>
+    </div>
+    <div class='metric-card'>
+        <div class='metric-numero' style='color: #FFCC00;'>{total_folga}</div>
+        <div class='metric-label'>DIAS FOLGA</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ============================================================
+# EXIBIÇÃO EM ABAS (SEM ÍCONES DE SOL/NOITE)
+# ============================================================
+abas_turnos = st.tabs([NOMES_TURNOS["T1"], NOMES_TURNOS["T2"], NOMES_TURNOS["T3"]])
+
+for idx_turno, cod_turno in enumerate(["T1", "T2", "T3"]):
+    with abas_turnos[idx_turno]:
+        st.markdown(f"""
+        <div class='turno-header'>
+            <span style='font-size:14px;'>🕒</span>
+            <div class='turno-titulo'>{NOMES_TURNOS[cod_turno]}</div>
+            <div class='turno-horario'>{HORARIOS[cod_turno]}</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        ops_do_turno = [o for o in todos_operadores if o[3] == cod_turno]
+        
+        if not ops_do_turno:
+            st.info("Nenhum operador alocado para este turno.")
+            continue
+            
+        # Linha de Cabeçalho dos Dados
+        c_op, c_fun, c_sex, c_sab, c_dom, c_seg = st.columns([2.5, 2.2, 1.5, 1.5, 1.5, 1.5])
+        c_op.markdown("<div class='header-col'>Operador</div>", unsafe_allow_html=True)
+        c_fun.markdown("<div class='header-col'>Função</div>", unsafe_allow_html=True)
+        c_sex.markdown(f"<div class='header-col' style='text-align:center;'>Sexta ({semana_selecionada['Sexta']})</div>", unsafe_allow_html=True)
+        c_sab.markdown(f"<div class='header-col' style='text-align:center;'>Sábado ({semana_selecionada['Sábado']})</div>", unsafe_allow_html=True)
+        c_dom.markdown(f"<div class='header-col' style='text-align:center;'>Domingo ({semana_selecionada['Domingo']})</div>", unsafe_allow_html=True)
+        c_seg.markdown(f"<div class='header-col' style='text-align:center;'>Segunda ({semana_selecionada['Segunda']})</div>", unsafe_allow_html=True)
+        
+        # Renderização das caixas
+        for op in ops_do_turno:
+            op_id, nome, funcao, _ = op
+            status_banco = buscar_status(op_id, semana_selecionada["id"])
+            
+            if status_banco:
+                status_dias = list(status_banco)
+            else:
+                status_dias = ["TRABALHO", "TRABALHO", "TRABALHO", "TRABALHO"]
+                
+            row_op, row_fun, row_sex, row_sab, row_dom, row_seg = st.columns([2.5, 2.2, 1.5, 1.5, 1.5, 1.5])
+            
+            row_op.markdown(f"<div class='nome-operador'>{nome}</div>", unsafe_allow_html=True)
+            row_fun.markdown(f"<div class='funcao-operador'>{funcao}</div>", unsafe_allow_html=True)
+            
+            dias_cols = [row_sex, row_sab, row_dom, row_seg]
+            dias_nomes = ["sexta", "sabado", "domingo", "segunda"]
+            
+            for i in range(4):
+                coluna_dia = dias_cols[i]
+                status_atual = status_dias[i]
+                
+                with coluna_dia:
+                    if status_atual == "TRABALHO":
+                        st.markdown(f"""
+                        <div class='card-status status-trabalho'>
+                            <div>TRABALHO</div>
+                            <div class='sub-status'>{HORARIOS[cod_turno]}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown("""
+                        <div class='card-status status-folga'>
+                            <div>FOLGA</div>
+                            <div class='sub-status'>INTERNA</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    if st.session_state.autenticado:
+                        if st.button("", key=f"btn_{op_id}_{semana_selecionada['id']}_{dias_nomes[i]}"):
+                            status_dias[i] = "FOLGA" if status_atual == "TRABALHO" else "TRABALHO"
+                            salvar_status(op_id, semana_selecionada["id"], status_dias[0], status_dias[1], status_dias[2], status_dias[3])
+                            st.rerun()

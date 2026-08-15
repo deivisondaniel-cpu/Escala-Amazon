@@ -305,20 +305,21 @@ div[data-testid="column"] .stButton > button { color: #C7D0DD; }
 .stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
 .stCaption { color: #5B6779 !important; }
 
-div[data-testid="stPopover"] > button {
+div[data-testid="stPopover"] button {
     background-color: #FF9900 !important;
     color: #146EB4 !important;
     border: 1px solid #FF9900 !important;
     font-weight: 800 !important;
     border-radius: 8px !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
-div[data-testid="stPopover"] > button p { color: #146EB4 !important; }
-div[data-testid="stPopover"] > button:hover {
+div[data-testid="stPopover"] button p { color: #146EB4 !important; }
+div[data-testid="stPopover"] button:hover {
     background-color: #E68A00 !important;
     border-color: #E68A00 !important;
     color: #0B3C5D !important;
 }
-div[data-testid="stPopover"] > button:hover p { color: #0B3C5D !important; }
+div[data-testid="stPopover"] button:hover p { color: #0B3C5D !important; }
 
 /* Conteúdo do popover (renderizado fora do container principal) */
 div[data-testid="stPopoverBody"],

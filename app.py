@@ -132,7 +132,7 @@ div[data-baseweb="select"] > div { border: 1px solid #D5D9D9 !important; border-
 .status-folga { background-color: #F0F2F2; color: #565959; border: 1px solid #D5D9D9; }
 .sub-status { font-size: 9px; font-weight: 500; opacity: 0.8; }
 
-/* Mobile Card Layout (Escondido no Desktop via Grid do Streamlit) */
+/* Mobile Card Layout */
 .mobile-operator-card { background: white; border: 1px solid #E7E9E9; border-radius: 6px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 .mobile-day-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #F3F3F3; }
 .mobile-day-row:last-child { border-bottom: none; }
@@ -193,7 +193,7 @@ def obter_semana(deslocamento=0):
 semanas = [obter_semana(i) for i in range(-2, 5)]
 
 # ============================================================
-# RENDERIZAÇÃO DO TOP BAR (COMPACTO)
+# RENDERIZAÇÃO DO TOP BAR
 # ============================================================
 col_tit, col_log = st.columns([3, 1], vertical_alignment="center")
 with col_tit:
@@ -206,7 +206,7 @@ with col_log:
     if not st.session_state.autenticado:
         with st.popover("👤 Gestor", use_container_width=True):
             with st.form("login_form", clear_on_submit=True):
-                usuario = st.text_input("Usuário", size="small")
+                usuario = st.text_input("Usuário")
                 senha = st.text_input("Senha", type="password")
                 if st.form_submit_button("Entrar", use_container_width=True):
                     if usuario.lower().strip() == "admin" and senha == "Amazon123":
@@ -262,14 +262,14 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ============================================================
-# LAYOUT DETECT (SISTEMA DE CORREÇÃO RESPONSIVA)
+# ESTRUTURA VISUAL DAS ABAS
 # ============================================================
 DIAS = [("Sexta", "sexta"), ("Sábado", "sabado"), ("Domingo", "domingo"), ("Segunda", "segunda")]
 
 aba_t1, aba_t2, aba_t3 = st.tabs(["🌅 Turno 1", "🌆 Turno 2", "🌌 Turno 3"])
 abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
 
-# Captura de agentes mobile para reestruturação visual
+# Checkbox discreto para alternar a visualização se necessário
 is_mobile = st.checkbox("📱 Otimizar visualização para Celular / Tela Pequena", value=False)
 
 for turno in ["T1", "T2", "T3"]:
@@ -283,7 +283,7 @@ for turno in ["T1", "T2", "T3"]:
         st.markdown(f"<div class='turno-header'><div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div><div class='turno-horario'>{HORARIOS[turno]}</div></div>", unsafe_allow_html=True)
         
         if not is_mobile:
-            # --- MODO DESKTOP (TABELA COMPACTA EXPANDIDA) ---
+            # --- MODO DESKTOP (TABELA COMPACTADA) ---
             headers = st.columns([1.8, 1.2, 1, 1, 1, 1])
             headers[0].markdown("<div class='header-col'>Operador</div>", unsafe_allow_html=True)
             headers[1].markdown("<div class='header-col'>Função</div>", unsafe_allow_html=True)
@@ -315,13 +315,12 @@ for turno in ["T1", "T2", "T3"]:
                             salvar_status(op_id, semana_id, *status_lista)
                             st.rerun()
         else:
-            # --- MODO MOBILE RESTRUTURADO (LISTA DE CARDS) ---
+            # --- MODO MOBILE (LISTA DE CARDS ENXUTOS) ---
             for op in operadores_turno:
                 op_id, nome, funcao = op[0], op[1], op[2]
                 status = buscar_status(op_id, semana_id) or (HORARIOS[turno],)*4
                 status_lista = list(status)
                 
-                # Container do Card
                 st.markdown(f"""
                 <div class='mobile-operator-card'>
                     <div style='border-bottom: 2px solid #FF9900; padding-bottom:4px; margin-bottom:8px;'>
@@ -331,7 +330,6 @@ for turno in ["T1", "T2", "T3"]:
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Linhas internas do Card (Dias e Ações)
                 for idx, (dia, _) in enumerate(DIAS):
                     valor = status_lista[idx]
                     col_dia, col_status, col_acao = st.columns([1.5, 2, 1.5])
@@ -345,7 +343,7 @@ for turno in ["T1", "T2", "T3"]:
                     
                     if st.session_state.autenticado:
                         novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                        if col_acao.button("Alternar ↔", key=f"m_{op_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
+                        if col_acao.button("Mudar ↔", key=f"m_{op_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
                             status_lista[idx] = novo_valor
                             salvar_status(op_id, semana_id, *status_lista)
                             st.rerun()

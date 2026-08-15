@@ -313,7 +313,7 @@ div[data-testid="stPopover"] button {
     border-radius: 8px !important;
     transition: background-color 0.15s ease, border-color 0.15s ease;
 }
-div[data-testid="stPopover"] button p { color: #146EB4 !important; }
+div[data-testid="stPopover"] button p { color: #1A1A1A !important; }
 div[data-testid="stPopover"] button:hover {
     background-color: #E68A00 !important;
     border-color: #E68A00 !important;

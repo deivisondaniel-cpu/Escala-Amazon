@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 # CONFIGURAÇÃO DA PÁGINA
 # ============================================================
 st.set_page_config(
-    page_title="Monitoramento Amazon",
+    page_title="Escala-Monitoramento-Amazon",
     page_icon="amazon.png",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -345,7 +345,7 @@ semanas = [obter_semana(i) for i in range(-2, 5)]
 col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
 with col_tit:
-    st.markdown("<div class='titulo'>Escala Amazon</div>", unsafe_allow_html=True)
+    st.markdown("<div class='titulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitulo'>Escala do turno</div>", unsafe_allow_html=True)
 
 with col_log:

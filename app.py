@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# BANCO INTERNO
+# BANCO INTERNO (SQLITE)
 # ============================================================
 BANCO = "escala_amazon.db"
 
@@ -45,6 +45,21 @@ def criar_banco():
         )
     """)
     conn.commit()
+    
+    # 🌟 CARGA AUTOMÁTICA DOS FUNCIONÁRIOS (Se o banco estiver vazio)
+    dados_operadores = cursor.execute("SELECT COUNT(*) FROM operadores WHERE ativo = 1").fetchone()[0]
+    if dados_operadores == 0:
+        funcionarios_iniciais = [
+            ("ALAN ARAÚJO", "ANALISTA", "T1"),
+            ("BRUNA BLENDA", "DROPOFF", "T1"),
+            # Se quiser colocar mais funcionários permanentemente, adicione aqui seguindo o padrão:
+            # ("NOME DO OPERADOR", "FUNÇÃO", "T1")
+        ]
+        cursor.executemany("""
+            INSERT INTO operadores (nome, funcao, turno) VALUES (?, ?, ?)
+        """, funcionarios_iniciais)
+        conn.commit()
+        
     conn.close()
 
 criar_banco()
@@ -65,18 +80,24 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS ATUALIZADO (SEM SIDEBAR, FOCO NO TOPO)
+# CSS ATUALIZADO (100% LIMPO E SEM A COROA VERMELHA)
 # ============================================================
 st.markdown("""
 <style>
-/* Remove o botão de Fork/GitHub e a barra superior nativa da nuvem */
-header[data-testid="stHeader"] {
-    display: none !important;
+/* 🚫 BLOCK COMPLETO DE ELEMENTOS NATIVOS (Fim da Coroa Vermelha e Headers) */
+header[data-testid="stHeader"], 
+.stAppDeployButton, 
+div[data-testid="stViewerBadge"],
+footer,
+#MainMenu,
+.stDecoration { 
+    display: none !important; 
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
-
-#MainMenu { visibility: hidden; }
-footer { visibility: hidden; }
-.stDecoration { display: none !important; }
 
 /* Remove o espaço que a sidebar deixaria */
 [data-testid="stSidebar"] { display: none; }
@@ -310,7 +331,6 @@ with col_tit:
     st.markdown("<div class='subtitulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
 
 with col_log:
-    # Caso NÃO esteja logado, exibe apenas o botão discreto de Login no canto superior direito
     if not st.session_state.autenticado:
         with st.popover("👤 Área do Gestor", use_container_width=True):
             with st.form("login_form", clear_on_submit=True):
@@ -325,12 +345,10 @@ with col_log:
                     else:
                         st.error("Dados incorretos.")
     else:
-        # Se logado, cria um menu flutuante com as ferramentas administrativas
         with st.popover("⚙️ Painel de Gestão", use_container_width=True):
             st.markdown("🟢 **Modo Administrador**")
             st.divider()
             
-            # Sub-opções dentro do botão superior
             menu_admin = st.selectbox("O que deseja fazer?", ["Adicionar Operador", "Remover Operador"])
             
             if menu_admin == "Adicionar Operador":

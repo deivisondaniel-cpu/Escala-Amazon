@@ -1,5 +1,5 @@
 import streamlit as st
-from sqlalchemy import text
+import sqlite3
 from datetime import datetime, timedelta
 import io
 import pandas as pd
@@ -8,93 +8,99 @@ import pandas as pd
 # CONFIGURAÇÃO DA PÁGINA
 # ============================================================
 st.set_page_config(
-    page_title="Monitoramento Amazon1",
+    page_title="Monitoramento Amazon",
     page_icon="📦",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # ============================================================
-# BANCO DE DADOS (Supabase / Postgres — persistente entre deploys)
+# BANCO DE DADOS
 # ============================================================
-conn = st.connection("supabase_db", type="sql")
+BANCO = "escala_amazon_v2.db"
 
-def inicializar_banco():
-    with conn.session as s:
-        s.execute(text("""
-            CREATE TABLE IF NOT EXISTS operadores (
-                id SERIAL PRIMARY KEY,
-                nome TEXT NOT NULL,
-                funcao TEXT NOT NULL,
-                turno TEXT NOT NULL,
-                ativo INTEGER DEFAULT 1
-            )
-        """))
-        s.execute(text("""
-            CREATE TABLE IF NOT EXISTS escala (
-                id SERIAL PRIMARY KEY,
-                operador_id INTEGER NOT NULL REFERENCES operadores(id),
-                semana_id TEXT NOT NULL,
-                sexta TEXT NOT NULL,
-                sabado TEXT NOT NULL,
-                domingo TEXT NOT NULL,
-                segunda TEXT NOT NULL
-            )
-        """))
-        # Histórico de alterações (nova funcionalidade)
-        s.execute(text("""
-            CREATE TABLE IF NOT EXISTS historico (
-                id SERIAL PRIMARY KEY,
-                data_hora TEXT NOT NULL,
-                operador_nome TEXT NOT NULL,
-                semana_id TEXT NOT NULL,
-                dia TEXT NOT NULL,
-                de_status TEXT NOT NULL,
-                para_status TEXT NOT NULL
-            )
-        """))
-        s.commit()
+def conectar():
+    return sqlite3.connect(BANCO, check_same_thread=False)
 
-        total = s.execute(text("SELECT COUNT(*) FROM operadores WHERE ativo = 1")).scalar()
-        if total == 0:
-            funcionarios_oficiais = [
-                ("ALAN ARAÚJO", "ANALISTA", "T1"),
-                ("MARGARIDA", "PICKUP", "T1"),
-                ("JOSÉ BRUNO PALHANO", "PICKUP", "T1"),
-                ("CRISTOVÃO MIKELLYS", "DEPART", "T1"),
-                ("PEDRO LUCAS", "DROPOFF", "T1"),
-                ("FELIPE ALLAN", "DROPOFF", "T1"),
-                ("BRUNA BLENDA", "DROPOFF", "T1"),
-                ("CONCEIÇÃO DAIANE", "SEGURANÇA (ONISYS)", "T1"),
-                ("MATHEUS LUSTOSA", "SEGURANÇA/ELOG", "T1"),
-                ("MANUELA PINHEIRO", "LÍDER", "T2"),
-                ("ISABEL", "LÍDER/SEGURANÇA", "T2"),
-                ("ANDREZA OLIVEIRA", "PICKUP", "T2"),
-                ("ROZIANE DA SILVA", "PICKUP", "T2"),
-                ("DAIANE", "SEGURANÇA", "T2"),
-                ("EMANUEL ROBERTO", "DEPART", "T2"),
-                ("TAMMYRIS DA SILVA", "DROPOFF", "T2"),
-                ("RAPHAEL DO NASCIMENTO", "DROPOFF", "T2"),
-                ("LUDMILLA RODRIGUES", "DROPOFF", "T2"),
-                ("MARIA NATHALIA", "SEGURANÇA", "T2"),
-                ("CINAMOR", "ELOG", "T2"),
-                ("WESLEY", "LÍDER", "T3"),
-                ("JOÃO", "LÍDER/SEGURANÇA", "T3"),
-                ("RILDOMAR", "PICKUP", "T3"),
-                ("LUCIANA", "PICKUP", "T3"),
-                ("GLAYLDSON", "SEGURANÇA", "T3"),
-                ("TAYANARA", "DEPART", "T3"),
-                ("RUAN", "DROPOFF", "T3"),
-                ("BÁRBARA", "DROPOFF", "T3")
-            ]
-            for nome, funcao, turno in funcionarios_oficiais:
-                s.execute(
-                    text("INSERT INTO operadores (nome, funcao, turno) VALUES (:nome, :funcao, :turno)"),
-                    {"nome": nome, "funcao": funcao, "turno": turno}
-                )
-            s.commit()
+def criar_banco_do_zero():
+    conn = conectar()
+    cursor = conn.cursor()
 
-inicializar_banco()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS operadores (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            funcao TEXT NOT NULL,
+            turno TEXT NOT NULL,
+            ativo INTEGER DEFAULT 1
+        )
+    """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS escala (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            operador_id INTEGER NOT NULL,
+            semana_id TEXT NOT NULL,
+            sexta TEXT NOT NULL,
+            sabado TEXT NOT NULL,
+            domingo TEXT NOT NULL,
+            segunda TEXT NOT NULL,
+            FOREIGN KEY (operador_id) REFERENCES operadores(id)
+        )
+    """)
+    # Histórico de alterações (nova funcionalidade)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS historico (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            data_hora TEXT NOT NULL,
+            operador_nome TEXT NOT NULL,
+            semana_id TEXT NOT NULL,
+            dia TEXT NOT NULL,
+            de_status TEXT NOT NULL,
+            para_status TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+
+    dados_existentes = cursor.execute("SELECT COUNT(*) FROM operadores WHERE ativo = 1").fetchone()[0]
+    if dados_existentes == 0:
+        funcionarios_oficiais = [
+            ("ALAN ARAÚJO", "ANALISTA", "T1"),
+            ("MARGARIDA", "PICKUP", "T1"),
+            ("JOSÉ BRUNO PALHANO", "PICKUP", "T1"),
+            ("CRISTOVÃO MIKELLYS", "DEPART", "T1"),
+            ("PEDRO LUCAS", "DROPOFF", "T1"),
+            ("FELIPE ALLAN", "DROPOFF", "T1"),
+            ("BRUNA BLENDA", "DROPOFF", "T1"),
+            ("CONCEIÇÃO DAIANE", "SEGURANÇA (ONISYS)", "T1"),
+            ("MATHEUS LUSTOSA", "SEGURANÇA/ELOG", "T1"),
+            ("MANUELA PINHEIRO", "LÍDER", "T2"),
+            ("ISABEL", "LÍDER/SEGURANÇA", "T2"),
+            ("ANDREZA OLIVEIRA", "PICKUP", "T2"),
+            ("ROZIANE DA SILVA", "PICKUP", "T2"),
+            ("DAIANE", "SEGURANÇA", "T2"),
+            ("EMANUEL ROBERTO", "DEPART", "T2"),
+            ("TAMMYRIS DA SILVA", "DROPOFF", "T2"),
+            ("RAPHAEL DO NASCIMENTO", "DROPOFF", "T2"),
+            ("LUDMILLA RODRIGUES", "DROPOFF", "T2"),
+            ("MARIA NATHALIA", "SEGURANÇA", "T2"),
+            ("CINAMOR", "ELOG", "T2"),
+            ("WESLEY", "LÍDER", "T3"),
+            ("JOÃO", "LÍDER/SEGURANÇA", "T3"),
+            ("RILDOMAR", "PICKUP", "T3"),
+            ("LUCIANA", "PICKUP", "T3"),
+            ("GLAYLDSON", "SEGURANÇA", "T3"),
+            ("TAYANARA", "DEPART", "T3"),
+            ("RUAN", "DROPOFF", "T3"),
+            ("BÁRBARA", "DROPOFF", "T3")
+        ]
+        cursor.executemany("""
+            INSERT INTO operadores (nome, funcao, turno) VALUES (?, ?, ?)
+        """, funcionarios_oficiais)
+        conn.commit()
+
+    conn.close()
+
+criar_banco_do_zero()
 
 # ============================================================
 # CONSTANTES
@@ -191,8 +197,6 @@ label, .stMarkdown, p { color: #C7D0DD; }
 .stTabs [data-baseweb="tab-list"] { gap: 4px; border-bottom: 1px solid #2A3855; }
 .stTabs [data-baseweb="tab"] { color: #8794A6; font-weight: 700; }
 .stTabs [aria-selected="true"] { color: #FF9900 !important; border-bottom-color: #FF9900 !important; }
-.stTabs [data-baseweb="tab-highlight"] { background-color: #FF9900 !important; }
-.stTabs [data-baseweb="tab-border"] { background-color: #2A3855 !important; }
 
 .turno-header {
     display: flex;
@@ -276,57 +280,6 @@ label, .stMarkdown, p { color: #C7D0DD; }
 .metric-numero { font-size: 22px; font-weight: 800; color: #FFFFFF; }
 .metric-label { font-size: 11px; color: #8794A6; font-weight: 700; }
 
-/* Cards de métrica clicáveis (filtro de turno) — texto flutua sobre o botão real */
-.metric-numero-btn {
-    font-size: 22px;
-    font-weight: 800;
-    color: #FFFFFF;
-    text-align: center;
-    position: relative;
-    z-index: 2;
-    pointer-events: none;
-    margin-top: 14px;
-    margin-bottom: 0;
-}
-.metric-label-btn {
-    font-size: 11px;
-    color: #8794A6;
-    font-weight: 700;
-    text-align: center;
-    position: relative;
-    z-index: 2;
-    pointer-events: none;
-    margin-bottom: 10px;
-}
-.st-key-metric_row div[data-testid="stButton"] > button {
-    position: relative;
-    margin-top: -62px;
-    height: 76px;
-    width: 100%;
-    background-color: #182238;
-    border: 1px solid #2A3855;
-    border-top: 4px solid #FF9900;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    z-index: 1;
-    cursor: pointer;
-}
-.st-key-metric_row div[data-testid="stButton"] > button:hover {
-    border-color: #FF9900;
-    background-color: #1E2A42;
-}
-.st-key-metric_row div[data-testid="stButton"] > button p { opacity: 0; }
-
-/* Cabeçalho da grade fixo ao rolar (estilo Excel) */
-.st-key-grid_header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background-color: #101A2C;
-    padding-top: 10px;
-    padding-bottom: 8px;
-}
-
 [data-testid="stForm"] { background-color: #182238; border: 1px solid #2A3855; padding: 16px; border-radius: 10px; }
 .stButton > button {
     border-radius: 7px;
@@ -364,9 +317,9 @@ div[data-testid="stPopover"] button p { color: #1A1A1A !important; }
 div[data-testid="stPopover"] button:hover {
     background-color: #E68A00 !important;
     border-color: #E68A00 !important;
-    color: #0A0A0A !important;
+    color: #0B3C5D !important;
 }
-div[data-testid="stPopover"] button:hover p { color: #0A0A0A !important; }
+div[data-testid="stPopover"] button:hover p { color: #0B3C5D !important; }
 
 /* Conteúdo do popover (renderizado fora do container principal) */
 div[data-testid="stPopoverBody"],
@@ -486,93 +439,76 @@ if "deslocamento_semana" not in st.session_state:
 # OPERAÇÕES DE BANCO
 # ============================================================
 def buscar_operadores():
-    df = conn.query(
-        "SELECT id, nome, funcao, turno FROM operadores WHERE ativo = 1 ORDER BY turno, nome",
-        ttl=0
-    )
-    return list(df.itertuples(index=False, name=None))
+    conn = conectar()
+    dados = conn.execute("""
+        SELECT id, nome, funcao, turno FROM operadores WHERE ativo = 1 ORDER BY turno, nome
+    """).fetchall()
+    conn.close()
+    return dados
 
 def cadastrar_operador(nome, funcao, turno):
-    with conn.session as s:
-        s.execute(
-            text("INSERT INTO operadores (nome, funcao, turno) VALUES (:nome, :funcao, :turno)"),
-            {"nome": nome, "funcao": funcao, "turno": turno}
-        )
-        s.commit()
+    conn = conectar()
+    conn.execute("INSERT INTO operadores (nome, funcao, turno) VALUES (?, ?, ?)", (nome, funcao, turno))
+    conn.commit()
+    conn.close()
 
 def editar_operador(operador_id, nome, funcao, turno):
-    with conn.session as s:
-        s.execute(
-            text("UPDATE operadores SET nome = :nome, funcao = :funcao, turno = :turno WHERE id = :id"),
-            {"nome": nome, "funcao": funcao, "turno": turno, "id": operador_id}
-        )
-        s.commit()
+    conn = conectar()
+    conn.execute(
+        "UPDATE operadores SET nome = ?, funcao = ?, turno = ? WHERE id = ?",
+        (nome, funcao, turno, operador_id)
+    )
+    conn.commit()
+    conn.close()
 
 def remover_operador(operador_id):
-    with conn.session as s:
-        s.execute(text("UPDATE operadores SET ativo = 0 WHERE id = :id"), {"id": operador_id})
-        s.commit()
+    conn = conectar()
+    conn.execute("UPDATE operadores SET ativo = 0 WHERE id = ?", (operador_id,))
+    conn.commit()
+    conn.close()
 
 def buscar_status(operador_id, semana_id):
-    df = conn.query(
-        "SELECT sexta, sabado, domingo, segunda FROM escala WHERE operador_id = :oid AND semana_id = :sid",
-        params={"oid": operador_id, "sid": semana_id},
-        ttl=0
-    )
-    if df.empty:
-        return None
-    linha = df.iloc[0]
-    return (linha["sexta"], linha["sabado"], linha["domingo"], linha["segunda"])
+    conn = conectar()
+    resultado = conn.execute("""
+        SELECT sexta, sabado, domingo, segunda FROM escala WHERE operador_id = ? AND semana_id = ?
+    """, (operador_id, semana_id)).fetchone()
+    conn.close()
+    return resultado
 
 def salvar_status(operador_id, semana_id, sexta, sabado, domingo, segunda):
-    with conn.session as s:
-        existente = s.execute(
-            text("SELECT id FROM escala WHERE operador_id = :oid AND semana_id = :sid"),
-            {"oid": operador_id, "sid": semana_id}
-        ).fetchone()
+    conn = conectar()
+    existente = conn.execute(
+        "SELECT id FROM escala WHERE operador_id = ? AND semana_id = ?", (operador_id, semana_id)
+    ).fetchone()
 
-        if existente:
-            s.execute(
-                text("""
-                    UPDATE escala SET sexta = :sexta, sabado = :sabado, domingo = :domingo, segunda = :segunda
-                    WHERE operador_id = :oid AND semana_id = :sid
-                """),
-                {"sexta": sexta, "sabado": sabado, "domingo": domingo, "segunda": segunda,
-                 "oid": operador_id, "sid": semana_id}
-            )
-        else:
-            s.execute(
-                text("""
-                    INSERT INTO escala (operador_id, semana_id, sexta, sabado, domingo, segunda)
-                    VALUES (:oid, :sid, :sexta, :sabado, :domingo, :segunda)
-                """),
-                {"oid": operador_id, "sid": semana_id, "sexta": sexta, "sabado": sabado,
-                 "domingo": domingo, "segunda": segunda}
-            )
-        s.commit()
+    if existente:
+        conn.execute("""
+            UPDATE escala SET sexta = ?, sabado = ?, domingo = ?, segunda = ? WHERE operador_id = ? AND semana_id = ?
+        """, (sexta, sabado, domingo, segunda, operador_id, semana_id))
+    else:
+        conn.execute("""
+            INSERT INTO escala (operador_id, semana_id, sexta, sabado, domingo, segunda) VALUES (?, ?, ?, ?, ?, ?)
+        """, (operador_id, semana_id, sexta, sabado, domingo, segunda))
+    conn.commit()
+    conn.close()
 
 def registrar_historico(operador_nome, semana_id, dia, de_status, para_status):
-    with conn.session as s:
-        s.execute(
-            text("""
-                INSERT INTO historico (data_hora, operador_nome, semana_id, dia, de_status, para_status)
-                VALUES (:dh, :nome, :sid, :dia, :de, :para)
-            """),
-            {"dh": datetime.now().strftime("%d/%m/%Y %H:%M"), "nome": operador_nome,
-             "sid": semana_id, "dia": dia, "de": de_status, "para": para_status}
-        )
-        s.commit()
+    conn = conectar()
+    conn.execute("""
+        INSERT INTO historico (data_hora, operador_nome, semana_id, dia, de_status, para_status)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (datetime.now().strftime("%d/%m/%Y %H:%M"), operador_nome, semana_id, dia, de_status, para_status))
+    conn.commit()
+    conn.close()
 
 def buscar_historico(limite=50):
-    df = conn.query(
-        """
-            SELECT data_hora, operador_nome, semana_id, dia, de_status, para_status
-            FROM historico ORDER BY id DESC LIMIT :lim
-        """,
-        params={"lim": limite},
-        ttl=0
-    )
-    return list(df.itertuples(index=False, name=None))
+    conn = conectar()
+    dados = conn.execute("""
+        SELECT data_hora, operador_nome, semana_id, dia, de_status, para_status
+        FROM historico ORDER BY id DESC LIMIT ?
+    """, (limite,)).fetchall()
+    conn.close()
+    return dados
 
 # ============================================================
 # DATAS DA ESCALA
@@ -630,8 +566,8 @@ def gerar_excel(operadores, semana):
 col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
 with col_tit:
-    st.markdown("<div class='subtitulo-tag'>ESCALA OPERACIONAL INTERNA</div>", unsafe_allow_html=True)
-    st.markdown("<div class='titulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitulo-tag'>ESCALA OPERACIONAL</div>", unsafe_allow_html=True)
+    st.markdown("<div class='titulo'>Monitoramento - amazon</div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitulo'>Selecione o período da escala</div>", unsafe_allow_html=True)
 
 with col_log:
@@ -643,14 +579,14 @@ with col_log:
                 entrar = st.form_submit_button("Entrar", use_container_width=True)
 
                 if entrar:
-                    if usuario.lower().strip() == "admin" and senha == "Amazon123":
+                    if usuario.lower().strip() == "admin" and senha == "losung@2026":
                         st.session_state.autenticado = True
                         st.rerun()
                     else:
                         st.error("Dados incorretos.")
     else:
         with st.popover("⚙️ Painel de Gestão", use_container_width=True):
-            st.markdown("🟢 **Modo Gestor ativo**")
+            st.markdown("**Gestão de Escala**")
             st.divider()
 
             menu_admin = st.selectbox(
@@ -756,118 +692,89 @@ with col_export:
     )
 
 # ============================================================
-# MÉTRICAS / FILTRO DE TURNO (cards clicáveis, substituem as abas)
+# MÉTRICAS
 # ============================================================
-if "filtro_turno" not in st.session_state:
-    st.session_state.filtro_turno = "TODOS"
-
 total = len(operadores)
 t1 = len([x for x in operadores if x[3] == "T1"])
 t2 = len([x for x in operadores if x[3] == "T2"])
 t3 = len([x for x in operadores if x[3] == "T3"])
 
-with st.container(key="metric_row"):
-    m1, m2, m3, m4 = st.columns(4)
-    with m1:
-        st.markdown(f"<div class='metric-numero-btn'>{total}</div><div class='metric-label-btn'>OPERADORES TOTAL</div>", unsafe_allow_html=True)
-        if st.button(" ", key="filtro_total", use_container_width=True):
-            st.session_state.filtro_turno = "TODOS"
-            st.rerun()
-    with m2:
-        st.markdown(f"<div class='metric-numero-btn'>{t1}</div><div class='metric-label-btn'>T1 • 07h às 15h</div>", unsafe_allow_html=True)
-        if st.button(" ", key="filtro_t1", use_container_width=True):
-            st.session_state.filtro_turno = "T1"
-            st.rerun()
-    with m3:
-        st.markdown(f"<div class='metric-numero-btn'>{t2}</div><div class='metric-label-btn'>T2 • 15h às 23h</div>", unsafe_allow_html=True)
-        if st.button(" ", key="filtro_t2", use_container_width=True):
-            st.session_state.filtro_turno = "T2"
-            st.rerun()
-    with m4:
-        st.markdown(f"<div class='metric-numero-btn'>{t3}</div><div class='metric-label-btn'>T3 • 23h às 07h</div>", unsafe_allow_html=True)
-        if st.button(" ", key="filtro_t3", use_container_width=True):
-            st.session_state.filtro_turno = "T3"
-            st.rerun()
-
-# Destaca visualmente o card do filtro ativo no momento
-_chave_ativa = {"TODOS": "filtro_total", "T1": "filtro_t1", "T2": "filtro_t2", "T3": "filtro_t3"}[st.session_state.filtro_turno]
-st.markdown(f"""
-<style>
-.st-key-{_chave_ativa} button {{
-    background-color: #FF9900 !important;
-    border-color: #FF9900 !important;
-}}
-</style>
-""", unsafe_allow_html=True)
+m1, m2, m3, m4 = st.columns(4)
+with m1: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{total}</div><div class='metric-label'>OPERADORES TOTAL</div></div>", unsafe_allow_html=True)
+with m2: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t1}</div><div class='metric-label'>T1 • 07h às 15h</div></div>", unsafe_allow_html=True)
+with m3: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t2}</div><div class='metric-label'>T2 • 15h às 23h</div></div>", unsafe_allow_html=True)
+with m4: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t3}</div><div class='metric-label'>T3 • 23h às 07h</div></div>", unsafe_allow_html=True)
 
 st.write("")
 
 # ============================================================
-# GRID DE ESCALA (cabeçalho fixo ao rolar, filtrado pelo card ativo)
+# GRID DE TURNOS
 # ============================================================
-turnos_a_mostrar = ["T1", "T2", "T3"] if st.session_state.filtro_turno == "TODOS" else [st.session_state.filtro_turno]
+aba_t1, aba_t2, aba_t3 = st.tabs(["Turno 1", "Turno 2", "Turno 3"])
+abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
 
-with st.container(key="grid_header"):
-    headers = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
-    headers[0].markdown("<div class='header-col header-esquerda'>OPERADOR</div>", unsafe_allow_html=True)
-    headers[1].markdown("<div class='header-col header-esquerda'>FUNÇÃO</div>", unsafe_allow_html=True)
-    for i, (dia, _) in enumerate(DIAS, 2):
-        headers[i].markdown(f"<div class='header-col'>{dia.upper()} ({semana[dia]})</div>", unsafe_allow_html=True)
+for turno in ["T1", "T2", "T3"]:
+    with abas_mapeamento[turno]:
+        operadores_turno = ordenar_por_funcao([x for x in operadores if x[3] == turno])
 
-st.markdown("<div class='separador'></div>", unsafe_allow_html=True)
+        if not operadores_turno:
+            st.info(f"Nenhum operador encontrado no {NOMES_TURNOS[turno]} para este filtro/período.")
+            continue
 
-for turno in turnos_a_mostrar:
-    operadores_turno = ordenar_por_funcao([x for x in operadores if x[3] == turno])
+        st.markdown(f"""
+            <div class='turno-header'>
+                <div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div>
+                <div class='turno-horario'>{HORARIOS[turno]}</div>
+            </div>
+        """, unsafe_allow_html=True)
 
-    if not operadores_turno:
-        st.info(f"Nenhum operador encontrado no {NOMES_TURNOS[turno]} para este filtro/período.")
-        continue
-
-    st.markdown(f"""
-        <div class='turno-header'>
-            <div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div>
-            <div class='turno-horario'>{HORARIOS[turno]}</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    for operador in operadores_turno:
-        operador_id, nome, funcao = operador[0], operador[1], operador[2]
-        status = buscar_status(operador_id, semana_id)
-
-        if status is None:
-            horario = HORARIOS[turno]
-            status = (horario, horario, horario, horario)
-            salvar_status(operador_id, semana_id, *status)
-
-        linha = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
-        linha[0].markdown(f"<div class='nome-operador'><b>{nome}</b></div>", unsafe_allow_html=True)
-        linha[1].markdown(f"<div class='funcao-operador'>{funcao}</div>", unsafe_allow_html=True)
-
-        status_lista = list(status)
+        headers = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
+        headers[0].markdown("<div class='header-col header-esquerda'>OPERADOR</div>", unsafe_allow_html=True)
+        headers[1].markdown("<div class='header-col header-esquerda'>FUNÇÃO</div>", unsafe_allow_html=True)
 
         for i, (dia, _) in enumerate(DIAS, 2):
-            valor = status_lista[i - 2]
+            headers[i].markdown(f"<div class='header-col'>{dia.upper()} ({semana[dia]})</div>", unsafe_allow_html=True)
 
-            if valor != "FOLGA":
-                linha[i].markdown(f"""
-                    <div class='card-trabalho'>
-                        {HORARIOS[turno]}
-                    </div>
-                """, unsafe_allow_html=True)
-            else:
-                linha[i].markdown("""
-                    <div class='card-folga'>
-                        Folga descanso
-                    </div>
-                """, unsafe_allow_html=True)
+        st.markdown("<div class='separador'></div>", unsafe_allow_html=True)
 
-            if st.session_state.autenticado:
-                novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                if linha[i].button("↔ Alternar", key=f"{operador_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
-                    registrar_historico(nome, semana_id, dia, valor, novo_valor)
-                    status_lista[i - 2] = novo_valor
-                    salvar_status(operador_id, semana_id, *status_lista)
-                    st.rerun()
+        for operador in operadores_turno:
+            operador_id, nome, funcao = operador[0], operador[1], operador[2]
+            status = buscar_status(operador_id, semana_id)
+
+            if status is None:
+                horario = HORARIOS[turno]
+                status = (horario, horario, horario, horario)
+                salvar_status(operador_id, semana_id, *status)
+
+            linha = st.columns([2.5, 2, 1.8, 1.8, 1.8, 1.8])
+            linha[0].markdown(f"<div class='nome-operador'><b>{nome}</b></div>", unsafe_allow_html=True)
+            linha[1].markdown(f"<div class='funcao-operador'>{funcao}</div>", unsafe_allow_html=True)
+
+            status_lista = list(status)
+
+            for i, (dia, _) in enumerate(DIAS, 2):
+                valor = status_lista[i - 2]
+
+                if valor != "FOLGA":
+                    linha[i].markdown(f"""
+                        <div class='card-trabalho'>
+                            {HORARIOS[turno]}
+                        </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    linha[i].markdown("""
+                        <div class='card-folga'>
+                            Folga descanso
+                        </div>
+                    """, unsafe_allow_html=True)
+
+                if st.session_state.autenticado:
+                    novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
+                    if linha[i].button("↔ Alterar", key=f"{operador_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
+                        registrar_historico(nome, semana_id, dia, valor, novo_valor)
+                        status_lista[i - 2] = novo_valor
+                        salvar_status(operador_id, semana_id, *status_lista)
+                        st.rerun()
 
 st.divider()
 st.caption("Escala Amazon • Sistema independente de gestão de escala")

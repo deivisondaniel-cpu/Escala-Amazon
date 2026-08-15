@@ -618,7 +618,7 @@ with col_log:
                     nome_edit = st.text_input("Nome", value=op_sel[1]).strip().upper()
                     funcao_edit = st.text_input("Função", value=op_sel[2]).strip().upper()
                     turno_edit = st.selectbox(
-                        "Turno", ["TURNO 1", "TURNO 2", "TURNO 3"],
+                        "Turno", ["T1", "T2", "T3"],
                         index=["T1", "T2", "T3"].index(op_sel[3]),
                         format_func=lambda x: f"{NOMES_TURNOS[x]} — {HORARIOS[x]}"
                     )

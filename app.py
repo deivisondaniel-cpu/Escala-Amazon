@@ -3,26 +3,28 @@ import sqlite3
 from datetime import datetime, timedelta
 
 # ============================================================
-# CONFIGURAÇÃO
+# CONFIGURAÇÃO DA PÁGINA
 # ============================================================
 st.set_page_config(
     page_title="Escala Amazon",
     page_icon="amazon.png",
     layout="wide",
-    initial_sidebar_state="collapsed" # Remove a sidebar por padrão
+    initial_sidebar_state="collapsed"
 )
 
 # ============================================================
-# BANCO INTERNO (SQLITE)
+# NOVO BANCO DE DADOS INTEGRADO (ZURADO - V2)
 # ============================================================
-BANCO = "escala_amazon.db"
+BANCO = "escala_amazon_v2.db"
 
 def conectar():
     return sqlite3.connect(BANCO, check_same_thread=False)
 
-def criar_banco():
+def criar_banco_do_zero():
     conn = conectar()
     cursor = conn.cursor()
+    
+    # Criação das tabelas estruturais
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS operadores (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,10 +48,10 @@ def criar_banco():
     """)
     conn.commit()
     
-    # 🌟 CARGA AUTOMÁTICA DE TODOS OS FUNCIONÁRIOS DAS PLANILHAS
-    dados_operadores = cursor.execute("SELECT COUNT(*) FROM operadores WHERE ativo = 1").fetchone()[0]
-    if dados_operadores == 0:
-        funcionarios_iniciais = [
+    # Injeção inicial forçada da lista oficial extraída das imagens
+    dados_existentes = cursor.execute("SELECT COUNT(*) FROM operadores WHERE ativo = 1").fetchone()[0]
+    if dados_existentes == 0:
+        funcionarios_oficiais = [
             # 🌅 TURNO 1 (T1)
             ("ALAN ARAÚJO", "ANALISTA", "T1"),
             ("MARGARIDA", "PICKUP", "T1"),
@@ -86,15 +88,16 @@ def criar_banco():
         ]
         cursor.executemany("""
             INSERT INTO operadores (nome, funcao, turno) VALUES (?, ?, ?)
-        """, funcionarios_iniciais)
+        """, funcionarios_oficiais)
         conn.commit()
         
     conn.close()
 
-criar_banco()
+# Executa a montagem limpa do projeto
+criar_banco_do_zero()
 
 # ============================================================
-# HORÁRIOS OFICIAIS
+# HORÁRIOS E CONSTANTES
 # ============================================================
 HORARIOS = {
     "T1": "07:00 às 15:00",
@@ -109,11 +112,11 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS ATUALIZADO (100% LIMPO E SEM A COROA VERMELHA / FOOTER)
+# CSS INJETADO (REMOÇÃO DA BARRA AZUL/COROA DO STREAMLIT)
 # ============================================================
 st.markdown("""
 <style>
-/* 🚫 BLOCK COMPLETO DE ELEMENTOS NATIVOS DELTA DO STREAMLIT */
+/* Oculta completamente os elementos nativos da Cloud do Streamlit */
 header[data-testid="stHeader"], 
 .stAppDeployButton, 
 div[data-testid="stViewerBadge"],
@@ -125,22 +128,11 @@ footer,
     width: 0 !important;
     height: 0 !important;
     opacity: 0 !important;
-    pointer-events: none !important;
 }
 
-/* Remove o espaço que a sidebar deixaria */
 [data-testid="stSidebar"] { display: none; }
-
 [data-testid="stAppViewContainer"] { background-color: #F3F6F9; }
 .stApp { background-color: #F3F6F9; }
-
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    margin-bottom: 5px;
-}
 
 .titulo {
     color: #232F3E;
@@ -207,7 +199,6 @@ div[data-baseweb="select"] > div {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(35,47,62,0.10);
 }
 .sub-info { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 700; }
 
@@ -225,7 +216,6 @@ div[data-baseweb="select"] > div {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(20,110,180,0.07);
 }
 .sub-info-folga { color: #6B8196; font-size: 10px; margin-top: 3px; font-weight: 600; }
 
@@ -249,10 +239,8 @@ div[data-baseweb="select"] > div {
 div[data-testid="column"] .stButton > button { color: #232F3E; }
 div[data-baseweb="input"] { border-radius: 7px; }
 .stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
-.stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
 .stCaption { color: #617184 !important; }
 
-/* Estilização dos botões popover no topo */
 div[data-testid="stPopover"] > button {
     background-color: #232F3E !important;
     color: #FFFFFF !important;
@@ -276,13 +264,13 @@ div[data-testid="stPopover"] > button:hover {
 """, unsafe_allow_html=True)
 
 # ============================================================
-# LOGIN STATE
+# SESSÃO DE AUTENTICAÇÃO
 # ============================================================
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
 # ============================================================
-# FUNÇÕES DE BANCO
+# OPERAÇÕES DE CONSULTA BANCO
 # ============================================================
 def buscar_operadores():
     conn = conectar()
@@ -330,7 +318,7 @@ def salvar_status(operador_id, semana_id, sexta, sabado, domingo, segunda):
     conn.close()
 
 # ============================================================
-# DATAS
+# MONITORAMENTO DE DATAS DA ESCALA
 # ============================================================
 def obter_semana(deslocamento=0):
     hoje = datetime.now()
@@ -352,7 +340,7 @@ def obter_semana(deslocamento=0):
 semanas = [obter_semana(i) for i in range(-2, 5)]
 
 # ============================================================
-# CABEÇALHO DA APLICAÇÃO (TÍTULO + LOGIN ALINHADOS)
+# CORE - RENDERIZAÇÃO DO TOP BAR
 # ============================================================
 col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
@@ -414,7 +402,7 @@ with col_log:
                 st.rerun()
 
 # ============================================================
-# FILTRO DE SEMANA
+# FILTRO DE SELEÇÃO GLOBAL
 # ============================================================
 semana_labels = [x["nome"] for x in semanas]
 semana_escolhida = st.selectbox("📅 Período da escala", semana_labels, index=2)
@@ -424,7 +412,7 @@ semana_id = semana["id"]
 operadores = buscar_operadores()
 
 # ============================================================
-# MÉTRICAS DO PAINEL
+# RECONSTRUÇÃO DAS MÉTRICAS EM TEMPO REAL
 # ============================================================
 total = len(operadores)
 t1 = len([x for x in operadores if x[3] == "T1"])
@@ -440,7 +428,7 @@ with m4: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t3}<
 st.write("")
 
 # ============================================================
-# ABAS DE NAVEGAÇÃO DOS TURNOS
+# CONSTRUÇÃO DO GRID DE TURNOS (ABAS INDEPENDENTES)
 # ============================================================
 DIAS = [("Sexta", "sexta"), ("Sábado", "sabado"), ("Domingo", "domingo"), ("Segunda", "segunda")]
 

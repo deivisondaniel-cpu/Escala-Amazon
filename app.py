@@ -9,7 +9,7 @@ st.set_page_config(
     page_title="Escala Amazon",
     page_icon="amazon.png",
     layout="wide",
-    initial_sidebar_state="collapsed" # Remove a sidebar por padrão
+    initial_sidebar_state="collapsed"
 )
 
 # ============================================================
@@ -65,22 +65,15 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS ATUALIZADO (SEM SIDEBAR, FOCO NO TOPO)
+# CSS ATUALIZADO
 # ============================================================
 st.markdown("""
 <style>
-/* Remove o botão de Fork/GitHub e a barra superior nativa da nuvem */
-header[data-testid="stHeader"] {
-    display: none !important;
-}
-
+header[data-testid="stHeader"] { display: none !important; }
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }
-
-/* Remove o espaço que a sidebar deixaria */
 [data-testid="stSidebar"] { display: none; }
-
 [data-testid="stAppViewContainer"] { background-color: #F3F6F9; }
 .stApp { background-color: #F3F6F9; }
 
@@ -91,21 +84,8 @@ footer { visibility: hidden; }
     margin-top: 10px;
     margin-bottom: 5px;
 }
-
-.titulo {
-    color: #232F3E;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 32px;
-    font-weight: 800;
-}
-
-.subtitulo {
-    color: #146EB4;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    margin-bottom: 25px;
-}
+.titulo { color: #232F3E; font-family: 'Segoe UI', sans-serif; font-size: 32px; font-weight: 800; }
+.subtitulo { color: #146EB4; font-size: 14px; font-weight: 700; letter-spacing: 0.2px; margin-bottom: 25px; }
 
 div[data-baseweb="select"] > div {
     border: 1px solid #CBD5E1 !important;
@@ -126,7 +106,6 @@ div[data-baseweb="select"] > div {
     border-radius: 8px;
     box-shadow: 0 2px 7px rgba(35,47,62,0.06);
 }
-
 .turno-titulo { font-size: 21px; font-weight: 800; color: #232F3E; }
 .turno-horario {
     background-color: #EAF3FB;
@@ -178,7 +157,6 @@ div[data-baseweb="select"] > div {
     box-shadow: 0 2px 5px rgba(20,110,180,0.07);
 }
 .sub-info-folga { color: #6B8196; font-size: 10px; margin-top: 3px; font-weight: 600; }
-
 .separador { border: 0; border-top: 1px solid #D7DEE7; margin-top: 2px; margin-bottom: 15px; }
 
 .metric-card {
@@ -201,7 +179,6 @@ div[data-baseweb="input"] { border-radius: 7px; }
 .stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
 .stCaption { color: #617184 !important; }
 
-/* Estilização dos botões popover no topo */
 div[data-testid="stPopover"] > button {
     background-color: #232F3E !important;
     color: #FFFFFF !important;
@@ -231,7 +208,7 @@ if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
 # ============================================================
-# FUNÇÕES DE BANCO
+# FUNÇÕES DE BANCO E CALLBACKS
 # ============================================================
 def buscar_operadores():
     conn = conectar()
@@ -278,6 +255,11 @@ def salvar_status(operador_id, semana_id, sexta, sabado, domingo, segunda):
     conn.commit()
     conn.close()
 
+# Novo Callback para alternar a escala sem quebrar a reatividade visual
+def alternar_status_callback(operador_id, semana_id, lista_atual, index_dia, novo_valor):
+    lista_atual[index_dia] = novo_valor
+    salvar_status(operador_id, semana_id, *lista_atual)
+
 # ============================================================
 # DATAS
 # ============================================================
@@ -291,7 +273,7 @@ def obter_semana(deslocamento=0):
 
     return {
         "id": sexta.strftime("%Y-%m-%d"),
-        "nome": f"{sexta.strftime('%d/%m')} até {segunda.strftime('%d/%m')}",
+        "name": f"{sexta.strftime('%d/%m')} até {segunda.strftime('%d/%m')}",
         "Sexta": sexta.strftime("%d/%m"),
         "Sábado": sabado.strftime("%d/%m"),
         "Domingo": domingo.strftime("%d/%m"),
@@ -310,7 +292,6 @@ with col_tit:
     st.markdown("<div class='subtitulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
 
 with col_log:
-    # Caso NÃO esteja logado, exibe apenas o botão discreto de Login no canto superior direito
     if not st.session_state.autenticado:
         with st.popover("👤 Área do Gestor", use_container_width=True):
             with st.form("login_form", clear_on_submit=True):
@@ -325,12 +306,10 @@ with col_log:
                     else:
                         st.error("Dados incorretos.")
     else:
-        # Se logado, cria um menu flutuante com as ferramentas administrativas
         with st.popover("⚙️ Painel de Gestão", use_container_width=True):
             st.markdown("🟢 **Modo Administrador**")
             st.divider()
             
-            # Sub-opções dentro do botão superior
             menu_admin = st.selectbox("O que deseja fazer?", ["Adicionar Operador", "Remover Operador"])
             
             if menu_admin == "Adicionar Operador":
@@ -368,7 +347,7 @@ with col_log:
 # ============================================================
 # FILTRO DE SEMANA
 # ============================================================
-semana_labels = [x["nome"] for x in semanas]
+semana_labels = [x["name"] for x in semanas]
 semana_escolhida = st.selectbox("📅 Período da escala", semana_labels, index=2)
 semana = semanas[semana_labels.index(semana_escolhida)]
 semana_id = semana["id"]
@@ -458,10 +437,14 @@ for turno in ["T1", "T2", "T3"]:
 
                 if st.session_state.autenticado:
                     novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                    if linha[i].button("↔ Alternar", key=f"{operador_id}_{semana_id}_{dia}_{turno}", use_container_width=True):
-                        status_lista[i - 2] = novo_valor
-                        salvar_status(operador_id, semana_id, *status_lista)
-                        st.rerun()
+                    # Correção: O botão agora chama a função de callback diretamente passando os argumentos necessários
+                    linha[i].button(
+                        "↔ Alternar", 
+                        key=f"{operador_id}_{semana_id}_{dia}_{turno}", 
+                        use_container_width=True,
+                        on_click=alternar_status_callback,
+                        args=(operador_id, semana_id, status_lista.copy(), i - 2, novo_valor)
+                    )
 
 st.divider()
 st.caption("Escala Amazon • Sistema independente de gestão de escala")

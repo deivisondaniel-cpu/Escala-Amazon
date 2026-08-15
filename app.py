@@ -246,14 +246,14 @@ label, .stMarkdown, p { color: #C7D0DD; }
 }
 
 .card-folga {
-    background-color: #2B2F36;
-    color: #FF9900;
+    background-color: #FFC107;
+    color: #C0C0C0;
     padding: 8px 5px;
     border-radius: 7px;
     text-align: center;
     font-weight: 800;
     font-size: 11px;
-    border-left: 4px solid #FF9900;
+    border-left: 4px solid #E6AC00;
     margin-bottom: 4px;
     min-height: 48px;
     width: 100%;
@@ -262,7 +262,7 @@ label, .stMarkdown, p { color: #C7D0DD; }
     flex-direction: column;
     justify-content: center;
 }
-.sub-info-folga { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 600; }
+.sub-info-folga { color: #A9A9A9; font-size: 10px; margin-top: 3px; font-weight: 600; }
 
 .separador { border: 0; border-top: 1px solid #2A3855; margin-top: 2px; margin-bottom: 15px; }
 

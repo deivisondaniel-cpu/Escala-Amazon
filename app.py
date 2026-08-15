@@ -322,7 +322,7 @@ for turno in ["T1", "T2", "T3"]:
                     
                     if st.session_state.autenticado:
                         novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
-                        if linha[idx].button("Alternar", key=f"d_{op_id}_{semana_id}_{dia}_{turno}"):
+                        if linha[idx].button("Folga", key=f"d_{op_id}_{semana_id}_{dia}_{turno}"):
                             status_lista[idx - 2] = novo_valor
                             salvar_status(op_id, semana_id, *status_lista)
                             st.rerun()

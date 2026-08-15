@@ -205,21 +205,21 @@ label, .stMarkdown, p { color: #C7D0DD; }
 .funcao-operador { padding-top: 9px; font-size: 11px; color: #4EA8E0; font-weight: 700; }
 
 .card-trabalho {
-    background-color: #2A1216;
-    color: #FF5C5C;
+    background-color: #2B2F36;
+    color: #FF9900;
     padding: 8px 5px;
     border-radius: 7px;
     text-align: center;
     font-weight: 800;
     font-size: 11px;
-    border-left: 4px solid #FF5C5C;
+    border-left: 4px solid #FF9900;
     margin-bottom: 4px;
     min-height: 43px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
-.sub-info { color: #FF9B9B; font-size: 10px; margin-top: 3px; font-weight: 700; }
+.sub-info { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 700; }
 
 .card-folga {
     background-color: #3A2C05;
@@ -261,22 +261,36 @@ label, .stMarkdown, p { color: #C7D0DD; }
     color: #E7ECF3;
 }
 .stButton > button:hover { border-color: #FF9900; color: #FF9900; }
+
+div[data-testid="stDownloadButton"] > button {
+    background-color: transparent !important;
+    border: 1px solid #232B39 !important;
+    color: #5B6779 !important;
+    font-size: 12px !important;
+    padding: 6px 0 !important;
+}
+div[data-testid="stDownloadButton"] > button:hover {
+    border-color: #4EA8E0 !important;
+    color: #4EA8E0 !important;
+}
 div[data-testid="column"] .stButton > button { color: #C7D0DD; }
 .stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
 .stCaption { color: #5B6779 !important; }
 
 div[data-testid="stPopover"] > button {
-    background-color: #151A23 !important;
-    color: #E7ECF3 !important;
-    border: 1px solid #2A3242 !important;
-    font-weight: 700 !important;
+    background-color: #FF9900 !important;
+    color: #146EB4 !important;
+    border: 1px solid #FF9900 !important;
+    font-weight: 800 !important;
     border-radius: 8px !important;
 }
+div[data-testid="stPopover"] > button p { color: #146EB4 !important; }
 div[data-testid="stPopover"] > button:hover {
-    background-color: #FF9900 !important;
-    border-color: #FF9900 !important;
-    color: #0B0E14 !important;
+    background-color: #E68A00 !important;
+    border-color: #E68A00 !important;
+    color: #0B3C5D !important;
 }
+div[data-testid="stPopover"] > button:hover p { color: #0B3C5D !important; }
 
 [data-testid="stExpander"] {
     background-color: #151A23;
@@ -523,7 +537,7 @@ with col_log:
 # ============================================================
 # NAVEGAÇÃO DE SEMANA + BUSCA (NOVA FUNCIONALIDADE)
 # ============================================================
-col_prev, col_periodo, col_next, col_busca = st.columns([0.6, 3, 0.6, 2])
+col_prev, col_periodo, col_next, col_busca, col_export = st.columns([0.6, 3, 0.6, 2, 0.5])
 
 with col_prev:
     if st.button("◀", use_container_width=True):
@@ -546,6 +560,17 @@ operadores = buscar_operadores()
 if termo_busca:
     operadores = [x for x in operadores if termo_busca.strip().upper() in x[1].upper()]
 
+with col_export:
+    excel_buffer = gerar_excel(operadores, semana)
+    st.download_button(
+        label="⬇️",
+        data=excel_buffer,
+        file_name=f"escala_amazon_{semana_id}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        use_container_width=True,
+        help="Exportar escala para Excel"
+    )
+
 # ============================================================
 # MÉTRICAS
 # ============================================================
@@ -560,24 +585,12 @@ with m2: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t1}<
 with m3: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t2}</div><div class='metric-label'>T2 • 15h às 23h</div></div>", unsafe_allow_html=True)
 with m4: st.markdown(f"<div class='metric-card'><div class='metric-numero'>{t3}</div><div class='metric-label'>T3 • 23h às 07h</div></div>", unsafe_allow_html=True)
 
-# Botão de exportação (nova funcionalidade)
-col_exp1, col_exp2 = st.columns([5, 1])
-with col_exp2:
-    excel_buffer = gerar_excel(operadores, semana)
-    st.download_button(
-        label="⬇️ Exportar Excel",
-        data=excel_buffer,
-        file_name=f"escala_amazon_{semana_id}.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        use_container_width=True
-    )
-
 st.write("")
 
 # ============================================================
 # GRID DE TURNOS
 # ============================================================
-aba_t1, aba_t2, aba_t3 = st.tabs(["🌅 Turno 1 (07h às 15h)", "🌆 Turno 2 (15h às 23h)", "🌌 Turno 3 (23h às 07h)"])
+aba_t1, aba_t2, aba_t3 = st.tabs(["Turno 1 (07h às 15h)", "Turno 2 (15h às 23h)", "Turno 3 (23h às 07h)"])
 abas_mapeamento = {"T1": aba_t1, "T2": aba_t2, "T3": aba_t3}
 
 for turno in ["T1", "T2", "T3"]:

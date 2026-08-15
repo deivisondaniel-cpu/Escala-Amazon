@@ -74,12 +74,15 @@ header[data-testid="stHeader"] {
     display: none !important;
 }
 
-/* Remove a coroa vermelha / botão de deploy do canto inferior */
-.stDeployButton {
+/* Remove absolutamente qualquer botão flutuante do canto inferior direito (incluindo a coroa) */
+div.stDeployButton, 
+iframe#stManageAppButton, 
+button[title*="Manage app"], 
+[data-testid="stStatusWidget"] {
     display: none !important;
-}
-div[data-testid="stStatusWidget"] {
-    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 #MainMenu { visibility: hidden; }

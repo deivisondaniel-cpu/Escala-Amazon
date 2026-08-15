@@ -266,14 +266,13 @@ label, .stMarkdown, p { color: #C7D0DD; }
 .metric-card {
     background-color: #182238;
     border: 1px solid #2A3855;
-    border-top: 4px solid #4EA8E0;
+    border-top: 4px solid #FF9900;
     border-radius: 10px;
     padding: 12px;
     text-align: center;
 }
 .metric-numero { font-size: 22px; font-weight: 800; color: #FFFFFF; }
 .metric-label { font-size: 11px; color: #8794A6; font-weight: 700; }
-.metric-card:first-child { border-top-color: #FF9900; }
 
 [data-testid="stForm"] { background-color: #182238; border: 1px solid #2A3855; padding: 16px; border-radius: 10px; }
 .stButton > button {
@@ -622,7 +621,7 @@ with col_log:
 # ============================================================
 # NAVEGAÇÃO DE SEMANA + BUSCA (NOVA FUNCIONALIDADE)
 # ============================================================
-col_prev, col_periodo, col_next, col_busca, col_export = st.columns([0.6, 3, 0.6, 2, 0.5])
+col_prev, col_periodo, col_next, col_busca, col_export = st.columns([0.5, 2, 0.5, 2.3, 0.45], gap="small")
 
 with col_prev:
     if st.button("◀", use_container_width=True):

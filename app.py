@@ -566,8 +566,8 @@ def gerar_excel(operadores, semana):
 col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
 with col_tit:
-    st.markdown("<div class='subtitulo-tag'>ESCALA OPERACIONAL INTERNA</div>", unsafe_allow_html=True)
-    st.markdown("<div class='titulo'>Monitoramento Amazon</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitulo-tag'>ESCALA OPERACIONAL</div>", unsafe_allow_html=True)
+    st.markdown("<div class='titulo'>Monitoramento - amazon</div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitulo'>Selecione o período da escala</div>", unsafe_allow_html=True)
 
 with col_log:

@@ -88,7 +88,7 @@ HORARIOS = {"T1": "07:00 às 15:00", "T2": "15:00 às 23:00", "T3": "23:00 às 0
 NOMES_TURNOS = {"T1": "Turno 1", "T2": "Turno 2", "T3": "Turno 3"}
 
 # ============================================================
-# CSS INJETADO CORRIGIDO (SEM ESMAGAR OS TEXTOS)
+# CSS INJETADO ATUALIZADO (ALINHAMENTO VERTICAL PERFEITO)
 # ============================================================
 st.markdown("""
 <style>
@@ -99,14 +99,9 @@ header[data-testid="stHeader"], .stAppDeployButton, div[data-testid="stViewerBad
 .stApp { background-color: #FAFAFA; }
 .stMainBlockContainer { padding: 15px 20px !important; max-width: 100% !important; }
 
-/* Ajuste fino de espaçamento - sem quebrar layout */
-[data-testid="stVerticalBlock"] {
-    gap: 8px !important;
-}
-[data-testid="stHorizontalBlock"] {
-    padding: 4px 0px !important;
-    margin-bottom: 4px !important;
-}
+/* Ajustes de bloco de colunas */
+[data-testid="stVerticalBlock"] { gap: 10px !important; }
+[data-testid="stHorizontalBlock"] { padding: 0px !important; margin-bottom: 0px !important; }
 
 /* Título Premium */
 .titulo-container { margin-bottom: 10px; }
@@ -126,12 +121,28 @@ header[data-testid="stHeader"], .stAppDeployButton, div[data-testid="stViewerBad
 .turno-horario { background-color: rgba(255,153,0,0.2); color: #FF9900; padding: 2px 8px; border-radius: 2px; font-size: 11px; font-weight: 700; }
 
 /* Grid de Escala Limpo e Alinhado */
-.header-col { font-weight: 700; font-size: 12px; color: #565959; text-transform: uppercase; padding-bottom: 6px; border-bottom: 2px solid #E7E9E9; margin-bottom: 8px; }
-.nome-operador { font-size: 13px; font-weight: 700; color: #111111; padding: 6px 0; }
-.funcao-operador { font-size: 12px; color: #565959; font-weight: 500; padding: 6px 0; }
+.header-col { font-weight: 700; font-size: 12px; color: #565959; text-transform: uppercase; padding-bottom: 6px; border-bottom: 2px solid #E7E9E9; margin-bottom: 4px; }
+
+/* Centraliza os textos verticalmente em relação aos cards da linha */
+.nome-operador { 
+    font-size: 13px; 
+    font-weight: 800; 
+    color: #111111; 
+    display: flex;
+    align-items: center;
+    min-height: 44px; /* Casando com a altura dos cards do lado direito */
+}
+.funcao-operador { 
+    font-size: 12px; 
+    color: #565959; 
+    font-weight: 600; 
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+}
 
 /* Cards de Status Ajustados */
-.card-status { padding: 6px 8px; border-radius: 4px; text-align: center; font-size: 11px; font-weight: 700; display: flex; flex-direction: column; justify-content: center; min-height: 40px; box-sizing: border-box; }
+.card-status { padding: 6px 8px; border-radius: 4px; text-align: center; font-size: 11px; font-weight: 700; display: flex; flex-direction: column; justify-content: center; min-height: 44px; box-sizing: border-box; }
 .status-trabalho { background-color: #FFF8F2; color: #C45500; border: 1px solid #FBD8B4; }
 .status-folga { background-color: #F0F2F2; color: #565959; border: 1px solid #D5D9D9; }
 .sub-status { font-size: 9px; font-weight: 500; opacity: 0.85; margin-top: 2px; }
@@ -284,7 +295,7 @@ for turno in ["T1", "T2", "T3"]:
         st.markdown(f"<div class='turno-header'><div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div><div class='turno-horario'>{HORARIOS[turno]}</div></div>", unsafe_allow_html=True)
         
         if not is_mobile:
-            # --- DESKTOP CORRIGIDO (ESPAÇAMENTO NATURAL) ---
+            # --- DESKTOP CENTRALIZADO VERTICALMENTE ---
             headers = st.columns([1.8, 1.4, 1, 1, 1, 1])
             headers[0].markdown("<div class='header-col'>Operador</div>", unsafe_allow_html=True)
             headers[1].markdown("<div class='header-col'>Função</div>", unsafe_allow_html=True)
@@ -325,7 +336,7 @@ for turno in ["T1", "T2", "T3"]:
                 st.markdown(f"""
                 <div class='mobile-operator-card'>
                     <div style='border-bottom: 2px solid #FF9900; padding-bottom:4px; margin-bottom:6px;'>
-                        <span class='nome-operador'>{nome}</span> • <span class='funcao-operador'>{funcao}</span>
+                        <span class='nome-operador' style='min-height:unset;'>{nome}</span> • <span class='funcao-operador' style='min-height:unset;'>{funcao}</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -348,4 +359,4 @@ for turno in ["T1", "T2", "T3"]:
                             st.rerun()
 
 st.divider()
-st.caption("Escala Amazon • Dashboard Corrigido")
+st.caption("Escala Amazon • Dashboard Alinhado")

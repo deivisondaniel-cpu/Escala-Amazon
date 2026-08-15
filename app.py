@@ -69,6 +69,11 @@ NOMES_TURNOS = {
 # ============================================================
 st.markdown("""
 <style>
+/* Remove o botão de Fork/GitHub e a barra superior nativa da nuvem */
+header[data-testid="stHeader"] {
+    display: none !important;
+}
+
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 .stDecoration { display: none !important; }

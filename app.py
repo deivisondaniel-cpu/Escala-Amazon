@@ -6,16 +6,16 @@ from datetime import datetime, timedelta
 # CONFIGURAÇÃO DA PÁGINA
 # ============================================================
 st.set_page_config(
-    page_title="Escala monitorimento - amazon",
+    page_title="Escala monitoramento - amazon",
     page_icon="amazon.png",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # ============================================================
-# NOVO BANCO DE DADOS INTEGRADO (ZURADO - V2)
+# NOVO BANCO DE DADOS INTEGRADO (ZERADO - V3)
 # ============================================================
-BANCO = "escala_amazon_v2.db"
+BANCO = "escala_amazon_v3.db"
 
 def conectar():
     return sqlite3.connect(BANCO, check_same_thread=False)
@@ -345,8 +345,8 @@ semanas = [obter_semana(i) for i in range(-2, 5)]
 col_tit, col_log = st.columns([4, 1], vertical_alignment="center")
 
 with col_tit:
-    st.markdown("<div class='titulo'>Monitoramento - amazon</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitulo'>Escala do turno</div>", unsafe_allow_html=True)
+    st.markdown("<div class='titulo'>Amazon</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitulo'>Escala monitoramento - amazon</div>", unsafe_allow_html=True)
 
 with col_log:
     if not st.session_state.autenticado:

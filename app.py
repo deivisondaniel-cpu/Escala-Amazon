@@ -46,14 +46,43 @@ def criar_banco():
     """)
     conn.commit()
     
-    # 🌟 CARGA AUTOMÁTICA DOS FUNCIONÁRIOS (Se o banco estiver vazio)
+    # 🌟 CARGA AUTOMÁTICA DE TODOS OS FUNCIONÁRIOS DAS PLANILHAS
     dados_operadores = cursor.execute("SELECT COUNT(*) FROM operadores WHERE ativo = 1").fetchone()[0]
     if dados_operadores == 0:
         funcionarios_iniciais = [
+            # 🌅 TURNO 1 (T1)
             ("ALAN ARAÚJO", "ANALISTA", "T1"),
+            ("MARGARIDA", "PICKUP", "T1"),
+            ("JOSÉ BRUNO PALHANO", "PICKUP", "T1"),
+            ("CRISTOVÃO MIKELLYS", "DEPART", "T1"),
+            ("PEDRO LUCAS", "DROPOFF", "T1"),
+            ("FELIPE ALLAN", "DROPOFF", "T1"),
             ("BRUNA BLENDA", "DROPOFF", "T1"),
-            # Se quiser colocar mais funcionários permanentemente, adicione aqui seguindo o padrão:
-            # ("NOME DO OPERADOR", "FUNÇÃO", "T1")
+            ("CONCEIÇÃO DAIANE", "SEGURANÇA (ONISYS)", "T1"),
+            ("MATHEUS LUSTOSA", "SEGURANÇA/ELOG", "T1"),
+
+            # 🌆 TURNO 2 (T2)
+            ("MANUELA PINHEIRO", "LÍDER", "T2"),
+            ("ISABEL", "LÍDER/SEGURANÇA", "T2"),
+            ("ANDREZA OLIVEIRA", "PICKUP", "T2"),
+            ("ROZIANE DA SILVA", "PICKUP", "T2"),
+            ("DAIANE", "SEGURANÇA", "T2"),
+            ("EMANUEL ROBERTO", "DEPART", "T2"),
+            ("TAMMYRIS DA SILVA", "DROPOFF", "T2"),
+            ("RAPHAEL DO NASCIMENTO", "DROPOFF", "T2"),
+            ("LUDMILLA RODRIGUES", "DROPOFF", "T2"),
+            ("MARIA NATHALIA", "SEGURANÇA", "T2"),
+            ("CINAMOR", "ELOG", "T2"),
+
+            # 🌌 TURNO 3 (T3)
+            ("WESLEY", "LÍDER", "T3"),
+            ("JOÃO", "LÍDER/SEGURANÇA", "T3"),
+            ("RILDOMAR", "PICKUP", "T3"),
+            ("LUCIANA", "PICKUP", "T3"),
+            ("GLAYLDSON", "SEGURANÇA", "T3"),
+            ("TAYANARA", "DEPART", "T3"),
+            ("RUAN", "DROPOFF", "T3"),
+            ("BÁRBARA", "DROPOFF", "T3")
         ]
         cursor.executemany("""
             INSERT INTO operadores (nome, funcao, turno) VALUES (?, ?, ?)
@@ -80,11 +109,11 @@ NOMES_TURNOS = {
 }
 
 # ============================================================
-# CSS ATUALIZADO (100% LIMPO E SEM A COROA VERMELHA)
+# CSS ATUALIZADO (100% LIMPO E SEM A COROA VERMELHA / FOOTER)
 # ============================================================
 st.markdown("""
 <style>
-/* 🚫 BLOCK COMPLETO DE ELEMENTOS NATIVOS (Fim da Coroa Vermelha e Headers) */
+/* 🚫 BLOCK COMPLETO DE ELEMENTOS NATIVOS DELTA DO STREAMLIT */
 header[data-testid="stHeader"], 
 .stAppDeployButton, 
 div[data-testid="stViewerBadge"],
@@ -219,6 +248,7 @@ div[data-baseweb="select"] > div {
 .stButton > button { border-radius: 7px; font-weight: 700; border: 1px solid #D7DEE7; }
 div[data-testid="column"] .stButton > button { color: #232F3E; }
 div[data-baseweb="input"] { border-radius: 7px; }
+.stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
 .stMainBlockContainer { padding-top: 25px !important; padding-bottom: 30px !important; }
 .stCaption { color: #617184 !important; }
 

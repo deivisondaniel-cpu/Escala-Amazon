@@ -228,21 +228,19 @@ label, .stMarkdown, p { color: #C7D0DD; }
 .funcao-operador { padding-top: 9px; font-size: 11px; color: #4EA8E0; font-weight: 700; }
 
 .card-trabalho {
-    background-color: #2B2F36;
-    color: #FF9900;
-    padding: 8px 5px;
+    background-color: #8CD790;
+    color: #111111;
+    padding: 9px 5px;
     border-radius: 7px;
     text-align: center;
     font-weight: 800;
-    font-size: 11px;
-    border-left: 4px solid #FF9900;
+    font-size: 12px;
+    border-left: 4px solid #4CAF50;
     margin-bottom: 4px;
-    min-height: 43px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
 }
-.sub-info { color: #FFB84D; font-size: 10px; margin-top: 3px; font-weight: 700; }
 
 .card-folga {
     background-color: #2B2F36;

@@ -74,7 +74,7 @@ HORARIOS = {"T1": "07:00 às 15:00", "T2": "15:00 às 23:00", "T3": "23:00 às 0
 NOMES_TURNOS = {"T1": "Turno 1", "T2": "Turno 2", "T3": "Turno 3"}
 
 # ============================================================
-# CSS CUSTOMIZADO - IDENTIDADE VISUAL EXATA DO SEU PRINT
+# CSS CLEAN REFINADO - EVITA O EFEITO PAREDE DE TIJOLOS
 # ============================================================
 st.markdown("""
 <style>
@@ -87,9 +87,9 @@ header[data-testid="stHeader"], .stAppDeployButton, div[data-testid="stViewerBad
 .stApp { background-color: #0B1320; color: #F1F5F9; }
 .stMainBlockContainer { padding: 15px 20px !important; max-width: 100% !important; }
 
-/* Correção de Margens e Alinhamentos das Linhas */
-[data-testid="stVerticalBlock"] { gap: 4px !important; }
-[data-testid="stHorizontalBlock"] { padding: 0px !important; margin-bottom: 0px !important; align-items: center !important; }
+/* Espaçamento real entre as linhas da tabela */
+[data-testid="stVerticalBlock"] { gap: 0px !important; }
+[data-testid="stHorizontalBlock"] { padding: 0px !important; margin-bottom: 6px !important; align-items: center !important; }
 
 /* Cabeçalho da Página */
 .titulo-container { margin-bottom: 12px; }
@@ -101,66 +101,63 @@ header[data-testid="stHeader"], .stAppDeployButton, div[data-testid="stViewerBad
 .metric-card { flex: 1; min-width: 120px; background: #141E30; border: 1px solid #1E293B; border-radius: 6px; padding: 8px 12px; text-align: left; }
 .metric-card.total { border-left: 4px solid #FF5500; }
 .metric-numero { font-size: 20px; font-weight: 800; color: #FFFFFF; line-height: 1.1; }
-.metric-label { font-size: 10px; color: #94A3B8; font-weight: 600; margin-top: 1px; }
+.metric-label { font-size: 10px; color: #64748B; font-weight: 600; margin-top: 1px; }
 
-/* Header de Turnos - Idêntico ao seu Layout */
-.turno-header { display: flex; align-items: center; gap: 8px; margin: 12px 0 8px 0; padding: 8px 12px; background-color: #141E30; color: white; border-radius: 4px; border: 1px solid #1E293B; }
+/* Header de Turnos */
+.turno-header { display: flex; align-items: center; gap: 8px; margin: 12px 0 12px 0; padding: 8px 12px; background-color: #141E30; color: white; border-radius: 4px; border: 1px solid #1E293B; }
 .turno-titulo { font-size: 13px; font-weight: 700; color: #FFFFFF; }
 .turno-horario { background-color: rgba(255,85,0,0.15); color: #FF5500; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,85,0,0.3); }
 
 /* Grid Headers */
-.header-col { font-weight: 700; font-size: 11px; color: #64748B; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid #1E293B; margin-bottom: 4px; }
+.header-col { font-weight: 700; font-size: 11px; color: #64748B; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid #1E293B; margin-bottom: 8px; }
 
 /* Textos da Tabela perfeitamente alinhados verticalmente ao centro */
-.nome-operador { font-size: 13px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; min-height: 48px; }
-.funcao-operador { font-size: 12px; color: #94A3B8; font-weight: 500; display: flex; align-items: center; min-height: 48px; }
+.nome-operador { font-size: 12px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; min-height: 44px; }
+.funcao-operador { font-size: 11px; color: #64748B; font-weight: 600; display: flex; align-items: center; min-height: 44px; }
 
-/* CARDS DE STATUS ULTRA LIMPOS - ESTILO PREMUM PROGRAMAÇÃO */
+/* CARDS DE STATUS ULTRA CLEAN - DESIGN MINIMALISTA PROFISSIONAL */
 .card-status { 
-    border-radius: 6px; 
+    background-color: #141E30;
+    border: 1px solid #1E293B;
+    border-radius: 4px; 
     text-align: center; 
     font-size: 11px; 
     font-weight: 700; 
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
-    min-height: 46px; 
+    min-height: 44px; 
     box-sizing: border-box; 
     width: 100%;
-    transition: all 0.2s ease;
 }
 
-/* Trabalho: Laranja Neon Degradê do Menu Ativo do seu print */
+/* Trabalho: Borda laranja neon sutil e elegante */
 .status-trabalho { 
-    background: linear-gradient(135deg, #FF5500 0%, #FF7700 100%); 
-    color: #FFFFFF; 
-    border: none;
-    box-shadow: 0 2px 4px rgba(255, 85, 0, 0.2);
+    border-left: 4px solid #FF5500 !important;
+    color: #FF5500;
 }
-.status-trabalho .sub-status { color: rgba(255, 255, 255, 0.85); }
+.status-trabalho .sub-status { color: #94A3B8; }
 
-/* Folga: Amarelo Sólido Limpo e Destacado */
+/* Folga: Borda Amarela sutil */
 .status-folga { 
-    background-color: #FFCC00; 
-    color: #000000; 
-    border: none;
-    box-shadow: 0 2px 4px rgba(255, 204, 0, 0.15);
+    border-left: 4px solid #FFCC00 !important;
+    color: #FFCC00;
 }
-.status-folga .sub-status { color: rgba(0, 0, 0, 0.65); }
+.status-folga .sub-status { color: #64748B; }
 
-.sub-status { font-size: 9px; font-weight: 600; margin-top: 2px; text-transform: uppercase; }
+.sub-status { font-size: 9px; font-weight: 500; margin-top: 1px; }
 
-/* Tornar o botão invisível por cima do card de forma limpa */
+/* Botão invisível sobreposto */
 .stButton > button {
     background-color: transparent !important;
     color: transparent !important;
     border: none !important;
     position: absolute !important;
-    top: 0; left: 0; width: 100% !important; height: 46px !important;
+    top: 0; left: 0; width: 100% !important; height: 44px !important;
     z-index: 10;
     cursor: pointer;
 }
-.stButton { position: relative !important; margin: 0 !important; padding: 0 !important; height: 46px; }
+.stButton { position: relative !important; margin: 0 !important; padding: 0 !important; height: 44px; }
 
 /* Mobile Cards */
 .mobile-operator-card { background: #141E30; border: 1px solid #1E293B; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
@@ -308,7 +305,7 @@ for turno in ["T1", "T2", "T3"]:
         st.markdown(f"<div class='turno-header'><div class='turno-titulo'>🕒 {NOMES_TURNOS[turno]}</div><div class='turno-horario'>{HORARIOS[turno]}</div></div>", unsafe_allow_html=True)
         
         if not is_mobile:
-            # --- MODELO DESKTOP CLEAN ---
+            # --- MODELO DESKTOP REALMENTE CLEAN ---
             headers = st.columns([1.8, 1.4, 1, 1, 1, 1])
             headers[0].markdown("<div class='header-col'>Operador</div>", unsafe_allow_html=True)
             headers[1].markdown("<div class='header-col'>Função</div>", unsafe_allow_html=True)
@@ -330,13 +327,13 @@ for turno in ["T1", "T2", "T3"]:
                     valor = status_lista[idx - 2]
                     
                     with linha[idx]:
-                        # Aplica o estilo baseado no status atual
+                        # Agora o card é escuro e elegante, mudando apenas a borda de destaque
                         if valor != "FOLGA":
                             st.markdown(f"<div class='card-status status-trabalho'>TRABALHO<span class='sub-status'>{HORARIOS[turno]}</span></div>", unsafe_allow_html=True)
                         else:
                             st.markdown("<div class='card-status status-folga'>FOLGA<span class='sub-status'>Descanso</span></div>", unsafe_allow_html=True)
                         
-                        # Se o gestor estiver logado, o clique sobre o card muda o status instantaneamente
+                        # Clique direto e sutil
                         if st.session_state.autenticado:
                             novo_valor = HORARIOS[turno] if valor == "FOLGA" else "FOLGA"
                             if st.button("", key=f"d_{op_id}_{semana_id}_{dia}_{turno}"):
@@ -354,7 +351,7 @@ for turno in ["T1", "T2", "T3"]:
                 <div class='mobile-operator-card'>
                     <div style='border-bottom: 1px solid #FF5500; padding-bottom:4px; margin-bottom:6px;'>
                         <span style='font-size:13px; font-weight:800; color:#FFF;'>{nome}</span><br>
-                        <span style='font-size:11px; color:#94A3B8;'>{funcao}</span>
+                        <span style='font-size:11px; color:#64748B;'>{funcao}</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)

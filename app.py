@@ -74,7 +74,7 @@ HORARIOS = {"T1": "07:00 às 15:00", "T2": "15:00 às 23:00", "T3": "23:00 às 0
 NOMES_TURNOS = {"T1": "Turno 1", "T2": "Turno 2", "T3": "Turno 3"}
 
 # ============================================================
-# CSS APURADO: AZUL VIVO, CAIXAS INDEPENDENTES SEM ESPAÇO VAZIO
+# CSS LIMPO E FIXADO: CHEGA DE GAMBIARRAS COM TEXTO DE BOTÃO
 # ============================================================
 st.markdown("""
 <style>
@@ -87,8 +87,8 @@ header[data-testid="stHeader"], .stAppDeployButton, div[data-testid="stViewerBad
 .stApp { background-color: #0B1320; color: #F1F5F9; }
 .stMainBlockContainer { padding: 12px 20px !important; max-width: 100% !important; }
 
-/* Remove espaçamentos e margens gigantescas nativas do Streamlit */
-div[data-testid="stVerticalBlock"] { gap: 4px !important; padding: 0px !important; }
+/* Controle de Espaçamentos */
+div[data-testid="stVerticalBlock"] { gap: 0px !important; padding: 0px !important; }
 div[data-testid="stHorizontalBlock"] { gap: 8px !important; padding: 0px !important; margin: 0px 0px 4px 0px !important; align-items: center !important; }
 
 /* Abas Customizadas - Sem Ícones */
@@ -105,80 +105,85 @@ button[aria-selected="true"] { color: #FF5500 !important; border-bottom-color: #
 .turno-titulo { font-size: 13px; font-weight: 700; color: #FFFFFF; }
 .turno-horario { background-color: rgba(255,85,0,0.15); color: #FF5500; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,85,0,0.3); }
 
-/* Colunas de Títulos com o Azul Mais Vivo */
+/* Colunas de Títulos */
 .header-col { font-weight: 700; font-size: 11px; color: #38BDF8 !important; text-transform: uppercase; padding-bottom: 4px; border-bottom: 1px solid #1E293B; margin-bottom: 6px; }
 
-/* Textos com o Azul Mais Vivo solicitado */
-.nome-operador { font-size: 12px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; height: 38px; }
-.funcao-operador { font-size: 11px; color: #38BDF8 !important; font-weight: 600; display: flex; align-items: center; height: 38px; }
+/* Textos Principais com o Azul Vivo */
+.nome-operador { font-size: 12px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; height: 42px; }
+.funcao-operador { font-size: 11px; color: #38BDF8 !important; font-weight: 600; display: flex; align-items: center; height: 42px; }
 
-/* ==========================================
-   CAIXAS INDEPENDENTES ESTILO PAINEL GESTOR
-   ========================================== */
-.stButton > button {
-    width: 100% !important;
-    height: 38px !important;
-    border-radius: 6px !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    padding: 0px !important;
-    margin: 0px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    transition: all 0.2s ease;
+/* ============================================================
+   CONTAINER MASTER PARA CAIXAS INDEPENDENTES CLICÁVEIS
+   ============================================================ */
+.container-click {
+    position: relative !important;
+    width: 100%;
+    height: 42px;
 }
 
-/* CAIXA DE TRABALHO: Borda Laranja, Fundo Escuro, Subtexto em Azul Vivo */
-.btn-trabalho > div [data-testid="stMarkdownContainer"] p { color: transparent !important; height: 0px; margin:0; } /* Esconde o texto padrão do streamlit button */
-.btn-trabalho button {
-    background-color: #141E30 !important;
-    border: 1px solid #1E293B !important;
-    border-left: 4px solid #FF5500 !important;
-    color: #FF5500 !important;
-}
-.btn-trabalho button::before {
-    content: "TRABALHO";
-    display: block;
+/* CARDS VISUAIS REAIS (HTML PURE) */
+.card-real {
+    width: 100%;
+    height: 42px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     font-size: 11px;
     font-weight: 700;
+    box-sizing: border-box;
 }
-.btn-trabalho button::after {
-    content: "07:00 às 15:00"; /* Dinâmico via CSS injetado ou fixo base */
-    display: block;
+
+.card-trabalho {
+    background-color: #141E30;
+    border: 1px solid #1E293B;
+    border-left: 4px solid #FF5500;
+    color: #FF5500;
+}
+.card-trabalho .sub {
+    color: #38BDF8 !important; /* Texto de horas em azul bem vivo */
     font-size: 9px;
-    color: #38BDF8 !important; /* Letras azul vivo */
     font-weight: 600;
     margin-top: 1px;
 }
 
-/* CAIXA DE FOLGA AMARELA SÓLIDA CONFORME SOLICITADO */
-.btn-folga > div [data-testid="stMarkdownContainer"] p { color: transparent !important; height: 0px; margin:0; }
-.btn-folga button {
-    background-color: #FFCC00 !important;
-    border: none !important;
+.card-folga {
+    background-color: #FFCC00 !important; /* Amarelo sólido */
     color: #0B1320 !important;
+    border: none;
 }
-.btn-folga button::before {
-    content: "FOLGA";
-    display: block;
-    font-size: 11px;
-    font-weight: 800;
-}
-.btn-folga button::after {
-    content: "INTERNA";
-    display: block;
+.card-folga .sub {
+    color: rgba(11, 19, 32, 0.6) !important;
     font-size: 9px;
-    color: rgba(11, 19, 32, 0.7) !important;
     font-weight: 600;
     margin-top: 1px;
 }
 
-/* Efeito de Hover nas caixas */
-.stButton > button:hover {
-    filter: brightness(1.2);
-    transform: scale(1.01);
+/* TORNA O BOTÃO INTERNO DO STREAMLIT TOTALMENTE INVISÍVEL E OVERLAY */
+.container-click .stButton {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 5;
+}
+
+.container-click .stButton > button {
+    background: transparent !important;
+    color: transparent !important;
+    border: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+}
+
+.container-click .stButton > button:hover {
+    background: rgba(255,255,255,0.03) !important; /* Feedback sutil de clique */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -279,12 +284,12 @@ with col_log:
                 st.session_state.autenticado = False
                 st.rerun()
 
-# Seleção de semana
+# Seleção de período
 semana_selecionada = st.selectbox("Selecione o período da Escala", options=semanas, format_func=lambda x: x["nome"], index=2)
 todos_operadores = buscar_operadores()
 
 # ============================================================
-# EXIBIÇÃO EM ABAS (SEM ÍCONES DE SOL/NOITE - SÓ RELÓGIO)
+# LAYOUT DAS ABAS SEM ÍCONES (APENAS RELÓGIO NO CABEÇALHO)
 # ============================================================
 abas_turnos = st.tabs([NOMES_TURNOS["T1"], NOMES_TURNOS["T2"], NOMES_TURNOS["T3"]])
 
@@ -304,7 +309,7 @@ for idx_turno, cod_turno in enumerate(["T1", "T2", "T3"]):
             st.info("Nenhum operador alocado.")
             continue
             
-        # Títulos das Colunas
+        # Nomes de colunas limpos
         c_op, c_fun, c_sex, c_sab, c_dom, c_seg = st.columns([2.5, 2.2, 1.5, 1.5, 1.5, 1.5])
         c_op.markdown("<div class='header-col'>Operador</div>", unsafe_allow_html=True)
         c_fun.markdown("<div class='header-col'>Função</div>", unsafe_allow_html=True)
@@ -313,7 +318,7 @@ for idx_turno, cod_turno in enumerate(["T1", "T2", "T3"]):
         c_dom.markdown(f"<div class='header-col' style='text-align:center;'>Domingo ({semana_selecionada['Domingo']})</div>", unsafe_allow_html=True)
         c_seg.markdown(f"<div class='header-col' style='text-align:center;'>Segunda ({semana_selecionada['Segunda']})</div>", unsafe_allow_html=True)
         
-        # Renderização das Caixas/Linhas por Operador
+        # Renderização perfeita das linhas por Operador
         for op in ops_do_turno:
             op_id, nome, funcao, _ = op
             status_banco = buscar_status(op_id, semana_selecionada["id"])
@@ -331,20 +336,34 @@ for idx_turno, cod_turno in enumerate(["T1", "T2", "T3"]):
             for i in range(4):
                 coluna_dia = dias_cols[i]
                 status_atual = status_dias[i]
-                classe_css = "btn-trabalho" if status_atual == "TRABALHO" else "btn-folga"
                 
                 with coluna_dia:
-                    # Injeta o botão nativo envelopado no container CSS para se transformar no Card customizado
-                    st.markdown(f"<div class='{classe_css}'>", unsafe_allow_html=True)
+                    # Inicia o bloco relativo onde o HTML e o botão invisível vão coexistir sem vazar dados
+                    st.markdown("<div class='container-click'>", unsafe_allow_html=True)
                     
-                    # O botão agora exibe o texto e altera o status ao clique direto (Modo Gestor logado)
+                    if status_atual == "TRABALHO":
+                        st.markdown(f"""
+                        <div class='card-real card-trabalho'>
+                            <div>TRABALHO</div>
+                            <div class='sub'>{HORARIOS[cod_turno]}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown("""
+                        <div class='card-real card-folga'>
+                            <div>FOLGA</div>
+                            <div class='sub'>INTERNA</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    # Botão 100% transparente por cima. O label dele é apenas um espaço vazio " " para nunca renderizar texto feio.
                     if st.session_state.autenticado:
-                        if st.button(f"{status_atual}_{op_id}_{dias_nomes[i]}", key=f"b_{op_id}_{semana_selecionada['id']}_{dias_nomes[i]}"):
+                        if st.button(" ", key=f"click_{op_id}_{semana_selecionada['id']}_{dias_nomes[i]}"):
                             status_dias[i] = "FOLGA" if status_atual == "TRABALHO" else "TRABALHO"
                             salvar_status(op_id, semana_selecionada["id"], status_dias[0], status_dias[1], status_dias[2], status_dias[3])
                             st.rerun()
                     else:
-                        # Se não logado, gera um botão desabilitado que apenas renderiza o card visual idêntico
-                        st.button(f"{status_atual}_{op_id}_{dias_nomes[i]}", key=f"b_{op_id}_{semana_selecionada['id']}_{dias_nomes[i]}", disabled=True)
+                        # Se não logado, o botão fica ali desativado e invisível apenas blindando o layout
+                        st.button(" ", key=f"disabled_{op_id}_{semana_selecionada['id']}_{dias_nomes[i]}", disabled=True)
                         
                     st.markdown("</div>", unsafe_allow_html=True)
